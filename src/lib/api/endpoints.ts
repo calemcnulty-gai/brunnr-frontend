@@ -169,7 +169,7 @@ export function extractVideoFilename(downloadUrl: string): string {
  */
 export function extractRequestId(downloadUrl: string): string {
   const parts = downloadUrl.split('/')
-  return parts[parts.length - 2]
+  return parts[parts.length - 2] || 'unknown'
 }
 
 /**

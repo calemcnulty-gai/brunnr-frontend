@@ -4,7 +4,40 @@
  */
 
 import { createClient } from './client'
-import type { Database, Project, NewProject, UpdateProject, WorkflowType, ProjectStatus } from '@/types/database'
+import type { Database, Project, NewProject, UpdateProject, WorkflowType, ProjectStatus, ProjectData } from '@/types/database'
+
+type ProjectRow = Database['public']['Tables']['projects']['Row']
+type ProjectInsert = Database['public']['Tables']['projects']['Insert']
+type ProjectUpdate = Database['public']['Tables']['projects']['Update']
+
+// Helper function to convert database row to Project type
+function rowToProject(row: ProjectRow): Project {
+  return {
+    ...row,
+    data: row.data as ProjectData,
+    created_at: row.created_at || new Date().toISOString(),
+    updated_at: row.updated_at || new Date().toISOString()
+  } as Project
+}
+
+// Helper to prepare project for insertion
+function prepareProjectInsert(project: NewProject): any {
+  return {
+    ...project,
+    data: project.data || {}
+  }
+}
+
+// Helper to prepare project for update
+function prepareProjectUpdate(updates: UpdateProject): any {
+  if (updates.data !== undefined) {
+    return {
+      ...updates,
+      data: updates.data
+    }
+  }
+  return updates
+}
 
 /**
  * Get all projects for the current user
@@ -14,14 +47,14 @@ import type { Database, Project, NewProject, UpdateProject, WorkflowType, Projec
 export async function getProjects(userId: string): Promise<Project[]> {
   const supabase = createClient()
   
-  const { data, error } = await supabase
+    const { data, error } = await supabase
     .from('projects')
     .select('*')
     .eq('user_id', userId)
     .order('updated_at', { ascending: false })
-  
+
   if (error) throw error
-  return data || []
+  return ((data || []) as ProjectRow[]).map(rowToProject)
 }
 
 /**
@@ -43,7 +76,7 @@ export async function getProject(projectId: string): Promise<Project | null> {
     throw error
   }
   
-  return data
+  return rowToProject(data as ProjectRow)
 }
 
 /**
@@ -56,12 +89,12 @@ export async function createProject(project: NewProject): Promise<Project> {
   
   const { data, error } = await supabase
     .from('projects')
-    .insert(project)
+    .insert(prepareProjectInsert(project))
     .select()
     .single()
   
   if (error) throw error
-  return data
+  return rowToProject(data as ProjectRow)
 }
 
 /**
@@ -78,13 +111,13 @@ export async function updateProject(
   
   const { data, error } = await supabase
     .from('projects')
-    .update(updates)
+    .update(prepareProjectUpdate(updates))
     .eq('id', projectId)
     .select()
     .single()
   
   if (error) throw error
-  return data
+  return rowToProject(data as ProjectRow)
 }
 
 /**
@@ -123,7 +156,7 @@ export async function getProjectsByStatus(
     .order('updated_at', { ascending: false })
   
   if (error) throw error
-  return data || []
+  return ((data || []) as ProjectRow[]).map(rowToProject)
 }
 
 /**

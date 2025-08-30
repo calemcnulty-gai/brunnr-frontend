@@ -82,21 +82,41 @@ When you believe the task is complete:
 1. **Final checklist**:
    - [ ] All todos marked as completed
    - [ ] Code runs without errors
-   - [ ] Linting passes
+   - [ ] TypeScript compilation passes (`npx tsc --noEmit`)
+   - [ ] Linting passes (`npm run lint`)
+   - [ ] Build succeeds (`npm run build`)
+   - [ ] Vercel deployment succeeds (`vercel --cwd . --yes`)
    - [ ] Changes match requirements
    
-2. **Commit any remaining changes**:
+2. **Run all checks**:
+```bash
+# TypeScript compilation
+npx tsc --noEmit
+
+# Linting
+npm run lint
+
+# Build check
+npm run build
+
+# Vercel deployment check
+vercel --cwd . --yes
+```
+
+3. **Fix any issues** before proceeding
+
+4. **Commit any remaining changes**:
 ```bash
 git add .
 git commit -m "chore: final cleanup and formatting"
 ```
 
-3. **Push the branch**:
+5. **Push the branch**:
 ```bash
 git push -u origin feature/task-name-here
 ```
 
-4. **Request verification** [[memory:3239760]]:
+6. **Request verification** [[memory:3239760]]:
 ```
 ✅ **Task Complete!**
 
@@ -326,21 +346,41 @@ When you believe the task is complete:
 1. **Final checklist**:
    - [ ] All todos marked as completed
    - [ ] Code runs without errors
-   - [ ] Linting passes
+   - [ ] TypeScript compilation passes (`npx tsc --noEmit`)
+   - [ ] Linting passes (`npm run lint`)
+   - [ ] Build succeeds (`npm run build`)
+   - [ ] Vercel deployment succeeds (`vercel --cwd . --yes`)
    - [ ] Changes match requirements
    
-2. **Commit any remaining changes**:
+2. **Run all checks**:
+```bash
+# TypeScript compilation
+npx tsc --noEmit
+
+# Linting
+npm run lint
+
+# Build check
+npm run build
+
+# Vercel deployment check
+vercel --cwd . --yes
+```
+
+3. **Fix any issues** before proceeding
+
+4. **Commit any remaining changes**:
 ```bash
 git add .
 git commit -m "chore: final cleanup and formatting"
 ```
 
-3. **Push the branch**:
+5. **Push the branch**:
 ```bash
 git push -u origin feature/task-name-here
 ```
 
-4. **Request verification** [[memory:3239760]]:
+6. **Request verification** [[memory:3239760]]:
 ```
 ✅ **Task Complete!**
 

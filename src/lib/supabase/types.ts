@@ -14,7 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      projects: {
+        Row: {
+          created_at: string | null
+          current_step: string | null
+          data: Json
+          id: string
+          name: string
+          status: Database["public"]["Enums"]["project_status"]
+          updated_at: string | null
+          user_id: string
+          video_storage_path: string | null
+          video_url: string | null
+          workflow_type: Database["public"]["Enums"]["workflow_type"]
+        }
+        Insert: {
+          created_at?: string | null
+          current_step?: string | null
+          data?: Json
+          id?: string
+          name: string
+          status?: Database["public"]["Enums"]["project_status"]
+          updated_at?: string | null
+          user_id: string
+          video_storage_path?: string | null
+          video_url?: string | null
+          workflow_type: Database["public"]["Enums"]["workflow_type"]
+        }
+        Update: {
+          created_at?: string | null
+          current_step?: string | null
+          data?: Json
+          id?: string
+          name?: string
+          status?: Database["public"]["Enums"]["project_status"]
+          updated_at?: string | null
+          user_id?: string
+          video_storage_path?: string | null
+          video_url?: string | null
+          workflow_type?: Database["public"]["Enums"]["workflow_type"]
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +64,13 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      project_status:
+        | "created"
+        | "in_progress"
+        | "generating"
+        | "completed"
+        | "failed"
+      workflow_type: "quick" | "step-by-step" | "manifest"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +197,15 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      project_status: [
+        "created",
+        "in_progress",
+        "generating",
+        "completed",
+        "failed",
+      ],
+      workflow_type: ["quick", "step-by-step", "manifest"],
+    },
   },
 } as const

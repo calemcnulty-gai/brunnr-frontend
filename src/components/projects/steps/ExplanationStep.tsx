@@ -74,7 +74,16 @@ export function ExplanationStep({ project, onComplete }: ExplanationStepProps) {
     } catch (err) {
       console.error('Failed to generate explanation:', err)
       if (err instanceof ApiError) {
-        setError(`API Error: ${err.message}${err.detail ? `\n\nDetails: ${err.detail}` : ''}`)
+        if (err.detail?.includes('No voiceover text found') || err.detail?.includes('content generation')) {
+          setError(
+            'Unable to generate an explanation. Try:\n\n' +
+            '• Making your question more specific\n' +
+            '• Adding more context about the topic\n' +
+            '• Checking if the question is educational in nature'
+          )
+        } else {
+          setError(`API Error: ${err.message}${err.detail ? `\n\nDetails: ${err.detail}` : ''}`)
+        }
       } else {
         setError('Failed to generate explanation. Please try again.')
       }

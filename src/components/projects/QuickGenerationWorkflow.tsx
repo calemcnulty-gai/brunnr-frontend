@@ -111,7 +111,18 @@ export function QuickGenerationWorkflow({ project }: QuickGenerationWorkflowProp
       })
       
       if (err instanceof ApiError) {
-        setError(`API Error: ${err.message}${err.detail ? `\n\nDetails: ${err.detail}` : ''}`)
+        // Handle specific API errors with user-friendly messages
+        if (err.detail?.includes('No voiceover text found')) {
+          setError(
+            'The AI was unable to generate content for your question. This can happen if:\n\n' +
+            '• The question is too vague or short\n' +
+            '• The topic is not well-suited for educational video\n' +
+            '• There was a temporary issue with content generation\n\n' +
+            'Try rephrasing your question with more detail, or add context to guide the explanation.'
+          )
+        } else {
+          setError(`API Error: ${err.message}${err.detail ? `\n\nDetails: ${err.detail}` : ''}`)
+        }
       } else {
         setError('Failed to generate video. Please try again.')
       }
@@ -164,6 +175,16 @@ export function QuickGenerationWorkflow({ project }: QuickGenerationWorkflowProp
             <p className="text-sm text-gray-500">
               Ask any educational question you'd like explained in a video
             </p>
+            <details className="text-sm text-gray-500 mt-2">
+              <summary className="cursor-pointer hover:text-gray-700">See example questions</summary>
+              <ul className="mt-2 space-y-1 text-xs">
+                <li>• What is the Pythagorean theorem and how do you use it?</li>
+                <li>• How does photosynthesis work in plants?</li>
+                <li>• What is the difference between velocity and acceleration?</li>
+                <li>• How do you calculate the area of a circle?</li>
+                <li>• What causes the seasons on Earth?</li>
+              </ul>
+            </details>
           </div>
           
           <div className="space-y-2">

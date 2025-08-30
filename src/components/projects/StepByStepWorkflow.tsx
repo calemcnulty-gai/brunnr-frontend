@@ -1,23 +1,130 @@
 /**
- * @fileoverview Step-by-Step workflow component (placeholder)
+ * @fileoverview Step-by-Step workflow component
  * @module components/projects/StepByStepWorkflow
  */
 
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, Layers } from 'lucide-react'
-import type { Project } from '@/types/database'
+import { ArrowLeft, ArrowRight, Check, Layers, Loader2 } from 'lucide-react'
+import { useUpdateProject } from '@/hooks/use-projects'
+import { useProjectStore } from '@/stores/project-store'
+import { QuestionStep } from './steps/QuestionStep'
+import { ExplanationStep } from './steps/ExplanationStep'
+import { ScreenplayStep } from './steps/ScreenplayStep'
+import { ManifestStep } from './steps/ManifestStep'
+import { VideoStep } from './steps/VideoStep'
+import type { Project, StepType } from '@/types/database'
+import { cn } from '@/lib/utils'
 
 interface StepByStepWorkflowProps {
   project: Project
 }
 
+interface WorkflowStep {
+  id: StepType
+  title: string
+  description: string
+}
+
+const workflowSteps: WorkflowStep[] = [
+  { id: 'question', title: 'Question', description: 'Enter your educational question' },
+  { id: 'explanation', title: 'Explanation', description: 'Review and edit the explanation' },
+  { id: 'screenplay', title: 'Screenplay', description: 'Review the video script' },
+  { id: 'manifest', title: 'Manifest', description: 'Customize animations' },
+  { id: 'video', title: 'Video', description: 'Generate and download' }
+]
+
 export function StepByStepWorkflow({ project }: StepByStepWorkflowProps) {
   const router = useRouter()
+  const updateProject = useUpdateProject()
+  const { setCurrentProject, currentProject, updateDraftData } = useProjectStore()
+  
+  const [currentStepIndex, setCurrentStepIndex] = useState(0)
+  const [completedSteps, setCompletedSteps] = useState<Set<StepType>>(new Set())
+  
+  // Initialize project store
+  useEffect(() => {
+    setCurrentProject(project)
+    
+    // Determine current step from project
+    if (project.current_step) {
+      const stepIndex = workflowSteps.findIndex(s => s.id === project.current_step)
+      if (stepIndex !== -1) {
+        setCurrentStepIndex(stepIndex)
+        
+        // Mark previous steps as completed
+        const completed = new Set<StepType>()
+        for (let i = 0; i < stepIndex; i++) {
+          completed.add(workflowSteps[i].id)
+        }
+        setCompletedSteps(completed)
+      }
+    }
+  }, [project, setCurrentProject])
+  
+  // Redirect to video page if complete
+  useEffect(() => {
+    if (project.status === 'completed' && project.video_url) {
+      router.push(`/project/${project.id}/video`)
+    }
+  }, [project, router])
+  
+  const currentStep = workflowSteps[currentStepIndex]
+  
+  const handleStepComplete = (stepId: StepType) => {
+    setCompletedSteps(prev => new Set([...prev, stepId]))
+    
+    // Move to next step if not at the end
+    if (currentStepIndex < workflowSteps.length - 1) {
+      const nextIndex = currentStepIndex + 1
+      setCurrentStepIndex(nextIndex)
+      
+      // Update project current step
+      updateProject.mutate({
+        projectId: project.id,
+        updates: {
+          current_step: workflowSteps[nextIndex].id
+        }
+      })
+    }
+  }
+  
+  const handleStepClick = (index: number) => {
+    // Can only go to completed steps or the next step
+    if (index <= completedSteps.size) {
+      setCurrentStepIndex(index)
+      
+      // Update project current step
+      updateProject.mutate({
+        projectId: project.id,
+        updates: {
+          current_step: workflowSteps[index].id
+        }
+      })
+    }
+  }
+  
+  const renderStepContent = () => {
+    switch (currentStep.id) {
+      case 'question':
+        return <QuestionStep project={currentProject || project} onComplete={() => handleStepComplete('question')} />
+      case 'explanation':
+        return <ExplanationStep project={currentProject || project} onComplete={() => handleStepComplete('explanation')} />
+      case 'screenplay':
+        return <ScreenplayStep project={currentProject || project} onComplete={() => handleStepComplete('screenplay')} />
+      case 'manifest':
+        return <ManifestStep project={currentProject || project} onComplete={() => handleStepComplete('manifest')} />
+      case 'video':
+        return <VideoStep project={currentProject || project} onComplete={() => handleStepComplete('video')} />
+      default:
+        return null
+    }
+  }
   
   return (
-    <div className="container mx-auto max-w-4xl py-8 px-4">
+    <div className="container mx-auto max-w-6xl py-8 px-4">
       <div className="mb-6">
         <Button
           variant="ghost"
@@ -33,28 +140,72 @@ export function StepByStepWorkflow({ project }: StepByStepWorkflowProps) {
         <p className="text-gray-600">Step-by-step video generation pipeline</p>
       </div>
       
+      {/* Progress Steps */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between">
+          {workflowSteps.map((step, index) => {
+            const isCompleted = completedSteps.has(step.id)
+            const isCurrent = index === currentStepIndex
+            const isClickable = index <= completedSteps.size
+            
+            return (
+              <div key={step.id} className="flex items-center flex-1">
+                <button
+                  onClick={() => handleStepClick(index)}
+                  disabled={!isClickable}
+                  className={cn(
+                    "flex flex-col items-center group",
+                    isClickable && "cursor-pointer",
+                    !isClickable && "cursor-not-allowed opacity-50"
+                  )}
+                >
+                  <div className={cn(
+                    "w-10 h-10 rounded-full flex items-center justify-center transition-colors",
+                    isCompleted && "bg-green-600 text-white",
+                    isCurrent && !isCompleted && "bg-purple-600 text-white",
+                    !isCompleted && !isCurrent && "bg-gray-200 text-gray-500"
+                  )}>
+                    {isCompleted ? (
+                      <Check className="h-5 w-5" />
+                    ) : (
+                      <span className="text-sm font-medium">{index + 1}</span>
+                    )}
+                  </div>
+                  <span className={cn(
+                    "mt-2 text-sm font-medium transition-colors",
+                    (isCompleted || isCurrent) && "text-gray-900",
+                    !isCompleted && !isCurrent && "text-gray-500"
+                  )}>
+                    {step.title}
+                  </span>
+                </button>
+                
+                {index < workflowSteps.length - 1 && (
+                  <div className={cn(
+                    "flex-1 h-0.5 mx-4 transition-colors",
+                    completedSteps.has(workflowSteps[index + 1].id) ? "bg-green-600" : "bg-gray-200"
+                  )} />
+                )}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+      
+      {/* Step Content */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Layers className="h-5 w-5 text-purple-600" />
-            Step-by-Step Pipeline
+            {currentStep.title}
           </CardTitle>
           <CardDescription>
-            This workflow is coming soon! For now, please use Quick Generation.
+            {currentStep.description}
           </CardDescription>
         </CardHeader>
         
         <CardContent>
-          <p className="text-gray-600">
-            The step-by-step pipeline will allow you to:
-          </p>
-          <ul className="mt-4 space-y-2 text-sm text-gray-600">
-            <li>• Enter your question and generate an explanation</li>
-            <li>• Edit and refine the explanation</li>
-            <li>• Review and modify the screenplay</li>
-            <li>• Customize the manifest with animations</li>
-            <li>• Generate the final video with full control</li>
-          </ul>
+          {renderStepContent()}
         </CardContent>
       </Card>
     </div>

@@ -159,7 +159,7 @@ export async function analyzeAudioTiming(
  */
 export function extractVideoFilename(downloadUrl: string): string {
   const parts = downloadUrl.split('/')
-  return parts[parts.length - 1]
+  return parts[parts.length - 1] || 'video.mp4'
 }
 
 /**

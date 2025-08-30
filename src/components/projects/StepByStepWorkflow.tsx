@@ -103,16 +103,21 @@ export function StepByStepWorkflow({ project }: StepByStepWorkflowProps) {
       setCurrentStepIndex(index)
       
       // Update project current step
-      updateProject.mutate({
-        projectId: project.id,
-        updates: {
-          current_step: workflowSteps[index].id
-        }
-      })
+      const targetStep = workflowSteps[index]
+      if (targetStep) {
+        updateProject.mutate({
+          projectId: project.id,
+          updates: {
+            current_step: targetStep.id
+          }
+        })
+      }
     }
   }
   
   const renderStepContent = () => {
+    if (!currentStep) return null
+    
     switch (currentStep.id) {
       case 'question':
         return <QuestionStep project={currentProject || project} onComplete={() => handleStepComplete('question')} />

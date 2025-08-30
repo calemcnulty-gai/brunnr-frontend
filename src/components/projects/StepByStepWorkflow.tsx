@@ -54,12 +54,15 @@ export function StepByStepWorkflow({ project }: StepByStepWorkflowProps) {
       if (stepIndex !== -1) {
         setCurrentStepIndex(stepIndex)
         
-        // Mark previous steps as completed
-        const completed = new Set<StepType>()
-        for (let i = 0; i < stepIndex; i++) {
-          completed.add(workflowSteps[i].id)
+              // Mark previous steps as completed
+      const completed = new Set<StepType>()
+      for (let i = 0; i < stepIndex; i++) {
+        const step = workflowSteps[i]
+        if (step) {
+          completed.add(step.id)
         }
-        setCompletedSteps(completed)
+      }
+      setCompletedSteps(completed)
       }
     }
   }, [project, setCurrentProject])

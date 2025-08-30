@@ -1,0 +1,493 @@
+---
+description: The agent is beginning a new task from _docs/phases
+alwaysApply: false
+---
+# Task Completion Workflow
+
+## Overview
+This rule defines the standard workflow for completing any development task. Always follow this process to ensure consistent, reviewable, and trackable work.
+
+## Workflow Steps
+
+### 1. Pre-Task Setup
+Before starting ANY coding task:
+
+```bash
+# Ensure you're on main and it's up to date
+git checkout main
+git pull origin main
+
+# Create a feature branch with descriptive name
+git checkout -b feature/task-name-here
+# Examples:
+# - feature/setup-nextjs-project
+# - feature/add-video-generation-ui
+# - fix/auth-redirect-issue
+```
+
+### 2. Task Planning
+Before coding, create or update the task list:
+
+1. **Review the task requirements** carefully
+2. **Break down into subtasks** if needed
+3. **Use todo_write tool** to track progress:
+```
+- [ ] Subtask 1
+- [ ] Subtask 2
+- [ ] Subtask 3
+```
+
+### 3. During Development
+
+#### Progress Tracking
+- **Update todos as you work** - mark items `in_progress` when starting
+- **Check off completed items immediately** - don't batch updates
+- **Add new todos** if you discover additional work needed
+
+#### Git Commits
+- **Commit frequently** with clear messages:
+```bash
+git add .
+git commit -m "feat: add video generation form component"
+git commit -m "fix: resolve TypeScript error in API client"
+git commit -m "style: update button styles to match design system"
+```
+
+- **Use conventional commits**:
+  - `feat:` new feature
+  - `fix:` bug fix
+  - `docs:` documentation
+  - `style:` formatting, missing semicolons
+  - `refactor:` code restructuring
+  - `test:` adding tests
+  - `chore:` maintenance
+
+#### Code Quality
+- **Run linters** after each file change:
+```bash
+npm run lint
+# or
+npm run lint:fix
+```
+
+- **Test your changes** if tests exist:
+```bash
+npm test
+npm run dev  # Manual testing in browser
+```
+
+### 4. Task Completion
+
+When you believe the task is complete:
+
+1. **Final checklist**:
+   - [ ] All todos marked as completed
+   - [ ] Code runs without errors
+   - [ ] Linting passes
+   - [ ] Changes match requirements
+   
+2. **Commit any remaining changes**:
+```bash
+git add .
+git commit -m "chore: final cleanup and formatting"
+```
+
+3. **Push the branch**:
+```bash
+git push -u origin feature/task-name-here
+```
+
+4. **Request verification** [[memory:3239760]]:
+```
+✅ **Task Complete!**
+
+I've completed the [task name] on branch `feature/task-name-here`.
+
+**What was done:**
+- [Summary of major changes]
+- [Key files modified/created]
+- [Any decisions or trade-offs made]
+
+**Please verify the work:**
+1. The development server runs without errors
+2. [Specific things to check based on the task]
+3. The code follows our conventions
+
+Would you like me to create a pull request, or would you prefer to review locally first?
+```
+
+### 5. Creating the Pull Request
+
+After user verification, create a PR:
+
+```bash
+# Using GitHub CLI (if available)
+gh pr create \
+  --title "feat: Add video generation UI" \
+  --body "## Summary
+  
+  Brief description of changes
+  
+  ## Changes
+  - Added component X
+  - Updated Y
+  - Fixed Z
+  
+  ## Testing
+  - Tested locally with...
+  - Verified that...
+  
+  ## Checklist
+  - [ ] Code follows style guidelines
+  - [ ] Self-review completed
+  - [ ] Comments added for complex logic" \
+  --base main
+
+# If gh CLI is not available, provide manual instructions:
+```
+
+If GitHub CLI is not available:
+```
+📋 **Pull Request Instructions**
+
+1. Go to: https://github.com/[username]/[repo]/pull/new/feature/task-name-here
+2. Use this PR template:
+
+**Title**: feat: Add video generation UI
+
+**Description**:
+## Summary
+[Brief description]
+
+## Changes
+- Added component X
+- Updated Y
+- Fixed Z
+
+## Testing
+- Tested locally with...
+- Verified that...
+```
+
+### 6. Post-PR
+
+After creating the PR:
+```
+🎉 **Pull Request Created!**
+
+PR #[number] has been created: [URL]
+
+The branch `feature/task-name-here` is ready for review.
+
+**Next steps:**
+- Await code review feedback
+- Address any requested changes
+- Merge when approved
+
+What would you like me to work on next?
+```
+
+## Important Rules
+
+### Always Remember:
+1. **NEVER work directly on main** - always create a feature branch
+2. **ALWAYS pull latest main** before starting new work
+3. **Track progress actively** - update todos as you work
+4. **Commit frequently** - small, logical commits
+5. **Ask for verification** before creating PR
+6. **Stay on the feature branch** until PR is merged
+
+### Error Handling:
+- If merge conflicts occur when pulling main, ask for guidance
+- If tests fail, fix them before proceeding
+- If unsure about implementation, ask before committing
+
+### Branch Naming:
+- `feature/` - new features
+- `fix/` - bug fixes
+- `docs/` - documentation only
+- `refactor/` - code refactoring
+- `chore/` - maintenance tasks
+
+### Communication Style:
+- Be direct about progress and blockers
+- Summarize work clearly when complete
+- Ask specific questions for verification
+- Provide clear next steps
+
+## Example Task Flow
+
+```
+1. git checkout main && git pull
+2. git checkout -b feature/add-auth
+3. Create todos for: setup Supabase, add login page, add middleware
+4. Work on each todo, updating status as you go
+5. Commit after each logical change
+6. Run lints and fix issues
+7. Push branch when complete
+8. Ask user to verify auth flow works
+9. Create PR with detailed description
+10. Await further instructions
+```
+
+## Anti-Patterns to Avoid
+
+❌ **DON'T**:
+- Work on main branch directly
+- Make huge commits with many changes
+- Forget to update todo progress
+- Create PR without user verification
+- Leave the feature branch before PR is merged
+- Force push unless explicitly instructed
+
+✅ **DO**:
+- Always work on feature branches
+- Make small, focused commits
+- Update todos in real-time
+- Get user approval before PR
+- Stay on feature branch
+- Communicate progress clearly# Task Completion Workflow
+
+## Overview
+This rule defines the standard workflow for completing any development task. Always follow this process to ensure consistent, reviewable, and trackable work.
+
+## Workflow Steps
+
+### 1. Pre-Task Setup
+Before starting ANY coding task:
+
+```bash
+# Ensure you're on main and it's up to date
+git checkout main
+git pull origin main
+
+# Create a feature branch with descriptive name
+git checkout -b feature/task-name-here
+# Examples:
+# - feature/setup-nextjs-project
+# - feature/add-video-generation-ui
+# - fix/auth-redirect-issue
+```
+
+### 2. Task Planning
+Before coding, create or update the task list:
+
+1. **Review the task requirements** carefully
+2. **Break down into subtasks** if needed
+3. **Use todo_write tool** to track progress:
+```
+- [ ] Subtask 1
+- [ ] Subtask 2
+- [ ] Subtask 3
+```
+
+### 3. During Development
+
+#### Progress Tracking
+- **Update todos as you work** - mark items `in_progress` when starting
+- **Check off completed items immediately** - don't batch updates
+- **Add new todos** if you discover additional work needed
+
+#### Git Commits
+- **Commit frequently** with clear messages:
+```bash
+git add .
+git commit -m "feat: add video generation form component"
+git commit -m "fix: resolve TypeScript error in API client"
+git commit -m "style: update button styles to match design system"
+```
+
+- **Use conventional commits**:
+  - `feat:` new feature
+  - `fix:` bug fix
+  - `docs:` documentation
+  - `style:` formatting, missing semicolons
+  - `refactor:` code restructuring
+  - `test:` adding tests
+  - `chore:` maintenance
+
+#### Code Quality
+- **Run linters** after each file change:
+```bash
+npm run lint
+# or
+npm run lint:fix
+```
+
+- **Test your changes** if tests exist:
+```bash
+npm test
+npm run dev  # Manual testing in browser
+```
+
+### 4. Task Completion
+
+When you believe the task is complete:
+
+1. **Final checklist**:
+   - [ ] All todos marked as completed
+   - [ ] Code runs without errors
+   - [ ] Linting passes
+   - [ ] Changes match requirements
+   
+2. **Commit any remaining changes**:
+```bash
+git add .
+git commit -m "chore: final cleanup and formatting"
+```
+
+3. **Push the branch**:
+```bash
+git push -u origin feature/task-name-here
+```
+
+4. **Request verification** [[memory:3239760]]:
+```
+✅ **Task Complete!**
+
+I've completed the [task name] on branch `feature/task-name-here`.
+
+**What was done:**
+- [Summary of major changes]
+- [Key files modified/created]
+- [Any decisions or trade-offs made]
+
+**Please verify the work:**
+1. The development server runs without errors
+2. [Specific things to check based on the task]
+3. The code follows our conventions
+
+Would you like me to create a pull request, or would you prefer to review locally first?
+```
+
+### 5. Creating the Pull Request
+
+After user verification, create a PR:
+
+```bash
+# Using GitHub CLI (if available)
+gh pr create \
+  --title "feat: Add video generation UI" \
+  --body "## Summary
+  
+  Brief description of changes
+  
+  ## Changes
+  - Added component X
+  - Updated Y
+  - Fixed Z
+  
+  ## Testing
+  - Tested locally with...
+  - Verified that...
+  
+  ## Checklist
+  - [ ] Code follows style guidelines
+  - [ ] Self-review completed
+  - [ ] Comments added for complex logic" \
+  --base main
+
+# If gh CLI is not available, provide manual instructions:
+```
+
+If GitHub CLI is not available:
+```
+📋 **Pull Request Instructions**
+
+1. Go to: https://github.com/[username]/[repo]/pull/new/feature/task-name-here
+2. Use this PR template:
+
+**Title**: feat: Add video generation UI
+
+**Description**:
+## Summary
+[Brief description]
+
+## Changes
+- Added component X
+- Updated Y
+- Fixed Z
+
+## Testing
+- Tested locally with...
+- Verified that...
+```
+
+### 6. Post-PR
+
+After creating the PR:
+```
+🎉 **Pull Request Created!**
+
+PR #[number] has been created: [URL]
+
+The branch `feature/task-name-here` is ready for review.
+
+**Next steps:**
+- Await code review feedback
+- Address any requested changes
+- Merge when approved
+
+What would you like me to work on next?
+```
+
+## Important Rules
+
+### Always Remember:
+1. **NEVER work directly on main** - always create a feature branch
+2. **ALWAYS pull latest main** before starting new work
+3. **Track progress actively** - update todos as you work
+4. **Commit frequently** - small, logical commits
+5. **Ask for verification** before creating PR
+6. **Stay on the feature branch** until PR is merged
+
+### Error Handling:
+- If merge conflicts occur when pulling main, ask for guidance
+- If tests fail, fix them before proceeding
+- If unsure about implementation, ask before committing
+
+### Branch Naming:
+- `feature/` - new features
+- `fix/` - bug fixes
+- `docs/` - documentation only
+- `refactor/` - code refactoring
+- `chore/` - maintenance tasks
+
+### Communication Style:
+- Be direct about progress and blockers
+- Summarize work clearly when complete
+- Ask specific questions for verification
+- Provide clear next steps
+
+## Example Task Flow
+
+```
+1. git checkout main && git pull
+2. git checkout -b feature/add-auth
+3. Create todos for: setup Supabase, add login page, add middleware
+4. Work on each todo, updating status as you go
+5. Commit after each logical change
+6. Run lints and fix issues
+7. Push branch when complete
+8. Ask user to verify auth flow works
+9. Create PR with detailed description
+10. Await further instructions
+```
+
+## Anti-Patterns to Avoid
+
+❌ **DON'T**:
+- Work on main branch directly
+- Make huge commits with many changes
+- Forget to update todo progress
+- Create PR without user verification
+- Leave the feature branch before PR is merged
+- Force push unless explicitly instructed
+
+✅ **DO**:
+- Always work on feature branches
+- Make small, focused commits
+- Update todos in real-time
+- Get user approval before PR
+- Stay on feature branch
+- Communicate progress clearly

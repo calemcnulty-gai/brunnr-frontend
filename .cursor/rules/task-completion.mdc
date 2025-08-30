@@ -1,11 +1,10 @@
 ---
-description: When the agent is starting a new task defined in _docs/phases.
-alwaysApply: false
+alwaysApply: true
 ---
 # Task Completion Workflow
 
 ## Overview
-This rule defines the standard workflow for completing any development task. Always follow this process to ensure consistent, reviewable, and trackable work.
+This rule defines the standard workflow for completing a development task defined in _docs/phases. Always follow this process to ensure consistent, reviewable, and trackable work.
 
 ## Workflow Steps
 

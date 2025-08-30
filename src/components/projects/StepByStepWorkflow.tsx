@@ -191,12 +191,16 @@ export function StepByStepWorkflow({ project }: StepByStepWorkflowProps) {
                   </span>
                 </button>
                 
-                {index < workflowSteps.length - 1 && workflowSteps[index + 1] && (
-                  <div className={cn(
-                    "flex-1 h-0.5 mx-4 transition-colors",
-                    completedSteps.has(workflowSteps[index + 1].id) ? "bg-green-600" : "bg-gray-200"
-                  )} />
-                )}
+                {index < workflowSteps.length - 1 && (() => {
+                  const nextStep = workflowSteps[index + 1]
+                  if (!nextStep) return null
+                  return (
+                    <div className={cn(
+                      "flex-1 h-0.5 mx-4 transition-colors",
+                      completedSteps.has(nextStep.id) ? "bg-green-600" : "bg-gray-200"
+                    )} />
+                  )
+                })()}
               </div>
             )
           })}

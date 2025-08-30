@@ -85,12 +85,15 @@ export function StepByStepWorkflow({ project }: StepByStepWorkflowProps) {
       setCurrentStepIndex(nextIndex)
       
       // Update project current step
-      updateProject.mutate({
-        projectId: project.id,
-        updates: {
-          current_step: workflowSteps[nextIndex].id
-        }
-      })
+      const nextStep = workflowSteps[nextIndex]
+      if (nextStep) {
+        updateProject.mutate({
+          projectId: project.id,
+          updates: {
+            current_step: nextStep.id
+          }
+        })
+      }
     }
   }
   

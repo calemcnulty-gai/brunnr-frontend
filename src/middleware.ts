@@ -43,8 +43,26 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Root path redirect based on auth status
+  if (request.nextUrl.pathname === "/") {
+    const url = request.nextUrl.clone();
+    if (user) {
+      // User is logged in, redirect to dashboard
+      url.pathname = "/dashboard";
+    } else {
+      // No user, redirect to login
+      url.pathname = "/auth/login";
+    }
+    return NextResponse.redirect(url);
+  }
+
   // Protected routes
-  if (!user && request.nextUrl.pathname.startsWith("/dashboard")) {
+  const protectedPaths = ["/dashboard", "/project"];
+  const isProtectedPath = protectedPaths.some(path => 
+    request.nextUrl.pathname.startsWith(path)
+  );
+  
+  if (!user && isProtectedPath) {
     // No user, redirect to login
     const url = request.nextUrl.clone();
     url.pathname = "/auth/login";

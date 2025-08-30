@@ -5,8 +5,8 @@
 
 import { ApiError } from "./types";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://brunnr-service-production.up.railway.app";
-const API_KEY = process.env.BRUNNR_API_KEY || "";
+// Use proxy route to handle API key on server side
+const API_BASE_URL = "/api/brunnr";
 
 interface ApiRequestOptions extends Omit<RequestInit, "body"> {
   body?: any;
@@ -27,7 +27,7 @@ export async function apiCall<T>(
   const { body, params, ...requestOptions } = options || {};
   
   // Build URL with query params
-  const url = new URL(`${API_BASE_URL}${endpoint}`);
+  const url = new URL(`${API_BASE_URL}${endpoint}`, window.location.origin);
   if (params) {
     Object.entries(params).forEach(([key, value]) => {
       url.searchParams.append(key, String(value));
@@ -37,7 +37,6 @@ export async function apiCall<T>(
   const response = await fetch(url.toString(), {
     ...requestOptions,
     headers: {
-      "X-API-Key": API_KEY,
       "Content-Type": "application/json",
       ...requestOptions.headers,
     },

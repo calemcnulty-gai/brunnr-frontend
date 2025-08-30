@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run TypeScript compiler to check for errors
+echo "🔍 Checking TypeScript compilation..."
+npx tsc --noEmit
+
+if [ $? -ne 0 ]; then
+  echo "❌ TypeScript compilation failed. Please fix the errors before committing."
+  exit 1
+fi
+
+echo "✅ TypeScript compilation passed!"
+
+# Skip linting for now due to ESLint configuration issues
+# echo "🔍 Running linter..."
+# npm run lint
+
+# if [ $? -ne 0 ]; then
+#   echo "❌ Linting failed. Please fix the errors before committing."
+#   exit 1
+# fi
+
+echo "✅ All checks passed!"

@@ -87,8 +87,10 @@ export function VideoPlayer({ videoUrl, projectName, projectData }: VideoPlayerP
     if (!video) return
     
     const time = value[0]
-    video.currentTime = time
-    setCurrentTime(time)
+    if (time !== undefined) {
+      video.currentTime = time
+      setCurrentTime(time)
+    }
   }
   
   const handleVolumeChange = (value: number[]) => {
@@ -96,10 +98,12 @@ export function VideoPlayer({ videoUrl, projectName, projectData }: VideoPlayerP
     if (!video) return
     
     const vol = value[0]
-    video.volume = vol
-    setVolume(vol)
-    if (vol > 0 && isMuted) {
-      setIsMuted(false)
+    if (vol !== undefined) {
+      video.volume = vol
+      setVolume(vol)
+      if (vol > 0 && isMuted) {
+        setIsMuted(false)
+      }
     }
   }
   

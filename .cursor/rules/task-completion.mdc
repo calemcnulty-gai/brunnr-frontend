@@ -4,7 +4,7 @@ alwaysApply: true
 # Task Completion Workflow
 
 ## Overview
-This rule defines the standard workflow for completing a development task defined in _docs/phases. Always follow this process to ensure consistent, reviewable, and trackable work.
+This rule defines the standard workflow for completing a development task defined in _docs/phases. Always follow this process to ensure consistent, reviewable, and trackable work. This is only needed when starting a task defined in the phases directory. Don't follow it when asked to do somethign else
 
 ## Workflow Steps
 

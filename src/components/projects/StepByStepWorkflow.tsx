@@ -76,6 +76,19 @@ export function StepByStepWorkflow({ project }: StepByStepWorkflowProps) {
   
   const currentStep = workflowSteps[currentStepIndex]
   
+  // Safety check
+  if (!currentStep) {
+    return (
+      <div className="container mx-auto max-w-6xl py-8 px-4">
+        <Card>
+          <CardContent className="p-8 text-center">
+            <p className="text-gray-500">Loading workflow...</p>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+  
   const handleStepComplete = (stepId: StepType) => {
     setCompletedSteps(prev => new Set([...Array.from(prev), stepId]))
     

@@ -11,17 +11,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Video, Sparkles, AlertCircle, Loader2, ArrowLeft } from 'lucide-react'
 import { useUpdateProject, useUploadProjectVideo } from '@/hooks/use-projects'
-import { 
-  questionToVideo, 
-  questionToExplanation,
-  explanationToScreenplay,
-  screenplayToManifest,
-  manifestToVideo,
-  downloadVideo, 
-  extractRequestId, 
-  extractVideoFilename, 
-  buildVideoUrl 
-} from '@/lib/api/endpoints'
+import { questionToVideo, downloadVideo, extractRequestId, extractVideoFilename, buildVideoUrl } from '@/lib/api/endpoints'
 import type { Project } from '@/types/database'
 import { ApiError } from '@/lib/api/types'
 
@@ -64,105 +54,12 @@ export function QuickGenerationWorkflow({ project }: QuickGenerationWorkflowProp
         }
       })
       
-      // Try the direct API first
-      setProgress('Generating video content...')
-      let response
-      
-      try {
-        response = await questionToVideo({
-          text: question.trim(),
-          context: context.trim() || undefined
-        })
-      } catch (apiError) {
-        // If direct generation fails, try step-by-step approach for better debugging
-        console.warn('Direct video generation failed, trying step-by-step approach:', apiError)
-        
-        // Step 1: Generate explanation
-        setProgress('Generating explanation...')
-        const explanationResponse = await questionToExplanation({
-          text: question.trim(),
-          context: context.trim() || undefined
-        })
-        
-        if (!explanationResponse.explanation) {
-          throw new Error('Failed to generate explanation from question')
-        }
-        
-        // Save explanation to project
-        await updateProject.mutateAsync({
-          projectId: project.id,
-          updates: {
-            data: { 
-              ...project.data,
-              explanation: explanationResponse.explanation,
-              explanationMetrics: explanationResponse.content_metrics
-            }
-          }
-        })
-        
-        // Step 2: Generate screenplay
-        setProgress('Creating video script...')
-        const screenplayResponse = await explanationToScreenplay({
-          text: explanationResponse.explanation
-        })
-        
-        if (!screenplayResponse.screenplay?.shotgroups?.length) {
-          throw new Error('Failed to generate screenplay with scenes')
-        }
-        
-        // Check if screenplay has voiceover content
-        const hasVoiceover = screenplayResponse.screenplay.shotgroups.some(group =>
-          group.shots?.some(shot => shot.voiceover && shot.voiceover.trim())
-        )
-        
-        if (!hasVoiceover) {
-          throw new Error('Generated screenplay has no voiceover content. Try a more specific educational question.')
-        }
-        
-        // Save screenplay
-        await updateProject.mutateAsync({
-          projectId: project.id,
-          updates: {
-            data: { 
-              ...project.data,
-              screenplay: screenplayResponse.screenplay,
-              screenplayMetrics: screenplayResponse.structure_stats
-            }
-          }
-        })
-        
-        // Step 3: Generate manifest
-        setProgress('Preparing video elements...')
-        const manifestResponse = await screenplayToManifest(screenplayResponse.screenplay)
-        
-        // Save manifest
-        await updateProject.mutateAsync({
-          projectId: project.id,
-          updates: {
-            data: { 
-              ...project.data,
-              manifest: manifestResponse.manifest,
-              manifestStats: manifestResponse.manifest_stats
-            }
-          }
-        })
-        
-        // Step 4: Generate video
-        setProgress('Rendering video...')
-        const videoResponse = await manifestToVideo(manifestResponse.manifest)
-        
-        // Convert to match expected response format
-        response = {
-          status: 'completed' as const,
-          message: 'Video generated successfully',
-          metadata: manifestResponse.metadata,
-          video_path: videoResponse.video_path,
-          download_url: videoResponse.download_url,
-          video_id: manifestResponse.manifest.video_id,
-          processing_phases: [],
-          total_processing_time: 0
-        }
-      }
+      // Call API to generate video
+      setProgress('Generating explanation...')
+      const response = await questionToVideo({
+        text: question.trim(),
+        context: context.trim() || undefined
+      })
       
       // Update progress based on processing phases
       if (response.processing_phases) {

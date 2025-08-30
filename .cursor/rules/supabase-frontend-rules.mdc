@@ -1,0 +1,126 @@
+# Supabase Frontend Integration Rules
+
+This document outlines the best practices for integrating Supabase with the Brunnr frontend application.
+
+## Overview
+
+This project uses Supabase for:
+- Authentication (email/password)
+- Database (PostgreSQL)
+- Real-time subscriptions (if needed)
+- File storage (if needed)
+
+## Client Configuration
+
+### Browser Client (`src/lib/supabase/client.ts`)
+- Used in client components and hooks
+- Handles cookie-based auth automatically
+- Should check for environment variables before creating client
+
+### Server Client (`src/lib/supabase/server.ts`)
+- Used in server components and API routes
+- Requires cookie handling setup
+- Must use the cookies() function from Next.js
+
+## Authentication Flow
+
+### Middleware Protection
+- The middleware checks auth state for protected routes
+- Redirects unauthenticated users to `/auth/login`
+- Redirects authenticated users away from auth pages
+- Gracefully handles missing environment variables
+
+### Auth State Management
+- Use the `useAuth` hook for client-side auth state
+- Auth state is persisted in Zustand store
+- Session refresh happens automatically via onAuthStateChange
+
+## Environment Variables
+
+Required variables:
+- `NEXT_PUBLIC_SUPABASE_URL` - Your Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Public anon key (safe for client)
+- `SUPABASE_SERVICE_ROLE_KEY` - Service role key (server-side only, never expose)
+
+## Database Schema
+
+When ready to add tables:
+1. Create tables in Supabase dashboard or via SQL
+2. Run `bun run supabase:types` to regenerate types
+3. Types will be in `src/lib/supabase/types.ts`
+
+## Security Best Practices
+
+1. **Never expose service role key** - Only use in secure server environments
+2. **Use Row Level Security (RLS)** - Enable on all tables
+3. **Validate user permissions** - Always check server-side
+4. **Handle errors gracefully** - Don't expose internal errors to users
+
+## Common Patterns
+
+### Protected API Route
+```typescript
+import { createClient } from "@/lib/supabase/server";
+import { NextResponse } from "next/server";
+
+export async function GET() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  
+  // Your logic here
+}
+```
+
+### Client-Side Data Fetching
+```typescript
+import { useQuery } from "@tanstack/react-query";
+import { createClient } from "@/lib/supabase/client";
+
+function useProjects() {
+  const supabase = createClient();
+  
+  return useQuery({
+    queryKey: ["projects"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("projects")
+        .select("*")
+        .order("created_at", { ascending: false });
+        
+      if (error) throw error;
+      return data;
+    },
+  });
+}
+```
+
+### Real-time Subscriptions
+```typescript
+useEffect(() => {
+  const channel = supabase
+    .channel("projects")
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "projects" },
+      (payload) => {
+        // Handle changes
+      }
+    )
+    .subscribe();
+    
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}, []);
+```
+
+## Deployment
+
+1. Set environment variables in Vercel dashboard
+2. Ensure Supabase project is in the correct region
+3. Configure redirect URLs in Supabase auth settings
+4. Test auth flow in preview deployments

@@ -1,0 +1,118 @@
+# Brunnr Frontend Deployment Issue Context
+
+## Current Problem
+The Vercel deployment is returning 404 errors on all routes, including the root path (`/`). The application builds successfully but seems to not be serving any pages.
+
+## Expected Behavior
+- `/` should redirect to `/auth/login` if user is not authenticated
+- `/` should redirect to `/dashboard` if user is authenticated
+- All other routes should work normally (auth pages, dashboard, project pages)
+
+## What We've Already Tried
+
+### 1. Password Protection (RESOLVED)
+- **Issue**: Initially getting 401 Unauthorized with `_vercel_sso_nonce` cookie
+- **Solution**: User disabled password protection in Vercel project settings
+- **Result**: Now getting 404 instead of 401
+
+### 2. Middleware Updates (IMPLEMENTED)
+- **File**: `src/middleware.ts`
+- **Changes Made**:
+  ```typescript
+  // Added root path redirect logic
+  if (request.nextUrl.pathname === "/") {
+    const url = request.nextUrl.clone();
+    if (user) {
+      url.pathname = "/dashboard";
+    } else {
+      url.pathname = "/auth/login";
+    }
+    return NextResponse.redirect(url);
+  }
+  
+  // Updated protected routes to include /project
+  const protectedPaths = ["/dashboard", "/project"];
+  ```
+- **Status**: Code changes committed and pushed, but deployment still returns 404
+
+### 3. Deployment URLs Tested
+- Production URL: `https://brunnr-frontend.vercel.app/` → 404
+- Latest deployment: `https://brunnr-frontend-c51883wke-cale-mcnultys-projects.vercel.app/` → 404
+- User's specific URL: `https://brunnr-frontend-9270ztmvw-cale-mcnultys-projects.vercel.app/` → 404 (this is an older deployment from 23 minutes before the fix)
+
+### 4. Verification Commands Run
+```bash
+# All returned 404
+curl -I https://brunnr-frontend.vercel.app/
+curl -I https://brunnr-frontend-c51883wke-cale-mcnultys-projects.vercel.app/
+curl -s -o /dev/null -w "%{http_code}" https://brunnr-frontend-9270ztmvw-cale-mcnultys-projects.vercel.app/
+```
+
+## Key Project Details
+
+### Tech Stack
+- Next.js 14 with App Router
+- TypeScript (strict mode, ES5 target)
+- Supabase for auth and database
+- Vercel for deployment
+
+### Important Files to Check
+1. `next.config.js` - Check for any output configuration
+2. `package.json` - Verify build script
+3. `src/app/layout.tsx` - Root layout
+4. `src/middleware.ts` - Already updated with redirect logic
+5. `.vercel/` directory - Check for any deployment configuration
+
+### Environment Variables Set in Vercel
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `BRUNNR_API_KEY`
+
+## Recommended Debugging Steps for Next Instance
+
+1. **Check Build Output**:
+   ```bash
+   npm run build
+   # Look for any warnings about missing pages or export issues
+   ```
+
+2. **Verify App Structure**:
+   - Ensure `src/app/page.tsx` exists (it does, but currently shows a landing page)
+   - Check if all page.tsx files have proper default exports
+   - Verify no conflicting route configurations
+
+3. **Check Vercel Build Logs**:
+   ```bash
+   vercel inspect [deployment-url]
+   # Look for build errors or warnings
+   ```
+
+4. **Test Locally**:
+   ```bash
+   npm run build && npm start
+   # See if the same 404 issue occurs locally
+   ```
+
+5. **Consider Framework Preset**:
+   - Verify Vercel is detecting this as a Next.js project
+   - Check if `vercel.json` is needed for any special configuration
+
+6. **Possible Root Causes to Investigate**:
+   - Missing or incorrect `output` configuration in next.config.js
+   - Issue with App Router detection in Vercel
+   - Middleware might be intercepting all routes incorrectly
+   - Build output not being generated in expected location
+
+## Context for Solution
+The application works locally in development (`npm run dev`), but fails when deployed to Vercel. This suggests a build or deployment configuration issue rather than a code issue. Focus on:
+1. How Next.js is building the application
+2. How Vercel is serving the built files
+3. Any discrepancies between local and production environments
+
+## Current Git Status
+- Branch: `feature/mvp-core-features`
+- All changes committed and pushed
+- Latest commit includes middleware fix for root path redirect
+
+Please start by running the recommended debugging steps and checking the build output carefully for any anomalies.

@@ -36,7 +36,7 @@ All project documentation is located in the `_docs/` directory:
 
 ### Prerequisites
 
-- Node.js 18+ and npm/yarn/pnpm/bun
+- [Bun](https://bun.sh/) - We use Bun as our package manager and runtime
 - Supabase account and project
 - Brunnr API key
 - Vercel account (for deployment)
@@ -66,10 +66,10 @@ git clone https://github.com/your-username/brunnr-frontend.git
 cd brunnr-frontend
 
 # Install dependencies
-npm install
+bun install
 
 # Run development server
-npm run dev
+bun dev
 ```
 
 Visit [http://localhost:3000](http://localhost:3000) to see the application.

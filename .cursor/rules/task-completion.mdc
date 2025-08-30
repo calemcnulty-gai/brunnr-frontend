@@ -1,5 +1,5 @@
 ---
-description: The agent is beginning a new task from _docs/phases
+description: When the agent is starting a new task defined in _docs/phases.
 alwaysApply: false
 ---
 # Task Completion Workflow

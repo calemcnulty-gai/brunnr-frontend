@@ -77,7 +77,7 @@ export function StepByStepWorkflow({ project }: StepByStepWorkflowProps) {
   const currentStep = workflowSteps[currentStepIndex]
   
   const handleStepComplete = (stepId: StepType) => {
-    setCompletedSteps(prev => new Set([...prev, stepId]))
+    setCompletedSteps(prev => new Set([...Array.from(prev), stepId]))
     
     // Move to next step if not at the end
     if (currentStepIndex < workflowSteps.length - 1) {

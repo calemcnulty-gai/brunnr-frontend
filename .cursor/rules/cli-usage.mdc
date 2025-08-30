@@ -1,0 +1,368 @@
+---
+alwaysApply: true
+---
+
+# CLI Usage Rules for Non-Interactive Execution
+
+## Core Principle
+**NEVER run interactive CLI commands that expect user input**. Always use non-interactive alternatives or manual configuration.
+
+## Common Blocking CLIs & Solutions
+
+### Vercel CLI
+
+#### ❌ AVOID These Commands:
+```bash
+vercel          # Interactive deployment
+vercel link     # Interactive project linking
+vercel login    # Interactive authentication
+vercel env add  # Interactive env var addition
+```
+
+#### ✅ USE These Instead:
+```bash
+# Non-interactive deployment
+vercel --yes --no-clipboard
+
+# Manual project linking
+mkdir -p .vercel
+echo '{"projectId":"prj_xxx","orgId":"team_xxx"}' > .vercel/project.json
+
+# Pull env vars without prompts
+vercel env pull .env.local --yes
+
+# Add env vars via dashboard or use files
+echo "KEY=value" >> .env.local
+```
+
+### Supabase CLI
+
+#### ❌ AVOID These Commands:
+```bash
+supabase login      # Interactive auth
+supabase init       # Interactive project init
+supabase link       # Interactive project linking
+supabase db push    # Can prompt for confirmation
+```
+
+#### ✅ USE These Instead:
+```bash
+# Non-interactive init
+supabase init --workdir supabase
+
+# Manual project linking
+mkdir -p supabase/.temp
+echo "PROJECT_REF" > supabase/.temp/project-ref
+
+# Generate types with explicit project ID
+supabase gen types typescript --project-id PROJECT_REF > types.ts
+
+# DB operations with force flag
+supabase db push --no-confirm
+```
+
+### NPM/Yarn/PNPM
+
+#### ❌ AVOID:
+```bash
+npm init        # Interactive package.json creation
+npm login       # Interactive auth
+yarn init       # Interactive
+pnpm init       # Interactive
+```
+
+#### ✅ USE:
+```bash
+# Create package.json directly
+cat > package.json << 'EOF'
+{
+  "name": "project-name",
+  "version": "0.1.0",
+  "private": true
+}
+EOF
+
+# Install with no prompts
+npm install --yes
+yarn install --non-interactive
+pnpm install --frozen-lockfile
+```
+
+### Git
+
+#### ❌ AVOID:
+```bash
+git commit  # Opens editor
+git merge   # Can open editor
+git rebase  # Interactive by default
+```
+
+#### ✅ USE:
+```bash
+# Commit with message inline
+git commit -m "commit message"
+
+# Merge with no-edit
+git merge branch-name --no-edit
+
+# Non-interactive rebase
+git rebase branch-name --no-interactive
+```
+
+## General Strategies
+
+### 1. Use Flags
+Always check for non-interactive flags:
+- `--yes`, `--no-input`, `--non-interactive`
+- `--force`, `--no-confirm`, `--skip-prompts`
+- `-y`, `-f` (short versions)
+
+### 2. Pipe Empty Input
+For commands that wait for input:
+```bash
+echo "" | command-that-waits
+yes "" | command-that-prompts
+```
+
+### 3. Use Environment Variables
+Many CLIs respect environment variables:
+```bash
+CI=true npm install  # Runs in CI mode (non-interactive)
+FORCE_COLOR=0 command  # Disables color prompts
+```
+
+### 4. Create Config Files Manually
+Instead of interactive setup, create configs directly:
+```bash
+# Instead of interactive config
+mkdir -p .config
+cat > .config/tool.json << 'EOF'
+{
+  "setting": "value"
+}
+EOF
+```
+
+### 5. Use API/Dashboard
+When CLI is too interactive, suggest manual steps:
+```markdown
+**Manual Setup Required**:
+1. Go to https://dashboard.example.com
+2. Create a new project
+3. Copy the project ID: ________
+4. I'll continue with the setup once you provide the ID
+```
+
+## Detection Patterns
+
+Before running any CLI command, check for these red flags:
+- Commands with "init", "login", "link", "setup"
+- Commands without explicit input/config flags
+- First-time setup commands
+- Commands that typically open editors
+
+## Error Recovery
+
+If a command blocks:
+1. Document the blocking command
+2. Provide manual alternative steps
+3. Ask user to complete manually
+4. Continue with next non-blocking task
+
+## Testing Commands
+
+Always test potentially blocking commands with:
+```bash
+# Check if command accepts input
+echo "" | timeout 5s command-to-test
+
+# If it times out, it's likely blocking
+```
+
+## REMEMBER
+- **Never assume** a CLI will be non-interactive
+- **Always prefer** file creation over interactive CLIs
+- **Document explicitly** when manual steps are needed
+- **Fail gracefully** and provide alternatives
+# CLI Usage Rules for Non-Interactive Execution
+
+## Core Principle
+**NEVER run interactive CLI commands that expect user input**. Always use non-interactive alternatives or manual configuration.
+
+## Common Blocking CLIs & Solutions
+
+### Vercel CLI
+
+#### ❌ AVOID These Commands:
+```bash
+vercel          # Interactive deployment
+vercel link     # Interactive project linking
+vercel login    # Interactive authentication
+vercel env add  # Interactive env var addition
+```
+
+#### ✅ USE These Instead:
+```bash
+# Non-interactive deployment
+vercel --yes --no-clipboard
+
+# Manual project linking
+mkdir -p .vercel
+echo '{"projectId":"prj_xxx","orgId":"team_xxx"}' > .vercel/project.json
+
+# Pull env vars without prompts
+vercel env pull .env.local --yes
+
+# Add env vars via dashboard or use files
+echo "KEY=value" >> .env.local
+```
+
+### Supabase CLI
+
+#### ❌ AVOID These Commands:
+```bash
+supabase login      # Interactive auth
+supabase init       # Interactive project init
+supabase link       # Interactive project linking
+supabase db push    # Can prompt for confirmation
+```
+
+#### ✅ USE These Instead:
+```bash
+# Non-interactive init
+supabase init --workdir supabase
+
+# Manual project linking
+mkdir -p supabase/.temp
+echo "PROJECT_REF" > supabase/.temp/project-ref
+
+# Generate types with explicit project ID
+supabase gen types typescript --project-id PROJECT_REF > types.ts
+
+# DB operations with force flag
+supabase db push --no-confirm
+```
+
+### NPM/Yarn/PNPM
+
+#### ❌ AVOID:
+```bash
+npm init        # Interactive package.json creation
+npm login       # Interactive auth
+yarn init       # Interactive
+pnpm init       # Interactive
+```
+
+#### ✅ USE:
+```bash
+# Create package.json directly
+cat > package.json << 'EOF'
+{
+  "name": "project-name",
+  "version": "0.1.0",
+  "private": true
+}
+EOF
+
+# Install with no prompts
+npm install --yes
+yarn install --non-interactive
+pnpm install --frozen-lockfile
+```
+
+### Git
+
+#### ❌ AVOID:
+```bash
+git commit  # Opens editor
+git merge   # Can open editor
+git rebase  # Interactive by default
+```
+
+#### ✅ USE:
+```bash
+# Commit with message inline
+git commit -m "commit message"
+
+# Merge with no-edit
+git merge branch-name --no-edit
+
+# Non-interactive rebase
+git rebase branch-name --no-interactive
+```
+
+## General Strategies
+
+### 1. Use Flags
+Always check for non-interactive flags:
+- `--yes`, `--no-input`, `--non-interactive`
+- `--force`, `--no-confirm`, `--skip-prompts`
+- `-y`, `-f` (short versions)
+
+### 2. Pipe Empty Input
+For commands that wait for input:
+```bash
+echo "" | command-that-waits
+yes "" | command-that-prompts
+```
+
+### 3. Use Environment Variables
+Many CLIs respect environment variables:
+```bash
+CI=true npm install  # Runs in CI mode (non-interactive)
+FORCE_COLOR=0 command  # Disables color prompts
+```
+
+### 4. Create Config Files Manually
+Instead of interactive setup, create configs directly:
+```bash
+# Instead of interactive config
+mkdir -p .config
+cat > .config/tool.json << 'EOF'
+{
+  "setting": "value"
+}
+EOF
+```
+
+### 5. Use API/Dashboard
+When CLI is too interactive, suggest manual steps:
+```markdown
+**Manual Setup Required**:
+1. Go to https://dashboard.example.com
+2. Create a new project
+3. Copy the project ID: ________
+4. I'll continue with the setup once you provide the ID
+```
+
+## Detection Patterns
+
+Before running any CLI command, check for these red flags:
+- Commands with "init", "login", "link", "setup"
+- Commands without explicit input/config flags
+- First-time setup commands
+- Commands that typically open editors
+
+## Error Recovery
+
+If a command blocks:
+1. Document the blocking command
+2. Provide manual alternative steps
+3. Ask user to complete manually
+4. Continue with next non-blocking task
+
+## Testing Commands
+
+Always test potentially blocking commands with:
+```bash
+# Check if command accepts input
+echo "" | timeout 5s command-to-test
+
+# If it times out, it's likely blocking
+```
+
+## REMEMBER
+- **Never assume** a CLI will be non-interactive
+- **Always prefer** file creation over interactive CLIs
+- **Document explicitly** when manual steps are needed
+- **Fail gracefully** and provide alternatives

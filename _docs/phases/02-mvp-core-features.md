@@ -34,10 +34,10 @@ This document contains all tasks needed to implement the core video generation f
 ## Tasks Checklist
 
 ### 1. Create Project Database Schema
-- [ ] Design projects table schema for Supabase
-- [ ] Create types in `src/lib/supabase/types.ts`
-- [ ] Set up Row Level Security policies
-- [ ] Create database helper functions in `src/lib/supabase/queries.ts`
+- [x] Design projects table schema for Supabase
+- [x] Create types in `src/lib/supabase/types.ts`
+- [x] Set up Row Level Security policies
+- [x] Create database helper functions in `src/lib/supabase/queries.ts`
 
 **Schema suggestion**:
 ```sql
@@ -56,28 +56,28 @@ create table projects (
 ```
 
 ### 2. Implement Project Management
-- [ ] Create `src/hooks/use-projects.ts` with React Query
-- [ ] Create `src/components/projects/ProjectCard.tsx`
-- [ ] Implement project list in dashboard
-- [ ] Add create new project modal
-- [ ] Implement project deletion with confirmation
+- [x] Create `src/hooks/use-projects.ts` with React Query
+- [x] Create `src/components/projects/ProjectCard.tsx`
+- [x] Implement project list in dashboard
+- [x] Add create new project modal
+- [x] Implement project deletion with confirmation
 
 **Reference**: Follow React Query patterns from `_docs/tech-stack.md` (lines 277-288)
 
 ### 3. Build Workflow Selection Modal
-- [ ] Create `src/components/projects/WorkflowSelector.tsx`
-- [ ] Implement three workflow options with descriptions
-- [ ] Add workflow icons and visual distinctions
-- [ ] Handle project creation with selected workflow
+- [x] Create `src/components/projects/WorkflowSelector.tsx`
+- [x] Implement three workflow options with descriptions
+- [x] Add workflow icons and visual distinctions
+- [x] Handle project creation with selected workflow
 
 **Reference**: Follow modal patterns from `_docs/ui-rules.md` (lines 191-195)
 
 ### 4. Implement Quick Generation Workflow
-- [ ] Create `src/app/project/[id]/page.tsx` main workflow page
-- [ ] Create `src/components/forms/QuestionForm.tsx`
-- [ ] Implement API call to `/media/question-to-video`
-- [ ] Add progress tracking UI
-- [ ] Handle success/error states
+- [x] Create `src/app/project/[id]/page.tsx` main workflow page
+- [x] Create `src/components/forms/QuestionForm.tsx`
+- [x] Implement API call to `/media/question-to-video`
+- [x] Add progress tracking UI
+- [x] Handle success/error states
 
 **API Integration**:
 ```typescript
@@ -90,63 +90,63 @@ POST /media/question-to-video
 ```
 
 ### 5. Create Video Player Component
-- [ ] Create `src/components/projects/VideoPlayer.tsx`
-- [ ] Implement custom controls
-- [ ] Add download functionality
-- [ ] Create `src/app/project/[id]/video/page.tsx`
-- [ ] Handle video URL from API response
+- [x] Create `src/components/projects/VideoPlayer.tsx`
+- [x] Implement custom controls
+- [x] Add download functionality
+- [x] Create `src/app/project/[id]/video/page.tsx`
+- [x] Handle video URL from API response
 
 ### 6. Build Step-by-Step Pipeline UI
-- [ ] Create `src/components/projects/WorkflowStep.tsx`
-- [ ] Create `src/components/projects/StepNavigation.tsx`
-- [ ] Implement progress bar component
-- [ ] Create form components for each step:
-  - [ ] Question input form
-  - [ ] Explanation editor
-  - [ ] Screenplay viewer/editor
-  - [ ] Manifest preview
+- [x] Create `src/components/projects/WorkflowStep.tsx`
+- [x] Create `src/components/projects/StepNavigation.tsx`
+- [x] Implement progress bar component
+- [x] Create form components for each step:
+  - [x] Question input form
+  - [x] Explanation editor
+  - [x] Screenplay viewer/editor
+  - [x] Manifest preview
 
 ### 7. Implement Pipeline API Calls
-- [ ] Create API functions for each endpoint:
-  - [ ] `questionToExplanation()`
-  - [ ] `explanationToScreenplay()`
-  - [ ] `screenplayToManifest()`
-  - [ ] `manifestToVideo()`
-- [ ] Add proper TypeScript types for each response
-- [ ] Implement error handling with retry logic
+- [x] Create API functions for each endpoint:
+  - [x] `questionToExplanation()`
+  - [x] `explanationToScreenplay()`
+  - [x] `screenplayToManifest()`
+  - [x] `manifestToVideo()`
+- [x] Add proper TypeScript types for each response
+- [x] Implement error handling with retry logic
 
 **Reference**: API endpoints from `_docs/api-reference.md` (lines 104-246)
 
 ### 8. Add Project State Persistence
-- [ ] Create `src/stores/project-store.ts` for current project
-- [ ] Implement auto-save functionality
-- [ ] Add step navigation with state preservation
-- [ ] Handle browser refresh without data loss
+- [x] Create `src/stores/project-store.ts` for current project
+- [x] Implement auto-save functionality
+- [x] Add step navigation with state preservation
+- [x] Handle browser refresh without data loss
 
 ### 9. Implement Error Handling
-- [ ] Create `src/components/ui/ErrorDisplay.tsx`
-- [ ] Add toast notifications for errors
-- [ ] Implement retry mechanisms
-- [ ] Show detailed API errors for technical users
+- [x] Create `src/components/ui/ErrorDisplay.tsx`
+- [x] Add toast notifications for errors
+- [x] Implement retry mechanisms
+- [x] Show detailed API errors for technical users
 
 **Reference**: Error handling patterns from `_docs/user-flow.md` (lines 118-134)
 
 ### 10. Create Loading States
-- [ ] Add skeleton loaders for all data fetching
-- [ ] Create progress indicators for video generation
-- [ ] Implement proper loading states in buttons
-- [ ] Add timeout handling for long operations
+- [x] Add skeleton loaders for all data fetching
+- [x] Create progress indicators for video generation
+- [x] Implement proper loading states in buttons
+- [x] Add timeout handling for long operations
 
 ## Verification Checklist
 
 After completing all tasks:
-- [ ] Can create a new project with Quick Generation
-- [ ] Video generation completes successfully
-- [ ] Can view and download generated video
-- [ ] Step-by-step workflow allows navigation between steps
-- [ ] All API errors are handled gracefully
-- [ ] Project state persists across page refreshes
-- [ ] Loading states appear during all async operations
+- [x] Can create a new project with Quick Generation
+- [x] Video generation completes successfully
+- [x] Can view and download generated video
+- [x] Step-by-step workflow allows navigation between steps
+- [x] All API errors are handled gracefully
+- [x] Project state persists across page refreshes
+- [x] Loading states appear during all async operations
 
 ## API Integration Notes
 

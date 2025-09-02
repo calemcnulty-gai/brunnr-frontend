@@ -1,6 +1,3 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
 # Run TypeScript compiler to check for errors
 echo "🔍 Checking TypeScript compilation..."
 npx tsc --noEmit

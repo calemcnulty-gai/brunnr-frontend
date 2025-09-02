@@ -1,5 +1,9 @@
 {
   "buildCommand": "next build",
   "outputDirectory": ".next",
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "alias": ["brunnr-frontend.vercel.app"],
+  "github": {
+    "silent": false
+  }
 }

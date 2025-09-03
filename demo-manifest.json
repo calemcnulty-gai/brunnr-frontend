@@ -1,0 +1,1165 @@
+{
+  "video_id": "demorgan_imperative",
+  "templates": [
+    {
+      "id": "set5_tex_t",
+      "type": "MathTex_term",
+      "content": "{88, 3, 43, 29, 7}",
+      "style": {
+        "color": "#60A5FA"
+      }
+    },
+    {
+      "id": "set5_circle_t",
+      "type": "circle_set",
+      "content": [
+        88,
+        3,
+        43,
+        29,
+        7
+      ],
+      "style": {
+        "color": "#60A5FA"
+      }
+    },
+    {
+      "id": "circle_a1_t",
+      "type": "circle",
+      "style": {
+        "color": "#60A5FA"
+      }
+    },
+    {
+      "id": "A_1_t",
+      "type": "MathTex_term",
+      "content": "A_1",
+      "style": {
+        "color": "#60A5FA"
+      }
+    },
+    {
+      "id": "circle_a2_t",
+      "type": "circle",
+      "style": {
+        "color": "#60A5FA"
+      }
+    },
+    {
+      "id": "A_2_t",
+      "type": "MathTex_term",
+      "content": "A_2",
+      "style": {
+        "color": "#60A5FA"
+      }
+    },
+    {
+      "id": "circle_a3_t",
+      "type": "circle",
+      "style": {
+        "color": "#60A5FA"
+      }
+    },
+    {
+      "id": "A_3_t",
+      "type": "MathTex_term",
+      "content": "A_3",
+      "style": {
+        "color": "#60A5FA"
+      }
+    },
+    {
+      "id": "Ai_label_t",
+      "type": "MathTex_term",
+      "content": "A_i: i \\in I",
+      "style": {
+        "color": "#60A5FA"
+      }
+    },
+    {
+      "id": "prove_text_t",
+      "type": "Text",
+      "content": "We want to prove",
+      "style": {
+        "color": "#F3F4F6"
+      }
+    },
+    {
+      "id": "laws_t",
+      "type": "MathTex_aligned",
+      "parts": [
+        "{{(\\bigcup_{i\\in I} A_i)^c}} &= {{\\bigcap_{i\\in I} A_i^c}}",
+        "&\\text{and}",
+        "{{(\\bigcap_{i\\in I} A_i)^c}} &= {{\\bigcup_{i\\in I} A_i^c}}"
+      ],
+      "style": {
+        "color": "#F3F4F6"
+      }
+    },
+    {
+      "id": "a_t",
+      "type": "MathTex_term",
+      "content": "a",
+      "style": {
+        "color": "#F3F4F6"
+      }
+    },
+    {
+      "id": "in_t",
+      "type": "in",
+      "style": {
+        "color": "#F3F4F6"
+      }
+    },
+    {
+      "id": "implies_t",
+      "type": "implies",
+      "style": {
+        "color": "#F3F4F6"
+      }
+    },
+    {
+      "id": "implied_by_t",
+      "type": "implied_by",
+      "style": {
+        "color": "#F3F4F6"
+      }
+    },
+    {
+      "id": "union_comp_t",
+      "type": "MathTex_term",
+      "content": "(\\bigcup_{i\\in I} A_i)^c",
+      "style": {
+        "color": "#F3F4F6"
+      }
+    },
+    {
+      "id": "intersect_t",
+      "type": "MathTex_term",
+      "content": "\\bigcap_{i\\in I} A_i^c",
+      "style": {
+        "color": "#F3F4F6"
+      }
+    },
+    {
+      "id": "concentric1_t",
+      "type": "concentric_inner_circles",
+      "style": {
+        "color": "#60A5FA",
+        "fill_opacity": 0.25,
+        "stroke_width": 3
+      }
+    },
+    {
+      "id": "concentric2_t",
+      "type": "concentric_inner_circles",
+      "style": {
+        "color": "#60A5FA",
+        "fill_opacity": 0.25,
+        "stroke_width": 3
+      }
+    },
+    {
+      "id": "circle_one_t",
+      "type": "circle",
+      "style": {
+        "color": "#60A5FA"
+      }
+    },
+    {
+      "id": "checkmark_t",
+      "type": "MathTex_term",
+      "content": "\\checkmark",
+      "style": {
+        "color": "#059669"
+      }
+    },
+    {
+      "id": "circle_ul_t",
+      "type": "circle_set",
+      "content": [
+        17,
+        2,
+        31
+      ],
+      "style": {
+        "color": "#60A5FA"
+      }
+    },
+    {
+      "id": "circle_ur_t",
+      "type": "circle_set",
+      "content": [
+        4,
+        9,
+        26
+      ],
+      "style": {
+        "color": "#60A5FA"
+      }
+    },
+    {
+      "id": "circle_ll_t",
+      "type": "circle_set",
+      "content": [
+        5,
+        12,
+        23
+      ],
+      "style": {
+        "color": "#60A5FA"
+      }
+    },
+    {
+      "id": "circle_lr_t",
+      "type": "circle_set",
+      "content": [
+        8,
+        13,
+        21
+      ],
+      "style": {
+        "color": "#60A5FA"
+      }
+    },
+    {
+      "id": "under_bracket_t",
+      "type": "under_bracket",
+      "style": {
+        "color": "#F3F4F6"
+      }
+    }
+  ],
+  "shots": [
+    {
+      "duration": null,
+      "actions": [
+        {
+          "fade_in": {
+            "instance_id": "set5",
+            "template": "set5_circle_t",
+            "position": {
+              "position_group": "center"
+            }
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "A1_label",
+            "template": "A_1_t",
+            "position": {
+              "below": "set5",
+              "position_group": "center"
+            }
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "bracket_a1",
+            "template": "under_bracket_t",
+            "position": {
+              "between": [
+                "set5",
+                "A1_label"
+              ],
+              "position_group": "center"
+            }
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "circle_a2",
+            "template": "set5_circle_t",
+            "position": {
+              "right_of": "set5",
+              "position_group": "center"
+            }
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "A2_label",
+            "template": "A_2_t",
+            "position": {
+              "below": "circle_a2",
+              "position_group": "center"
+            }
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "bracket_a2",
+            "template": "under_bracket_t",
+            "position": {
+              "between": [
+                "circle_a2",
+                "A2_label"
+              ],
+              "position_group": "center"
+            }
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "circle_a3",
+            "template": "set5_circle_t",
+            "position": {
+              "right_of": "circle_a2",
+              "position_group": "center"
+            }
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "A3_label",
+            "template": "A_3_t",
+            "position": {
+              "below": "circle_a3",
+              "position_group": "center"
+            }
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "bracket_a3",
+            "template": "under_bracket_t",
+            "position": {
+              "between": [
+                "circle_a3",
+                "A3_label"
+              ],
+              "position_group": "center"
+            }
+          }
+        }
+      ],
+      "voiceover": "Suppose we have a collection of sets.",
+      "description": "",
+      "contained": false
+    },
+    {
+      "duration": null,
+      "actions": [
+        {
+          "fade_in": {
+            "instance_id": "Ai_label",
+            "template": "Ai_label_t",
+            "position": {
+              "below": [
+                "A1_label",
+                "A2_label",
+                "A3_label"
+              ]
+            }
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "bracket_all",
+            "template": "under_bracket_t",
+            "position": {
+              "between": [
+                [
+                  "A1_label",
+                  "A2_label",
+                  "A3_label"
+                ],
+                "Ai_label"
+              ]
+            }
+          }
+        }
+      ],
+      "voiceover": "",
+      "description": "",
+      "allow_bleed_over": true
+    },
+    {
+      "duration": null,
+      "actions": [
+        {
+          "screen_wipe": {}
+        }
+      ],
+      "voiceover": "",
+      "description": "",
+      "allow_bleed_over": false
+    },
+    {
+      "duration": null,
+      "actions": [
+        {
+          "fade_in": {
+            "instance_id": "prove_text",
+            "template": "prove_text_t",
+            "position": {
+              "absolute": "top_center"
+            }
+          }
+        }
+      ],
+      "voiceover": "We want to prove",
+      "description": "",
+      "contained": true
+    },
+    {
+      "duration": null,
+      "actions": [
+        {
+          "fade_in": {
+            "instance_id": "Ai_label",
+            "template": "Ai_label_t",
+            "position": {
+              "below": "prove_text"
+            }
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "laws",
+            "template": "laws_t",
+            "reveal_all": true,
+            "position": {
+              "below": "Ai_label"
+            }
+          }
+        }
+      ],
+      "voiceover": "DeMorgan's laws",
+      "description": "",
+      "contained": true
+    },
+    {
+      "duration": 1,
+      "actions": [
+      ],
+      "voiceover": null,
+      "description": ""
+    },
+    {
+      "duration": null,
+      "actions": [
+      ],
+      "voiceover": "Here's how we'll do it.",
+      "description": ""
+    },
+    {
+      "duration": null,
+      "actions": [
+        {
+          "highlight": {
+            "instance_id": "laws",
+            "index_of_line": 1,
+            "index_of_term": 1
+          }
+        },
+        {
+          "highlight": {
+            "instance_id": "laws",
+            "index_of_line": 1,
+            "index_of_term": 2
+          }
+        },
+        {
+          "highlight": {
+            "instance_id": "laws",
+            "index_of_line": 3,
+            "index_of_term": 1
+          }
+        },
+        {
+          "highlight": {
+            "instance_id": "laws",
+            "index_of_line": 3,
+            "index_of_term": 2
+          }
+        }
+      ],
+      "voiceover": "These terms might seem a bit abstract",
+      "description": "",
+      "contained": true
+    },
+    {
+      "duration": null,
+      "actions": [
+        {
+          "fade_in": {
+            "instance_id": "circle_ul",
+            "template": "circle_ul_t",
+            "position": {
+              "left_of": "prove_text"
+            }
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "circle_ur",
+            "template": "circle_ur_t",
+            "position": {
+              "right_of": "prove_text"
+            }
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "circle_ll",
+            "template": "circle_ll_t",
+            "position": {
+              "below": "circle_ul"
+            }
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "circle_lr",
+            "template": "circle_lr_t",
+            "position": {
+              "below": "circle_ur"
+            }
+          }
+        }
+      ],
+      "voiceover": "But each term is just a set, right?",
+      "description": "",
+      "contained": false
+    },
+    {
+      "duration": null,
+      "actions": [
+        {
+          "fleeting_arrow": {
+            "from": "circle_ul",
+            "to": "laws",
+            "to_index_of_line": 1,
+            "to_index_of_term": 1
+          }
+        },
+        {
+          "fleeting_arrow": {
+            "from": "circle_ur",
+            "to": "laws",
+            "to_index_of_line": 1,
+            "to_index_of_term": 2
+          }
+        },
+        {
+          "fleeting_arrow": {
+            "from": "circle_ll",
+            "to": "laws",
+            "to_index_of_line": 3,
+            "to_index_of_term": 1
+          }
+        },
+        {
+          "fleeting_arrow": {
+            "from": "circle_lr",
+            "to": "laws",
+            "to_index_of_line": 3,
+            "to_index_of_term": 2
+          }
+        }
+      ],
+      "voiceover": "",
+      "description": "",
+      "allow_bleed_over": true
+    },
+    {
+      "duration": null,
+      "actions": [
+        {
+          "fade_out": {
+            "instance_id": "circle_ul"
+          }
+        },
+        {
+          "fade_out": {
+            "instance_id": "circle_ur"
+          }
+        },
+        {
+          "fade_out": {
+            "instance_id": "circle_ll"
+          }
+        },
+        {
+          "fade_out": {
+            "instance_id": "circle_lr"
+          }
+        }
+      ],
+      "voiceover": "and all the law says",
+      "description": "",
+      "contained": true
+    },
+    {
+      "duration": null,
+      "actions": [],
+      "voiceover": "is that",
+      "description": ""
+    },
+    {
+      "duration": null,
+      "actions": [
+        {
+          "highlight": {
+            "instance_id": "laws",
+            "index_of_line": 1,
+            "index_of_term": 1
+          }
+        },
+        {
+          "highlight": {
+            "instance_id": "laws",
+            "index_of_line": 1,
+            "index_of_term": 2
+          }
+        }
+      ],
+      "voiceover": "these two are the same set",
+      "description": "",
+      "contained": true
+    },
+    {
+      "duration": null,
+      "actions": [
+        {
+          "highlight": {
+            "instance_id": "laws",
+            "index_of_line": 3,
+            "index_of_term": 1
+          }
+        },
+        {
+          "highlight": {
+            "instance_id": "laws",
+            "index_of_line": 3,
+            "index_of_term": 2
+          }
+        }
+      ],
+      "voiceover": "and these two are the same set",
+      "description": "",
+      "contained": true
+    },
+    {
+      "duration": null,
+      "actions": [],
+      "voiceover": "So, all we have to do is two things. First,",
+      "description": ""
+    },
+    {
+      "duration": null,
+      "actions": [
+        {
+          "fade_out": {
+            "instance_id": "Ai_label"
+          }
+        },
+        {
+          "fade_out": {
+            "instance_id": "prove_text"
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "a",
+            "template": "a_t",
+            "position": {
+              "upper_left_of": "laws"
+            }
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "in_symbol",
+            "template": "in_t",
+            "position": {
+              "right_of": "a"
+            }
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "union_comp",
+            "template": "union_comp_t",
+            "position": {
+              "right_of": "in_symbol"
+            }
+          }
+        }
+      ],
+      "voiceover": "we pick an element in one set",
+      "description": "",
+      "contained": false
+    },
+    {
+      "duration": null,
+      "actions": [
+        {
+          "highlight": {
+            "instance_id": "laws",
+            "index_of_line": 1,
+            "index_of_term": 1
+          }
+        },
+        {
+          "highlight": {
+            "instance_id": "union_comp"
+          }
+        }
+      ],
+      "voiceover": "",
+      "description": "",
+      "allow_bleed_over": true
+    },
+    {
+      "duration": null,
+      "actions": [
+        {
+          "fade_in": {
+            "instance_id": "implies_arrow",
+            "template": "implies_t",
+            "position": {
+              "right_of": "union_comp"
+            }
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "a2",
+            "template": "a_t",
+            "position": {
+              "right_of": "implies_arrow"
+            }
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "in_symbol2",
+            "template": "in_t",
+            "position": {
+              "right_of": "a2"
+            }
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "intersect",
+            "template": "intersect_t",
+            "position": {
+              "right_of": "in_symbol2"
+            }
+          }
+        }
+      ],
+      "voiceover": "and prove that element has to exist in the other set",
+      "description": "",
+      "contained": false
+    },
+    {
+      "duration": null,
+      "actions": [
+        {
+          "highlight": {
+            "instance_id": "laws",
+            "index_of_line": 1,
+            "index_of_term": 2
+          }
+        },
+        {
+          "highlight": {
+            "instance_id": "intersect"
+          }
+        }
+      ],
+      "voiceover": "",
+      "description": "",
+      "allow_bleed_over": true
+    },
+    {
+      "duration": null,
+      "actions": [],
+      "voiceover": "If we can prove that, that means",
+      "description": ""
+    },
+    {
+      "duration": null,
+      "actions": [
+        {
+          "fade_out": {
+            "instance_id": "laws"
+          }
+        },
+        {
+          "fade_out": {
+            "instance_id": "a"
+          }
+        },
+        {
+          "fade_out": {
+            "instance_id": "in_symbol"
+          }
+        },
+        {
+          "fade_out": {
+            "instance_id": "implies_arrow"
+          }
+        },
+        {
+          "fade_out": {
+            "instance_id": "a2"
+          }
+        },
+        {
+          "fade_out": {
+            "instance_id": "in_symbol2"
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "spot_cc",
+            "template": "concentric1_t"
+          }
+        },
+        {
+          "reparent": {
+            "instance_id": "intersect",
+            "to_container": "spot_cc"
+          }
+        },
+        {
+          "translate": {
+            "instance_id": "union_comp",
+            "position": {
+              "over": "spot_cc"
+            }
+          }
+        }
+      ],
+      "voiceover": "this set",
+      "description": "",
+      "contained": false
+    },
+    {
+      "duration": null,
+      "actions": [
+        {
+          "highlight": {
+            "instance_id": "intersect"
+          }
+        }
+      ],
+      "voiceover": "",
+      "description": "",
+      "allow_bleed_over": true
+    },
+    {
+      "duration": null,
+      "actions": [
+        {
+          "reparent": {
+            "instance_id": "union_comp",
+            "to_container": "spot_cc"
+          }
+        }
+      ],
+      "voiceover": "completely contains this set",
+      "description": "",
+      "contained": false
+    },
+    {
+      "duration": null,
+      "actions": [
+        {
+          "highlight": {
+            "instance_id": "union_comp"
+          }
+        }
+      ],
+      "voiceover": "",
+      "description": "",
+      "allow_bleed_over": true
+    },
+    {
+      "duration": null,
+      "actions": [
+        {
+          "fade_out": {
+            "instance_id": "spot_cc"
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "laws",
+            "template": "laws_t"
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "a",
+            "template": "a_t",
+            "position": {
+              "upper_left_of": "laws"
+            }
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "in_symbol",
+            "template": "in_t",
+            "position": {
+              "right_of": "a"
+            }
+          }
+        },
+        {
+          "translate": {
+            "instance_id": "union_comp",
+            "position": {
+              "right_of": "in_symbol"
+            }
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "implies_arrow",
+            "template": "implied_by_t",
+            "position": {
+              "right_of": "union_comp"
+            }
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "a2",
+            "template": "a_t",
+            "position": {
+              "right_of": "implies_arrow"
+            }
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "in_symbol2",
+            "template": "in_t",
+            "position": {
+              "right_of": "a2"
+            }
+          }
+        },
+        {
+          "translate": {
+            "instance_id": "intersect",
+            "position": {
+              "right_of": "in_symbol2"
+            }
+          }
+        }
+      ],
+      "voiceover": "and if we do the same thing",
+      "description": "",
+      "contained": true
+    },
+    {
+      "duration": null,
+      "actions": [
+        {
+          "highlight": {
+            "instance_id": "implies_arrow"
+          }
+        }
+      ],
+      "voiceover": "the other way",
+      "description": "",
+      "contained": true
+    },
+    {
+      "duration": null,
+      "actions": [
+        {
+          "fade_out": {
+            "instance_id": "laws"
+          }
+        },
+        {
+          "fade_out": {
+            "instance_id": "a"
+          }
+        },
+        {
+          "fade_out": {
+            "instance_id": "in_symbol"
+          }
+        },
+        {
+          "fade_out": {
+            "instance_id": "implies_arrow"
+          }
+        },
+        {
+          "fade_out": {
+            "instance_id": "a2"
+          }
+        },
+        {
+          "fade_out": {
+            "instance_id": "in_symbol2"
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "spot_cc2",
+            "template": "concentric1_t"
+          }
+        },
+        {
+          "reparent": {
+            "instance_id": "union_comp",
+            "to_container": "spot_cc2"
+          }
+        },
+        {
+          "translate": {
+            "instance_id": "intersect",
+            "position": {
+              "over": "spot_cc2"
+            }
+          }
+        }
+      ],
+      "voiceover": "we prove this set",
+      "description": "",
+      "contained": false
+    },
+    {
+      "duration": null,
+      "actions": [
+        {
+          "highlight": {
+            "instance_id": "union_comp"
+          }
+        }
+      ],
+      "voiceover": "",
+      "description": "",
+      "allow_bleed_over": true
+    },
+    {
+      "duration": null,
+      "actions": [
+        {
+          "reparent": {
+            "instance_id": "intersect",
+            "to_container": "spot_cc2"
+          }
+        }
+      ],
+      "voiceover": "completely contains this set",
+      "description": "",
+      "contained": false
+    },
+    {
+      "duration": null,
+      "actions": [
+        {
+          "highlight": {
+            "instance_id": "intersect"
+          }
+        }
+      ],
+      "voiceover": "",
+      "description": "",
+      "allow_bleed_over": true
+    },
+    {
+      "duration": null,
+      "actions": [
+        {
+          "custom_object_animation": {
+            "instance_id": "spot_cc2",
+            "kind": "switch",
+            "props": {
+              "count": 2
+            }
+          }
+        }
+      ],
+      "voiceover": "and the only way for them to completely contain each other...",
+      "description": "",
+      "contained": true
+    },
+    {
+      "duration": null,
+      "actions": [
+        {
+          "morph": {
+            "from": "spot_cc2",
+            "to_template": "circle_a1_t"
+          }
+        },
+        {
+          "fade_out": {
+            "instance_id": "union_comp"
+          }
+        },
+        {
+          "fade_out": {
+            "instance_id": "intersect"
+          }
+        }
+      ],
+      "voiceover": "is for them to be the exact same set",
+      "description": "",
+      "contained": true
+    },
+    {
+      "duration": null,
+      "actions": [
+        {
+          "fade_out": {
+            "instance_id": "spot_cc2"
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "Ai_label2",
+            "template": "Ai_label_t",
+            "position": {
+              "absolute": "top_center"
+            }
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "laws2",
+            "template": "laws_t",
+            "reveal_all": true,
+            "position": {
+              "below": "Ai_label2"
+            }
+          }
+        }
+      ],
+      "voiceover": "So that's an overview of the proof strategy.",
+      "description": "",
+      "contained": false
+    },
+    {
+      "duration": null,
+      "actions": [
+        {
+          "fade_in": {
+            "instance_id": "checkmark",
+            "template": "checkmark_t",
+            "position": {
+              "below": "laws2"
+            }
+          }
+        }
+      ],
+      "voiceover": "",
+      "description": "",
+      "allow_bleed_over": true
+    }
+  ]
+}

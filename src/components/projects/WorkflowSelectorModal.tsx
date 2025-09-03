@@ -73,7 +73,7 @@ const workflowOptions: WorkflowOption[] = [
 export function WorkflowSelectorModal({ open, onClose }: WorkflowSelectorModalProps) {
   const router = useRouter()
   const createProject = useCreateProject()
-  const [selectedWorkflow, setSelectedWorkflow] = useState<WorkflowType | null>(null)
+  const [selectedWorkflow, setSelectedWorkflow] = useState<WorkflowType | null>('quick') // Default to Quick Demo
   const [projectName, setProjectName] = useState('')
   const [isCreating, setIsCreating] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -110,7 +110,7 @@ export function WorkflowSelectorModal({ open, onClose }: WorkflowSelectorModalPr
   
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-2xl">
+      <DialogContent className="sm:max-w-xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Create New Project</DialogTitle>
           <DialogDescription>
@@ -149,37 +149,37 @@ export function WorkflowSelectorModal({ open, onClose }: WorkflowSelectorModalPr
                     )}
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <ul className="space-y-1 text-sm text-gray-600">
-                    {option.features.map((feature, index) => (
-                      <li key={index} className="flex items-center gap-2">
-                        <ArrowRight className="h-3 w-3 text-gray-400" />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
+                {selectedWorkflow === option.type && (
+                  <CardContent>
+                    <ul className="space-y-1 text-sm text-gray-600">
+                      {option.features.map((feature, index) => (
+                        <li key={index} className="flex items-center gap-2">
+                          <ArrowRight className="h-3 w-3 text-gray-400" />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                )}
               </Card>
             ))}
           </div>
           
           {/* Project Name Input */}
-          {selectedWorkflow && (
-            <div className="space-y-2 animate-in slide-in-from-bottom-2">
-              <Label htmlFor="project-name">Project Name</Label>
-              <Input
-                id="project-name"
-                placeholder="Enter a name for your project"
-                value={projectName}
-                onChange={(e) => setProjectName(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && projectName.trim()) {
-                    handleCreateProject()
-                  }
-                }}
-              />
-            </div>
-          )}
+          <div className="space-y-2">
+            <Label htmlFor="project-name">Project Name</Label>
+            <Input
+              id="project-name"
+              placeholder="Enter a name for your project"
+              value={projectName}
+              onChange={(e) => setProjectName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && projectName.trim()) {
+                  handleCreateProject()
+                }
+              }}
+            />
+          </div>
           
           {/* Error Display */}
           {error && (

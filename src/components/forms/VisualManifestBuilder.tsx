@@ -126,7 +126,7 @@ export function VisualManifestBuilder({
       setShotgroupError(null)
       
       try {
-        const response = await fetch('http://localhost:8000/media/manifest-to-shotgroup-videos', {
+        const response = await fetch('/api/backend/media/manifest-to-shotgroup-videos', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -106,6 +106,7 @@ export function VisualManifestBuilder({
   const [shotgroups, setShotgroups] = useState<Shotgroup[]>([])
   const [isLoadingShotgroups, setIsLoadingShotgroups] = useState(false)
   const [shotgroupError, setShotgroupError] = useState<string | null>(null)
+  const [processingTime, setProcessingTime] = useState<number | null>(null)
   
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -139,11 +140,18 @@ export function VisualManifestBuilder({
         }
         
         const data: ShotgroupResponse = await response.json()
+        
+        if (data.status === 'error' && data.error) {
+          throw new Error(data.error)
+        }
+        
         setShotgroups(data.shotgroups)
+        setProcessingTime(data.total_processing_time || null)
       } catch (error) {
         console.error('Error fetching shotgroups:', error)
         setShotgroupError(error instanceof Error ? error.message : 'Failed to fetch shotgroups')
         setShotgroups([])
+        setProcessingTime(null)
       } finally {
         setIsLoadingShotgroups(false)
       }
@@ -371,10 +379,15 @@ export function VisualManifestBuilder({
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Film className="h-5 w-5" />
-              <CardTitle className="text-lg">Shot Groups</CardTitle>
-              <Badge variant="secondary">{shotgroups.length}</Badge>
-              {isLoadingShotgroups && <Loader2 className="h-4 w-4 animate-spin" />}
+                          <Film className="h-5 w-5" />
+            <CardTitle className="text-lg">Shot Groups</CardTitle>
+            <Badge variant="secondary">{shotgroups.length}</Badge>
+            {isLoadingShotgroups && <Loader2 className="h-4 w-4 animate-spin" />}
+            {processingTime && (
+              <Badge variant="outline" className="text-xs">
+                Generated in {processingTime.toFixed(1)}s
+              </Badge>
+            )}
             </div>
             <Button
               size="sm"
@@ -440,7 +453,30 @@ export function VisualManifestBuilder({
                   
                   {expandedShotgroups.has(sgIndex) && (
                     <CardContent>
-                      <div className="space-y-2">
+                      <div className="space-y-4">
+                        {/* Video Player */}
+                        {shotgroup.download_url && (
+                          <div className="bg-gray-900 rounded-lg overflow-hidden">
+                            <video
+                              controls
+                              className="w-full"
+                              src={shotgroup.download_url.replace('http://localhost:8000', '/api/backend')}
+                            >
+                              Your browser does not support the video tag.
+                            </video>
+                            <div className="p-2 bg-gray-800 text-xs text-gray-400 flex justify-between">
+                              <span>Duration: {shotgroup.duration_seconds}s</span>
+                              <a 
+                                href={shotgroup.download_url.replace('http://localhost:8000', '/api/backend')}
+                                download
+                                className="text-blue-400 hover:text-blue-300"
+                              >
+                                Download MP4
+                              </a>
+                            </div>
+                          </div>
+                        )}
+                        
                         <div className="text-sm text-gray-600 mb-2">
                           Shots: {shotgroup.shot_indices.map(i => i + 1).join(', ')}
                         </div>

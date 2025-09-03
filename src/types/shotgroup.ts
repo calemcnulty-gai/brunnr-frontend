@@ -14,9 +14,32 @@ export interface Shotgroup {
   has_audio: boolean
 }
 
+export interface ProcessingPhase {
+  phase_name: string
+  start_time: string
+  end_time: string
+  duration_seconds: number
+  status: string
+  output_files?: string[]
+}
+
 export interface ShotgroupResponse {
+  status: string
+  message: string
+  error: string | null
+  metadata: {
+    request_id: string
+    timestamp: string
+    client_ip: string
+    processing_time: number
+    log_file_path: string
+  }
   shotgroups: Shotgroup[]
   manifest: any // This will be the full manifest object
   total_shotgroups: number
   total_shots: number
+  processing_phases?: ProcessingPhase[]
+  total_processing_time?: number
+  render_mode?: string
+  video_id?: string
 }

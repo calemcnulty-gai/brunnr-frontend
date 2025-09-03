@@ -3,6 +3,18 @@
  * @module types/shotgroup
  */
 
+export interface IndividualShot {
+  shot_index: number
+  shot_id: string
+  video_path: string
+  download_url?: string
+  start_time: number
+  end_time: number
+  duration_seconds: number
+  voiceover: string
+  action_count: number
+}
+
 export interface Shotgroup {
   shotgroup_index: number
   shot_indices: number[]
@@ -12,6 +24,7 @@ export interface Shotgroup {
   shot_count: number
   voiceover_preview: string
   has_audio: boolean
+  individual_shots?: IndividualShot[]
 }
 
 export interface ProcessingPhase {

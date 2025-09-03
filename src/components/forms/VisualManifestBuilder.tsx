@@ -59,7 +59,7 @@ import type {
   TemplateType,
   ActionType
 } from '@/lib/validation/manifest'
-import type { Shotgroup, ShotgroupResponse } from '@/types/shotgroup'
+import type { Shotgroup, ShotgroupResponse, IndividualShot } from '@/types/shotgroup'
 import { cn } from '@/lib/utils'
 
 interface VisualManifestBuilderProps {
@@ -513,6 +513,11 @@ export function VisualManifestBuilder({
                                 const shot = manifest.shots[shotIndex]
                                 if (!shot) return null
                                 
+                                // Find the corresponding individual shot data
+                                const individualShot = shotgroup.individual_shots?.find(
+                                  is => is.shot_index === shotIndex
+                                )
+                                
                                 return (
                                   <ShotItem
                                     key={`shot-${shotIndex}`}
@@ -521,6 +526,7 @@ export function VisualManifestBuilder({
                                     index={shotIndex}
                                     expanded={expandedShots.has(shotIndex)}
                                     templates={manifest.templates}
+                                    individualShot={individualShot}
                                     onToggle={() => toggleShot(shotIndex)}
                                     onUpdate={(s) => updateShot(shotIndex, s)}
                                     onDelete={() => deleteShot(shotIndex)}
@@ -646,6 +652,7 @@ interface ShotItemProps {
   index: number
   expanded: boolean
   templates: Template[]
+  individualShot?: IndividualShot
   onToggle: () => void
   onUpdate: (shot: Shot) => void
   onDelete: () => void
@@ -662,6 +669,7 @@ function ShotItem({
   index,
   expanded,
   templates,
+  individualShot,
   onToggle,
   onUpdate,
   onDelete,
@@ -756,59 +764,91 @@ function ShotItem({
         </div>
         
         {expanded && (
-          <div className="mt-4 space-y-4 pl-8">
-            {/* Voiceover */}
-            <div className="space-y-2">
-              <Label>Voiceover</Label>
-              <Textarea
-                value={shot.voiceover || ''}
-                onChange={(e) => onUpdate({ ...shot, voiceover: e.target.value })}
-                disabled={readOnly}
-                placeholder="Enter voiceover text..."
-                className="min-h-[80px]"
-              />
-            </div>
-            
-            {/* Duration */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Duration (seconds)</Label>
-                <Input
-                  type="number"
-                  value={shot.duration || ''}
-                  onChange={(e) => onUpdate({ 
-                    ...shot, 
-                    duration: e.target.value ? parseFloat(e.target.value) : undefined 
-                  })}
-                  disabled={readOnly}
-                  placeholder="Auto"
-                  step="0.1"
-                  min="0"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label>Allow Bleed Over</Label>
-                <div className="flex items-center gap-2 mt-2">
-                  <input
-                    type="checkbox"
-                    checked={shot.allow_bleed_over}
+          <div className="mt-4 pl-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Left Column - Shot Details */}
+              <div className="space-y-4">
+                {/* Voiceover */}
+                <div className="space-y-2">
+                  <Label>Voiceover</Label>
+                  <Textarea
+                    value={shot.voiceover || ''}
+                    onChange={(e) => onUpdate({ ...shot, voiceover: e.target.value })}
+                    disabled={readOnly}
+                    placeholder="Enter voiceover text..."
+                    className="min-h-[80px]"
+                  />
+                </div>
+                
+                {/* Duration */}
+                <div className="space-y-2">
+                  <Label>Duration (seconds)</Label>
+                  <Input
+                    type="number"
+                    value={shot.duration || ''}
                     onChange={(e) => onUpdate({ 
                       ...shot, 
-                      allow_bleed_over: e.target.checked 
+                      duration: e.target.value ? parseFloat(e.target.value) : undefined 
                     })}
                     disabled={readOnly}
-                    className="rounded"
+                    placeholder="Auto"
+                    step="0.1"
+                    min="0"
                   />
-                  <span className="text-sm text-gray-600">
-                    Allow voiceover to continue into next shot
-                  </span>
                 </div>
+                
+                {/* Allow Bleed Over */}
+                <div className="space-y-2">
+                  <Label>Allow Bleed Over</Label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={shot.allow_bleed_over}
+                      onChange={(e) => onUpdate({ 
+                        ...shot, 
+                        allow_bleed_over: e.target.checked 
+                      })}
+                      disabled={readOnly}
+                      className="rounded"
+                    />
+                    <span className="text-sm text-gray-600">
+                      Allow voiceover to continue into next shot
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Right Column - Video */}
+              <div className="space-y-2">
+                {individualShot?.video_path && (
+                  <div>
+                    <Label className="mb-2 block">Preview</Label>
+                    <div className="bg-gray-900 rounded-lg overflow-hidden">
+                      <video
+                        controls
+                        className="w-full"
+                        src={(individualShot.download_url || individualShot.video_path).replace('http://localhost:8000', '/api/backend')}
+                      >
+                        Your browser does not support the video tag.
+                      </video>
+                      <div className="p-2 bg-gray-800 text-xs text-gray-400 flex justify-between">
+                        <span>Duration: {individualShot.duration_seconds.toFixed(1)}s</span>
+                        <span>Actions: {individualShot.action_count}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {!individualShot?.video_path && (
+                  <div className="bg-gray-100 rounded-lg p-8 text-center text-gray-500">
+                    <Video className="h-12 w-12 mx-auto mb-2 text-gray-400" />
+                    <p className="text-sm">No video generated yet</p>
+                  </div>
+                )}
               </div>
             </div>
             
-            {/* Actions */}
-            <div className="space-y-2">
+            {/* Actions - Full Width Below */}
+            <div className="space-y-2 mt-6">
               <div className="flex items-center justify-between">
                 <Label>Actions</Label>
                 <Button

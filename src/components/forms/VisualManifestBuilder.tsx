@@ -177,10 +177,12 @@ export function VisualManifestBuilder({
     const shotToDuplicate = manifest.shots[index]
     if (!shotToDuplicate) return
     const newShot: Shot = { 
-      voiceover: shotToDuplicate.voiceover || '',
+      voiceover: shotToDuplicate.voiceover,
       actions: [...shotToDuplicate.actions],
       allow_bleed_over: shotToDuplicate.allow_bleed_over,
-      duration: shotToDuplicate.duration
+      duration: shotToDuplicate.duration,
+      description: shotToDuplicate.description,
+      contained: shotToDuplicate.contained
     }
     const newShots = [...manifest.shots]
     newShots.splice(index + 1, 0, newShot)
@@ -197,10 +199,12 @@ export function VisualManifestBuilder({
     const shot = manifest.shots[shotIndex]
     if (!shot) return
     updateShot(shotIndex, {
-      voiceover: shot.voiceover || '',
+      voiceover: shot.voiceover,
       actions: [...shot.actions, newAction],
       allow_bleed_over: shot.allow_bleed_over,
-      duration: shot.duration
+      duration: shot.duration,
+      description: shot.description,
+      contained: shot.contained
     })
   }
   
@@ -210,10 +214,12 @@ export function VisualManifestBuilder({
     const newActions = [...shot.actions]
     newActions[actionIndex] = action
     updateShot(shotIndex, { 
-      voiceover: shot.voiceover || '',
+      voiceover: shot.voiceover,
       actions: newActions,
       allow_bleed_over: shot.allow_bleed_over,
-      duration: shot.duration
+      duration: shot.duration,
+      description: shot.description,
+      contained: shot.contained
     })
   }
   
@@ -222,10 +228,12 @@ export function VisualManifestBuilder({
     if (!shot) return
     const newActions = shot.actions.filter((_, i) => i !== actionIndex)
     updateShot(shotIndex, { 
-      voiceover: shot.voiceover || '',
+      voiceover: shot.voiceover,
       actions: newActions,
       allow_bleed_over: shot.allow_bleed_over,
-      duration: shot.duration
+      duration: shot.duration,
+      description: shot.description,
+      contained: shot.contained
     })
   }
   
@@ -586,7 +594,7 @@ function ShotItem({
             <div className="space-y-2">
               <Label>Voiceover</Label>
               <Textarea
-                value={shot.voiceover}
+                value={shot.voiceover || ''}
                 onChange={(e) => onUpdate({ ...shot, voiceover: e.target.value })}
                 disabled={readOnly}
                 placeholder="Enter voiceover text..."

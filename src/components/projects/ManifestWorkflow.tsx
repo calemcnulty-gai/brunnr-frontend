@@ -102,9 +102,9 @@ export function ManifestWorkflow({ project }: ManifestWorkflowProps) {
           style: t.style
         })),
         shots: manifest.shots.map(s => ({
-          voiceover: s.voiceover,
+          voiceover: s.voiceover || '',
           actions: s.actions,
-          duration: s.duration,
+          duration: s.duration || undefined,
           allow_bleed_over: s.allow_bleed_over
         }))
       }

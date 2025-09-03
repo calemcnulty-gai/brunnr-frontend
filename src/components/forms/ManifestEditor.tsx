@@ -172,18 +172,44 @@ export function ManifestEditor({
       
       try {
         const text = await file.text()
+        console.log('Importing manifest file:', file.name)
+        
         const parsed = JSON.parse(text)
+        console.log('Parsed manifest:', parsed)
+        
+        // Try validation but don't fail if it doesn't match our schema exactly
+        // The API has the authoritative validation
         const validation = validateManifest(parsed)
         
         if (validation.success && validation.data) {
+          console.log('Manifest validation passed')
           setManifest(validation.data)
           setJsonContent(JSON.stringify(validation.data, null, 2))
           handleVisualChange(validation.data)
         } else {
-          alert('Invalid manifest file')
+          console.warn('Manifest validation failed:', validation.errors)
+          
+          // Still allow importing if it's valid JSON
+          // Let the API handle the actual validation
+          const manifestLike = parsed as Manifest
+          if (manifestLike.video_id && manifestLike.shots) {
+            console.log('Using manifest despite validation errors - API will validate')
+            setManifest(manifestLike)
+            setJsonContent(JSON.stringify(manifestLike, null, 2))
+            handleVisualChange(manifestLike)
+            
+            // Show warning that validation failed but we're proceeding
+            setValidationWarnings([
+              'Manifest structure differs from expected format.',
+              'The API will perform final validation when generating video.'
+            ])
+          } else {
+            alert('Invalid manifest file: missing required fields (video_id or shots)')
+          }
         }
       } catch (error) {
-        alert('Failed to import manifest file')
+        console.error('Failed to import manifest:', error)
+        alert(`Failed to import manifest file: ${error instanceof Error ? error.message : 'Unknown error'}`)
       }
     }
     input.click()

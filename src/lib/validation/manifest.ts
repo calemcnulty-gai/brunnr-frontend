@@ -11,20 +11,31 @@ export const templateStyleSchema = z.object({
   fontSize: z.number().optional(),
   fontWeight: z.string().optional(),
   opacity: z.number().min(0).max(1).optional(),
+  fill_opacity: z.number().min(0).max(1).optional(),
+  stroke_width: z.number().optional(),
 }).optional()
 
-// Template types enum
-export const templateTypeEnum = z.enum([
-  'Text',
-  'MathTex',
-  'MathTex_term',
-  'circle',
-  'circle_set',
-  'rectangle',
-  'arrow',
-  'line',
-  'image',
-  'video_clip'
+// Template types - more flexible to handle all API types
+export const templateTypeEnum = z.union([
+  z.enum([
+    'Text',
+    'MathTex',
+    'MathTex_term',
+    'MathTex_aligned',
+    'circle',
+    'circle_set',
+    'rectangle',
+    'arrow',
+    'line',
+    'image',
+    'video_clip',
+    'in',
+    'implies',
+    'implied_by',
+    'under_bracket',
+    'concentric_inner_circles'
+  ]),
+  z.string() // Allow any string for unknown types
 ])
 
 // Template schema
@@ -36,6 +47,7 @@ export const templateSchema = z.object({
     z.array(z.union([z.string(), z.number()])),
     z.record(z.any())
   ]).optional(),
+  parts: z.array(z.string()).optional(), // For MathTex_aligned
   style: templateStyleSchema,
   position: z.object({
     x: z.number(),
@@ -66,22 +78,29 @@ export const actionTypeEnum = z.enum([
   'Wait'
 ])
 
-// Action schema
-export const actionSchema = z.object({
-  type: actionTypeEnum,
-  template_id: z.string().optional(),
-  target_template_id: z.string().optional(),
-  duration: z.number().positive().optional(),
-  delay: z.number().min(0).optional(),
-  params: z.record(z.any()).optional()
-})
+// Action schema - more flexible to handle API format
+export const actionSchema = z.union([
+  // Our simplified format
+  z.object({
+    type: actionTypeEnum,
+    template_id: z.string().optional(),
+    target_template_id: z.string().optional(),
+    duration: z.number().positive().optional(),
+    delay: z.number().min(0).optional(),
+    params: z.record(z.any()).optional()
+  }),
+  // API's nested format (e.g., { fade_in: { ... } })
+  z.record(z.any())
+])
 
 // Shot schema
 export const shotSchema = z.object({
-  voiceover: z.string().default(''),
+  voiceover: z.union([z.string(), z.null()]).optional().default(''),
   actions: z.array(actionSchema).default([]),
-  duration: z.number().positive().optional(),
-  allow_bleed_over: z.boolean().optional().default(false)
+  duration: z.union([z.number().positive(), z.null()]).optional(),
+  allow_bleed_over: z.boolean().optional().default(false),
+  description: z.string().optional(),
+  contained: z.boolean().optional()
 })
 
 // Main manifest schema
@@ -98,10 +117,12 @@ export type TemplateType = z.infer<typeof templateTypeEnum>
 export type ActionType = z.infer<typeof actionTypeEnum>
 
 export type Shot = {
-  voiceover: string
+  voiceover?: string | null
   actions: Action[]
-  duration?: number
+  duration?: number | null
   allow_bleed_over?: boolean
+  description?: string
+  contained?: boolean
 }
 
 export type Manifest = {

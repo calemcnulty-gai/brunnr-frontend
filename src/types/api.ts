@@ -74,8 +74,10 @@ export interface ScreenplayToManifestRequest extends Screenplay {}
 export interface ManifestTemplate {
   id: string
   type: string
-  content: string
+  content?: string
+  parts?: string[]
   labels?: string[]
+  style?: any
 }
 
 export interface ManifestAction {

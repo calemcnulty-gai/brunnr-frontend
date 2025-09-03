@@ -8,15 +8,8 @@ const nextConfig = {
     // Enable if needed for better performance
     // optimizeCss: true,
   },
-  // Proxy API requests to avoid CORS issues
-  async rewrites() {
-    return [
-      {
-        source: '/api/backend/:path*',
-        destination: 'http://localhost:8000/:path*',
-      },
-    ];
-  },
+  // Note: We use custom API route handlers for backend proxying
+  // to have better control over timeouts and error handling
   // Supabase auth might require headers
   async headers() {
     return [

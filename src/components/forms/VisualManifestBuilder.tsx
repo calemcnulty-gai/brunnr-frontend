@@ -101,6 +101,7 @@ export function VisualManifestBuilder({
 }: VisualManifestBuilderProps) {
   const [expandedShots, setExpandedShots] = useState<Set<number>>(new Set([0]))
   const [expandedShotgroups, setExpandedShotgroups] = useState<Set<number>>(new Set([0]))
+  const [expandedTemplates, setExpandedTemplates] = useState(false)
   const [activeId, setActiveId] = useState<string | null>(null)
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null)
   const [shotgroups, setShotgroups] = useState<Shotgroup[]>([])
@@ -337,12 +338,26 @@ export function VisualManifestBuilder({
       
       {/* Templates Section */}
       <Card>
-        <CardHeader>
+        <CardHeader 
+          className="cursor-pointer"
+          onClick={() => setExpandedTemplates(!expandedTemplates)}
+        >
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg">Templates</CardTitle>
+            <div className="flex items-center gap-2">
+              {expandedTemplates ? 
+                <ChevronDown className="h-4 w-4" /> : 
+                <ChevronRight className="h-4 w-4" />
+              }
+              <CardTitle className="text-lg">Templates</CardTitle>
+              <Badge variant="secondary">{manifest.templates.length}</Badge>
+            </div>
             <Button
               size="sm"
-              onClick={addTemplate}
+              onClick={(e) => {
+                e.stopPropagation()
+                addTemplate()
+                setExpandedTemplates(true)
+              }}
               disabled={readOnly}
             >
               <Plus className="mr-2 h-4 w-4" />
@@ -350,28 +365,30 @@ export function VisualManifestBuilder({
             </Button>
           </div>
         </CardHeader>
-        <CardContent>
-          {manifest.templates.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              No templates defined. Add a template to get started.
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {manifest.templates.map((template, index) => (
-                <TemplateItem
-                  key={template.id}
-                  template={template}
-                  index={index}
-                  selected={selectedTemplate === template.id}
-                  onSelect={() => setSelectedTemplate(template.id)}
-                  onUpdate={(t) => updateTemplate(index, t)}
-                  onDelete={() => deleteTemplate(index)}
-                  readOnly={readOnly}
-                />
-              ))}
-            </div>
-          )}
-        </CardContent>
+        {expandedTemplates && (
+          <CardContent>
+            {manifest.templates.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                No templates defined. Add a template to get started.
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {manifest.templates.map((template, index) => (
+                  <TemplateItem
+                    key={template.id}
+                    template={template}
+                    index={index}
+                    selected={selectedTemplate === template.id}
+                    onSelect={() => setSelectedTemplate(template.id)}
+                    onUpdate={(t) => updateTemplate(index, t)}
+                    onDelete={() => deleteTemplate(index)}
+                    readOnly={readOnly}
+                  />
+                ))}
+              </div>
+            )}
+          </CardContent>
+        )}
       </Card>
       
       {/* Shots Section - Grouped by Shotgroups */}

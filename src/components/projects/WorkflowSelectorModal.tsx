@@ -31,15 +31,15 @@ interface WorkflowOption {
 const workflowOptions: WorkflowOption[] = [
   {
     type: 'quick',
-    title: 'Quick Generation',
-    description: 'Create a video from a single question in one click',
+    title: 'Quick Demo',
+    description: 'Experience video generation with a pre-built DeMorgan\'s Laws example',
     icon: <Video className="h-8 w-8" />,
-    color: 'text-blue-600 bg-blue-50',
+    color: 'text-purple-600 bg-purple-50',
     features: [
-      'Fastest option',
-      'Single question input',
-      'Automatic optimization',
-      'Great for simple topics'
+      'Pre-built manifest example',
+      'Shows generation pipeline',
+      'DeMorgan\'s Laws demo',
+      'Learn how it works'
     ]
   },
   {

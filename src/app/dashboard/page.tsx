@@ -41,10 +41,10 @@ export default function DashboardPage() {
           <CardHeader>
             <div className="flex items-center gap-2">
               <Video className="h-5 w-5 text-blue-600" />
-              <CardTitle>Quick Generate</CardTitle>
+              <CardTitle>Quick Demo</CardTitle>
             </div>
             <CardDescription>
-              Create a video from a question in one click
+              See how video generation works with a demo
             </CardDescription>
           </CardHeader>
           <CardContent>

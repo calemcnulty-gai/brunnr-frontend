@@ -8,7 +8,7 @@
 import { useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useProject } from '@/hooks/use-projects'
-import { QuickGenerationWorkflow } from '@/components/projects/QuickGenerationWorkflow'
+import { QuickDemoWorkflow } from '@/components/projects/QuickDemoWorkflow'
 import { StepByStepWorkflow } from '@/components/projects/StepByStepWorkflow'
 import { ManifestWorkflow } from '@/components/projects/ManifestWorkflow'
 import { Loader2 } from 'lucide-react'
@@ -52,7 +52,7 @@ export default function ProjectPage() {
   // Render appropriate workflow based on project type
   switch (project.workflow_type) {
     case 'quick':
-      return <QuickGenerationWorkflow project={project} />
+      return <QuickDemoWorkflow project={project} />
     case 'step-by-step':
       return <StepByStepWorkflow project={project} />
     case 'manifest':

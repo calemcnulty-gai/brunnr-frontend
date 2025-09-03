@@ -36,6 +36,12 @@ export interface ProcessingPhase {
   output_files?: string[]
 }
 
+export interface TemplateImage {
+  id: string
+  path: string
+  download_url: string
+}
+
 export interface ShotgroupResponse {
   status: string
   message: string
@@ -55,4 +61,5 @@ export interface ShotgroupResponse {
   total_processing_time?: number
   render_mode?: string
   video_id?: string
+  template_images?: TemplateImage[]
 }

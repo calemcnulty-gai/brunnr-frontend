@@ -59,7 +59,7 @@ import type {
   TemplateType,
   ActionType
 } from '@/lib/validation/manifest'
-import type { Shotgroup, ShotgroupResponse, IndividualShot } from '@/types/shotgroup'
+import type { Shotgroup, ShotgroupResponse, IndividualShot, TemplateImage } from '@/types/shotgroup'
 import { cn } from '@/lib/utils'
 
 interface VisualManifestBuilderProps {
@@ -108,6 +108,7 @@ export function VisualManifestBuilder({
   const [isLoadingShotgroups, setIsLoadingShotgroups] = useState(false)
   const [shotgroupError, setShotgroupError] = useState<string | null>(null)
   const [processingTime, setProcessingTime] = useState<number | null>(null)
+  const [templateImages, setTemplateImages] = useState<TemplateImage[]>([])
   
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -148,6 +149,7 @@ export function VisualManifestBuilder({
         
         setShotgroups(data.shotgroups)
         setProcessingTime(data.total_processing_time || null)
+        setTemplateImages(data.template_images || [])
       } catch (error) {
         console.error('Error fetching shotgroups:', error)
         setShotgroupError(error instanceof Error ? error.message : 'Failed to fetch shotgroups')
@@ -538,6 +540,7 @@ export function VisualManifestBuilder({
                                     onDeleteAction={(actionIndex) => 
                                       deleteAction(shotIndex, actionIndex)
                                     }
+                                    templateImages={templateImages}
                                     readOnly={readOnly}
                                   />
                                 )
@@ -653,6 +656,7 @@ interface ShotItemProps {
   expanded: boolean
   templates: Template[]
   individualShot?: IndividualShot
+  templateImages?: TemplateImage[]
   onToggle: () => void
   onUpdate: (shot: Shot) => void
   onDelete: () => void
@@ -670,6 +674,7 @@ function ShotItem({
   expanded,
   templates,
   individualShot,
+  templateImages,
   onToggle,
   onUpdate,
   onDelete,
@@ -873,6 +878,7 @@ function ShotItem({
                       key={actionIndex}
                       action={action}
                       templates={templates}
+                      templateImages={templateImages}
                       onUpdate={(a) => onUpdateAction(actionIndex, a)}
                       onDelete={() => onDeleteAction(actionIndex)}
                       readOnly={readOnly}
@@ -892,6 +898,7 @@ function ShotItem({
 interface ActionItemProps {
   action: Action
   templates: Template[]
+  templateImages?: TemplateImage[]
   onUpdate: (action: Action) => void
   onDelete: () => void
   readOnly?: boolean
@@ -900,6 +907,7 @@ interface ActionItemProps {
 function ActionItem({
   action,
   templates,
+  templateImages,
   onUpdate,
   onDelete,
   readOnly
@@ -940,6 +948,10 @@ function ActionItem({
       word.charAt(0).toUpperCase() + word.slice(1)
     ).join(' ')
   }
+  
+  // Find template image for this action
+  const templateId = getTemplateOrInstance()
+  const templateImage = templateImages?.find(img => img.id === templateId)
   
   return (
     <div className="border rounded p-2 bg-gray-50">
@@ -1044,8 +1056,28 @@ function ActionItem({
         </div>
       </div>
       
-      {/* Show additional action details */}
-      {typeof actionData === 'object' && actionData !== null && Object.keys(actionData).length > 0 && (
+      {/* Show template preview image if available */}
+      {templateImage && (
+        <div className="mt-2 flex items-start gap-2">
+          <div className="flex-shrink-0">
+            <img 
+              src={templateImage.download_url.replace('http://localhost:8000', '/api/backend')}
+              alt={templateId}
+              className="h-16 w-16 object-contain bg-gray-900 rounded border border-gray-300"
+            />
+          </div>
+          <div className="flex-1 text-xs text-gray-600">
+            <div className="font-medium mb-1">Template: {templateId}</div>
+            {typeof actionData === 'object' && actionData !== null && Object.keys(actionData).length > 0 && (
+              <div className="font-mono text-[10px]">
+                {JSON.stringify(actionData, null, 2).substring(0, 100)}...
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      {/* Show action details if no image */}
+      {!templateImage && typeof actionData === 'object' && actionData !== null && Object.keys(actionData).length > 0 && (
         <div className="mt-2 text-xs text-gray-600">
           {JSON.stringify(actionData, null, 2).substring(0, 100)}...
         </div>

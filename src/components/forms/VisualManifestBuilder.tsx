@@ -5,7 +5,7 @@
 
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import {
   DndContext,
   closestCenter,
@@ -47,7 +47,9 @@ import {
   Image as ImageIcon,
   Mic,
   Clock,
-  Zap
+  Zap,
+  Film,
+  Loader2
 } from 'lucide-react'
 import type { 
   Manifest, 
@@ -57,6 +59,7 @@ import type {
   TemplateType,
   ActionType
 } from '@/lib/validation/manifest'
+import type { Shotgroup, ShotgroupResponse } from '@/types/shotgroup'
 import { cn } from '@/lib/utils'
 
 interface VisualManifestBuilderProps {
@@ -97,8 +100,12 @@ export function VisualManifestBuilder({
   readOnly = false
 }: VisualManifestBuilderProps) {
   const [expandedShots, setExpandedShots] = useState<Set<number>>(new Set([0]))
+  const [expandedShotgroups, setExpandedShotgroups] = useState<Set<number>>(new Set([0]))
   const [activeId, setActiveId] = useState<string | null>(null)
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null)
+  const [shotgroups, setShotgroups] = useState<Shotgroup[]>([])
+  const [isLoadingShotgroups, setIsLoadingShotgroups] = useState(false)
+  const [shotgroupError, setShotgroupError] = useState<string | null>(null)
   
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -106,6 +113,44 @@ export function VisualManifestBuilder({
       coordinateGetter: sortableKeyboardCoordinates,
     })
   )
+  
+  // Fetch shotgroups whenever manifest changes
+  useEffect(() => {
+    const fetchShotgroups = async () => {
+      if (!manifest || manifest.shots.length === 0) {
+        setShotgroups([])
+        return
+      }
+      
+      setIsLoadingShotgroups(true)
+      setShotgroupError(null)
+      
+      try {
+        const response = await fetch('http://localhost:8000/media/manifest-to-shotgroup-videos', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(manifest)
+        })
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch shotgroups: ${response.statusText}`)
+        }
+        
+        const data: ShotgroupResponse = await response.json()
+        setShotgroups(data.shotgroups)
+      } catch (error) {
+        console.error('Error fetching shotgroups:', error)
+        setShotgroupError(error instanceof Error ? error.message : 'Failed to fetch shotgroups')
+        setShotgroups([])
+      } finally {
+        setIsLoadingShotgroups(false)
+      }
+    }
+    
+    fetchShotgroups()
+  }, [manifest])
   
   // Handle video ID change
   const handleVideoIdChange = (videoId: string) => {
@@ -321,11 +366,16 @@ export function VisualManifestBuilder({
         </CardContent>
       </Card>
       
-      {/* Shots Section */}
+      {/* Shots Section - Grouped by Shotgroups */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg">Shots</CardTitle>
+            <div className="flex items-center gap-2">
+              <Film className="h-5 w-5" />
+              <CardTitle className="text-lg">Shot Groups</CardTitle>
+              <Badge variant="secondary">{shotgroups.length}</Badge>
+              {isLoadingShotgroups && <Loader2 className="h-4 w-4 animate-spin" />}
+            </div>
             <Button
               size="sm"
               onClick={addShot}
@@ -337,66 +387,130 @@ export function VisualManifestBuilder({
           </div>
         </CardHeader>
         <CardContent>
-          {manifest.shots.length === 0 ? (
+          {shotgroupError ? (
+            <div className="text-center py-8 text-red-500">
+              <p>Error loading shot groups: {shotgroupError}</p>
+              <p className="text-sm text-gray-500 mt-2">Make sure the API is running on localhost:8000</p>
+            </div>
+          ) : isLoadingShotgroups ? (
+            <div className="text-center py-8 text-gray-500">
+              <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2" />
+              Loading shot groups...
+            </div>
+          ) : manifest.shots.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               No shots defined. Add a shot to begin creating your video.
             </div>
+          ) : shotgroups.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              Processing shot groups...
+            </div>
           ) : (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragStart={handleDragStart}
-              onDragEnd={handleDragEnd}
-            >
-              <SortableContext
-                items={manifest.shots.map((_, i) => `shot-${i}`)}
-                strategy={verticalListSortingStrategy}
-              >
-                <div className="space-y-2">
-                  {manifest.shots.map((shot, index) => (
-                    <ShotItem
-                      key={`shot-${index}`}
-                      id={`shot-${index}`}
-                      shot={shot}
-                      index={index}
-                      expanded={expandedShots.has(index)}
-                      templates={manifest.templates}
-                      onToggle={() => toggleShot(index)}
-                      onUpdate={(s) => updateShot(index, s)}
-                      onDelete={() => deleteShot(index)}
-                      onDuplicate={() => duplicateShot(index)}
-                      onAddAction={() => addAction(index)}
-                      onUpdateAction={(actionIndex, action) => 
-                        updateAction(index, actionIndex, action)
+            <div className="space-y-4">
+              {shotgroups.map((shotgroup, sgIndex) => (
+                <Card key={`shotgroup-${sgIndex}`} className="border-l-4 border-l-blue-500">
+                  <CardHeader 
+                    className="cursor-pointer"
+                    onClick={() => {
+                      const newExpanded = new Set(expandedShotgroups)
+                      if (newExpanded.has(sgIndex)) {
+                        newExpanded.delete(sgIndex)
+                      } else {
+                        newExpanded.add(sgIndex)
                       }
-                      onDeleteAction={(actionIndex) => 
-                        deleteAction(index, actionIndex)
-                      }
-                      readOnly={readOnly}
-                    />
-                  ))}
-                </div>
-              </SortableContext>
-              
-              <DragOverlay>
-                {activeId ? (
-                  <div className="bg-white border rounded-lg p-4 shadow-lg opacity-90">
-                    <div className="flex items-center gap-2">
-                      <GripVertical className="h-4 w-4 text-gray-400" />
-                      <span className="font-medium">
-                        {(() => {
-                          const parts = activeId.split('-')
-                          if (parts[1]) {
-                            return `Shot ${parseInt(parts[1]) + 1}`
-                          }
-                          return 'Shot'
-                        })()}
-                      </span>
+                      setExpandedShotgroups(newExpanded)
+                    }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {expandedShotgroups.has(sgIndex) ? 
+                          <ChevronDown className="h-4 w-4" /> : 
+                          <ChevronRight className="h-4 w-4" />
+                        }
+                        <span className="font-medium">Shot Group {sgIndex + 1}</span>
+                        <Badge variant="outline">{shotgroup.shot_count} shots</Badge>
+                        <Badge variant="secondary">{shotgroup.duration_seconds.toFixed(1)}s</Badge>
+                        {shotgroup.has_audio && <Mic className="h-4 w-4 text-green-500" />}
+                      </div>
+                      <div className="text-sm text-gray-500 max-w-md truncate">
+                        {shotgroup.voiceover_preview}
+                      </div>
                     </div>
-                  </div>
-                ) : null}
-              </DragOverlay>
-            </DndContext>
+                  </CardHeader>
+                  
+                  {expandedShotgroups.has(sgIndex) && (
+                    <CardContent>
+                      <div className="space-y-2">
+                        <div className="text-sm text-gray-600 mb-2">
+                          Shots: {shotgroup.shot_indices.map(i => i + 1).join(', ')}
+                        </div>
+                        
+                        <DndContext
+                          sensors={sensors}
+                          collisionDetection={closestCenter}
+                          onDragStart={handleDragStart}
+                          onDragEnd={handleDragEnd}
+                        >
+                          <SortableContext
+                            items={shotgroup.shot_indices.map(i => `shot-${i}`)}
+                            strategy={verticalListSortingStrategy}
+                          >
+                            <div className="space-y-2">
+                              {shotgroup.shot_indices.map((shotIndex) => {
+                                const shot = manifest.shots[shotIndex]
+                                if (!shot) return null
+                                
+                                return (
+                                  <ShotItem
+                                    key={`shot-${shotIndex}`}
+                                    id={`shot-${shotIndex}`}
+                                    shot={shot}
+                                    index={shotIndex}
+                                    expanded={expandedShots.has(shotIndex)}
+                                    templates={manifest.templates}
+                                    onToggle={() => toggleShot(shotIndex)}
+                                    onUpdate={(s) => updateShot(shotIndex, s)}
+                                    onDelete={() => deleteShot(shotIndex)}
+                                    onDuplicate={() => duplicateShot(shotIndex)}
+                                    onAddAction={() => addAction(shotIndex)}
+                                    onUpdateAction={(actionIndex, action) => 
+                                      updateAction(shotIndex, actionIndex, action)
+                                    }
+                                    onDeleteAction={(actionIndex) => 
+                                      deleteAction(shotIndex, actionIndex)
+                                    }
+                                    readOnly={readOnly}
+                                  />
+                                )
+                              })}
+                            </div>
+                          </SortableContext>
+                          
+                          <DragOverlay>
+                            {activeId ? (
+                              <div className="bg-white border rounded-lg p-4 shadow-lg opacity-90">
+                                <div className="flex items-center gap-2">
+                                  <GripVertical className="h-4 w-4 text-gray-400" />
+                                  <span className="font-medium">
+                                    {(() => {
+                                      const parts = activeId.split('-')
+                                      if (parts[1]) {
+                                        return `Shot ${parseInt(parts[1]) + 1}`
+                                      }
+                                      return 'Shot'
+                                    })()}
+                                  </span>
+                                </div>
+                              </div>
+                            ) : null}
+                          </DragOverlay>
+                        </DndContext>
+                      </div>
+                    </CardContent>
+                  )}
+                </Card>
+              ))}
+            </div>
           )}
         </CardContent>
       </Card>

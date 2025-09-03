@@ -904,50 +904,127 @@ function ActionItem({
   onDelete,
   readOnly
 }: ActionItemProps) {
+  // Determine action type and data from the action structure
+  const getActionType = () => {
+    if ('fade_in' in action) return 'fade_in'
+    if ('fade_out' in action) return 'fade_out'
+    if ('highlight' in action) return 'highlight'
+    if ('screen_wipe' in action) return 'screen_wipe'
+    if ('fleeting_arrow' in action) return 'fleeting_arrow'
+    if ('translate' in action) return 'translate'
+    if ('reparent' in action) return 'reparent'
+    if ('morph' in action) return 'morph'
+    if ('custom_object_animation' in action) return 'custom_object_animation'
+    if (action.type) return action.type
+    return 'unknown'
+  }
+  
+  const actionType = getActionType()
+  const actionData = action[actionType as keyof typeof action] || {}
+  
+  // Extract template/instance info
+  const getTemplateOrInstance = () => {
+    if (typeof actionData === 'object' && actionData !== null) {
+      if ('template' in actionData) return actionData.template
+      if ('template_id' in actionData) return actionData.template_id
+      if ('instance_id' in actionData) return actionData.instance_id
+      if ('from' in actionData) return actionData.from
+      if ('to_template' in actionData) return actionData.to_template
+    }
+    return action.template_id || ''
+  }
+  
+  // Format action type for display
+  const formatActionType = (type: string) => {
+    return type.split('_').map(word => 
+      word.charAt(0).toUpperCase() + word.slice(1)
+    ).join(' ')
+  }
+  
   return (
     <div className="border rounded p-2 bg-gray-50">
       <div className="grid grid-cols-3 gap-2">
         <select
-          value={action.type}
-          onChange={(e) => onUpdate({ ...action, type: e.target.value as ActionType })}
+          value={actionType}
+          onChange={(e) => {
+            // Create new action structure based on type
+            const newType = e.target.value
+            let newAction: any = {}
+            if (newType === 'screen_wipe') {
+              newAction = { screen_wipe: {} }
+            } else if (newType === 'fade_in' || newType === 'fade_out') {
+              newAction = { [newType]: { instance_id: '', template: '' } }
+            } else {
+              newAction = { type: newType as ActionType, template_id: '' }
+            }
+            onUpdate(newAction)
+          }}
           disabled={readOnly}
           className="px-2 py-1 border rounded text-sm"
         >
-          <option value="FadeIn">Fade In</option>
-          <option value="FadeOut">Fade Out</option>
+          <option value="fade_in">Fade In</option>
+          <option value="fade_out">Fade Out</option>
+          <option value="highlight">Highlight</option>
+          <option value="fleeting_arrow">Fleeting Arrow</option>
+          <option value="translate">Translate</option>
+          <option value="reparent">Reparent</option>
+          <option value="morph">Morph</option>
+          <option value="custom_object_animation">Custom Animation</option>
+          <option value="screen_wipe">Screen Wipe</option>
           <option value="Write">Write</option>
-          <option value="Unwrite">Unwrite</option>
           <option value="Transform">Transform</option>
-          <option value="Morph">Morph</option>
-          <option value="Move">Move</option>
-          <option value="Scale">Scale</option>
-          <option value="Rotate">Rotate</option>
-          <option value="Highlight">Highlight</option>
           <option value="Wait">Wait</option>
         </select>
         
-        {action.type !== 'Wait' && (
-          <select
-            value={action.template_id || ''}
-            onChange={(e) => onUpdate({ ...action, template_id: e.target.value })}
+        {actionType !== 'Wait' && actionType !== 'screen_wipe' && (
+          <Input
+            value={getTemplateOrInstance()}
+            onChange={(e) => {
+              let updatedAction = { ...action }
+              if (typeof actionData === 'object' && actionData !== null) {
+                const key = Object.keys(action)[0]
+                if (key && typeof action[key as keyof typeof action] === 'object') {
+                  updatedAction = {
+                    [key]: {
+                      ...actionData,
+                      template: e.target.value,
+                      instance_id: 'instance_id' in actionData ? actionData.instance_id : e.target.value
+                    }
+                  }
+                }
+              } else {
+                updatedAction.template_id = e.target.value
+              }
+              onUpdate(updatedAction)
+            }}
             disabled={readOnly}
+            placeholder="Template/Instance ID"
             className="px-2 py-1 border rounded text-sm"
-          >
-            <option value="">Select template</option>
-            {templates.map(t => (
-              <option key={t.id} value={t.id}>{t.id}</option>
-            ))}
-          </select>
+          />
         )}
         
         <div className="flex items-center gap-1">
           <Input
             type="number"
-            value={action.duration || ''}
-            onChange={(e) => onUpdate({ 
-              ...action, 
-              duration: e.target.value ? parseFloat(e.target.value) : undefined 
-            })}
+            value={actionData?.duration || action.duration || ''}
+            onChange={(e) => {
+              let updatedAction = { ...action }
+              const duration = e.target.value ? parseFloat(e.target.value) : undefined
+              if (typeof actionData === 'object' && actionData !== null) {
+                const key = Object.keys(action)[0]
+                if (key && typeof action[key as keyof typeof action] === 'object') {
+                  updatedAction = {
+                    [key]: {
+                      ...actionData,
+                      duration
+                    }
+                  }
+                }
+              } else {
+                updatedAction.duration = duration
+              }
+              onUpdate(updatedAction)
+            }}
             disabled={readOnly}
             placeholder="Duration"
             step="0.1"
@@ -966,6 +1043,13 @@ function ActionItem({
           )}
         </div>
       </div>
+      
+      {/* Show additional action details */}
+      {typeof actionData === 'object' && actionData !== null && Object.keys(actionData).length > 0 && (
+        <div className="mt-2 text-xs text-gray-600">
+          {JSON.stringify(actionData, null, 2).substring(0, 100)}...
+        </div>
+      )}
     </div>
   )
 }

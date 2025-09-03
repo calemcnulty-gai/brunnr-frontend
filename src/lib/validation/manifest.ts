@@ -81,7 +81,7 @@ export const shotSchema = z.object({
   voiceover: z.string().default(''),
   actions: z.array(actionSchema).default([]),
   duration: z.number().positive().optional(),
-  allow_bleed_over: z.boolean().default(false)
+  allow_bleed_over: z.boolean().optional().default(false)
 })
 
 // Main manifest schema
@@ -92,12 +92,23 @@ export const manifestSchema = z.object({
 })
 
 // Type exports
-export type Manifest = z.infer<typeof manifestSchema>
 export type Template = z.infer<typeof templateSchema>
-export type Shot = z.infer<typeof shotSchema>
 export type Action = z.infer<typeof actionSchema>
 export type TemplateType = z.infer<typeof templateTypeEnum>
 export type ActionType = z.infer<typeof actionTypeEnum>
+
+export type Shot = {
+  voiceover: string
+  actions: Action[]
+  duration?: number
+  allow_bleed_over?: boolean
+}
+
+export type Manifest = {
+  video_id: string
+  templates: Template[]
+  shots: Shot[]
+}
 
 // Validation helper functions
 export function validateManifest(data: unknown): { 

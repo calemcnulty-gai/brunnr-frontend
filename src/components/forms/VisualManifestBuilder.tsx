@@ -153,8 +153,7 @@ export function VisualManifestBuilder({
   const addShot = () => {
     const newShot: Shot = {
       voiceover: '',
-      actions: [],
-      allow_bleed_over: false
+      actions: []
     }
     onChange({
       ...manifest,
@@ -180,7 +179,7 @@ export function VisualManifestBuilder({
     const newShot: Shot = { 
       voiceover: shotToDuplicate.voiceover || '',
       actions: [...shotToDuplicate.actions],
-      allow_bleed_over: shotToDuplicate.allow_bleed_over || false,
+      allow_bleed_over: shotToDuplicate.allow_bleed_over,
       duration: shotToDuplicate.duration
     }
     const newShots = [...manifest.shots]
@@ -200,7 +199,7 @@ export function VisualManifestBuilder({
     updateShot(shotIndex, {
       voiceover: shot.voiceover || '',
       actions: [...shot.actions, newAction],
-      allow_bleed_over: shot.allow_bleed_over || false,
+      allow_bleed_over: shot.allow_bleed_over,
       duration: shot.duration
     })
   }
@@ -213,7 +212,7 @@ export function VisualManifestBuilder({
     updateShot(shotIndex, { 
       voiceover: shot.voiceover || '',
       actions: newActions,
-      allow_bleed_over: shot.allow_bleed_over || false,
+      allow_bleed_over: shot.allow_bleed_over,
       duration: shot.duration
     })
   }
@@ -225,7 +224,7 @@ export function VisualManifestBuilder({
     updateShot(shotIndex, { 
       voiceover: shot.voiceover || '',
       actions: newActions,
-      allow_bleed_over: shot.allow_bleed_over || false,
+      allow_bleed_over: shot.allow_bleed_over,
       duration: shot.duration
     })
   }

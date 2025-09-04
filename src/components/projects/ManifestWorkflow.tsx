@@ -291,6 +291,8 @@ export function ManifestWorkflow({ project }: ManifestWorkflowProps) {
         initialManifest={manifest}
         onChange={setManifest}
         onSave={handleSaveManifest}
+        existingShotgroups={project.shotgroups}
+        existingTemplateImages={project.template_images}
       />
       
       {/* Instructions Card */}

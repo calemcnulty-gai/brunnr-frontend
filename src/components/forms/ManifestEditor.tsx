@@ -41,7 +41,7 @@ import { cn } from '@/lib/utils'
 import { useDebounce } from '@/hooks/use-debounce'
 import { getProjectsWithManifests } from '@/lib/supabase/queries'
 import { useAuthStore } from '@/stores/auth-store'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Dynamically import Monaco Editor to avoid SSR issues
 const MonacoEditor = dynamic(
@@ -75,6 +75,8 @@ interface ManifestEditorProps {
   onSave?: (manifest: Manifest) => Promise<void>
   readOnly?: boolean
   className?: string
+  existingShotgroups?: any[] // Pass existing shotgroups to avoid refetching
+  existingTemplateImages?: any[] // Pass existing template images
 }
 
 export function ManifestEditor({
@@ -82,7 +84,9 @@ export function ManifestEditor({
   onChange,
   onSave,
   readOnly = false,
-  className
+  className,
+  existingShotgroups,
+  existingTemplateImages
 }: ManifestEditorProps) {
   const [activeTab, setActiveTab] = useState<'json' | 'visual'>('visual')
   const [jsonContent, setJsonContent] = useState<string>(() => 
@@ -94,6 +98,7 @@ export function ManifestEditor({
   const [isSaving, setIsSaving] = useState(false)
   const [hasChanges, setHasChanges] = useState(false)
   const { user } = useAuthStore()
+  const queryClient = useQueryClient()
   
   // Fetch saved manifests
   const { data: savedManifests, isLoading: isLoadingManifests } = useQuery({
@@ -159,6 +164,8 @@ export function ManifestEditor({
     try {
       await onSave(manifest)
       setHasChanges(false)
+      // Invalidate the query to refetch saved manifests
+      queryClient.invalidateQueries({ queryKey: ['projects-with-manifests', user?.id] })
     } catch (error) {
       console.error('Failed to save manifest:', error)
     } finally {
@@ -263,11 +270,15 @@ export function ManifestEditor({
   }
   
   // Handle selecting a saved manifest
-  const handleSelectSavedManifest = (projectId: string) => {
+  const handleSelectSavedManifest = async (projectId: string) => {
     const selected = savedManifests?.find(p => p.id === projectId)
     if (!selected?.manifest) return
     
     try {
+      // Fetch the full project data to get shotgroups and template images
+      const { getProject } = await import('@/lib/supabase/queries')
+      const fullProject = await getProject(projectId)
+      
       const validation = validateManifest(selected.manifest)
       
       if (validation.success && validation.data) {
@@ -285,6 +296,13 @@ export function ManifestEditor({
           'Loaded manifest may have validation issues.',
           'The API will perform final validation when generating video.'
         ])
+      }
+      
+      // Update the existing data props if we have them
+      if (fullProject) {
+        // We can't directly update props, but we can trigger a re-render
+        // by invalidating the cache which will cause parent to re-render
+        queryClient.invalidateQueries({ queryKey: ['project', projectId] })
       }
     } catch (error) {
       console.error('Failed to load manifest:', error)
@@ -347,25 +365,36 @@ export function ManifestEditor({
           
           <div className="flex items-center gap-2">
             {/* Saved Manifests Dropdown */}
-            {savedManifests && savedManifests.length > 0 && (
-              <Select onValueChange={handleSelectSavedManifest} disabled={readOnly}>
-                <SelectTrigger className="w-[200px]">
-                  <SelectValue placeholder="Load saved manifest" />
-                </SelectTrigger>
-                <SelectContent>
-                  {savedManifests.map((project) => (
+            <Select 
+              onValueChange={handleSelectSavedManifest} 
+              disabled={readOnly || isLoadingManifests || !savedManifests?.length}
+            >
+              <SelectTrigger className="w-[200px] h-9">
+                <SelectValue placeholder={
+                  isLoadingManifests ? "Loading..." : 
+                  !savedManifests?.length ? "No saved manifests" : 
+                  "Load saved manifest"
+                } />
+              </SelectTrigger>
+              <SelectContent>
+                {savedManifests && savedManifests.length > 0 ? (
+                  savedManifests.map((project) => (
                     <SelectItem key={project.id} value={project.id}>
-                      <div className="flex flex-col">
+                      <div className="flex items-center justify-between w-full gap-4">
                         <span className="font-medium">{project.name}</span>
                         <span className="text-xs text-muted-foreground">
                           {new Date(project.updated_at).toLocaleDateString()}
                         </span>
                       </div>
                     </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
+                  ))
+                ) : (
+                  <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                    No saved manifests yet
+                  </div>
+                )}
+              </SelectContent>
+            </Select>
             
             <Button
               variant="outline"
@@ -497,6 +526,8 @@ export function ManifestEditor({
               manifest={manifest || undefined}
               onChange={handleVisualChange}
               readOnly={readOnly}
+              existingShotgroups={existingShotgroups}
+              existingTemplateImages={existingTemplateImages}
             />
           )}
         </div>

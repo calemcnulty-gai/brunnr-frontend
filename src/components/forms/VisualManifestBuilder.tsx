@@ -66,6 +66,8 @@ interface VisualManifestBuilderProps {
   manifest?: Manifest
   onChange: (manifest: Manifest) => void
   readOnly?: boolean
+  existingShotgroups?: any[]
+  existingTemplateImages?: any[]
 }
 
 // Template type icons
@@ -97,18 +99,21 @@ export function VisualManifestBuilder({
     shots: []
   },
   onChange,
-  readOnly = false
+  readOnly = false,
+  existingShotgroups,
+  existingTemplateImages
 }: VisualManifestBuilderProps) {
   const [expandedShots, setExpandedShots] = useState<Set<number>>(new Set([0]))
   const [expandedShotgroups, setExpandedShotgroups] = useState<Set<number>>(new Set([0]))
   const [expandedTemplates, setExpandedTemplates] = useState(false)
   const [activeId, setActiveId] = useState<string | null>(null)
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null)
-  const [shotgroups, setShotgroups] = useState<Shotgroup[]>([])
+  const [shotgroups, setShotgroups] = useState<Shotgroup[]>(existingShotgroups || [])
   const [isLoadingShotgroups, setIsLoadingShotgroups] = useState(false)
   const [shotgroupError, setShotgroupError] = useState<string | null>(null)
   const [processingTime, setProcessingTime] = useState<number | null>(null)
-  const [templateImages, setTemplateImages] = useState<TemplateImage[]>([])
+  const [templateImages, setTemplateImages] = useState<TemplateImage[]>(existingTemplateImages || [])
+  const [hasExistingData, setHasExistingData] = useState(!!existingShotgroups)
   
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -117,11 +122,14 @@ export function VisualManifestBuilder({
     })
   )
   
-  // Fetch shotgroups whenever manifest changes
+  // Only fetch shotgroups if we don't have existing data and manifest changes
   useEffect(() => {
     const fetchShotgroups = async () => {
-      if (!manifest || manifest.shots.length === 0) {
-        setShotgroups([])
+      // Skip if we have existing data or no manifest
+      if (hasExistingData || !manifest || manifest.shots.length === 0) {
+        if (!manifest || manifest.shots.length === 0) {
+          setShotgroups([])
+        }
         return
       }
       
@@ -150,6 +158,7 @@ export function VisualManifestBuilder({
         setShotgroups(data.shotgroups)
         setProcessingTime(data.total_processing_time || null)
         setTemplateImages(data.template_images || [])
+        setHasExistingData(true) // Mark that we now have data
       } catch (error) {
         console.error('Error fetching shotgroups:', error)
         setShotgroupError(error instanceof Error ? error.message : 'Failed to fetch shotgroups')
@@ -161,7 +170,14 @@ export function VisualManifestBuilder({
     }
     
     fetchShotgroups()
-  }, [manifest])
+  }, [manifest, hasExistingData])
+  
+  // Reset hasExistingData when manifest changes significantly
+  useEffect(() => {
+    // If the manifest changes (new shots, templates modified), reset the flag
+    // so it will fetch new shotgroups
+    setHasExistingData(false)
+  }, [manifest?.shots?.length, manifest?.templates?.length])
   
   // Handle video ID change
   const handleVideoIdChange = (videoId: string) => {

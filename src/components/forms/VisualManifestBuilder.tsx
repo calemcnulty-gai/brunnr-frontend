@@ -59,8 +59,9 @@ import type {
   TemplateType,
   ActionType
 } from '@/lib/validation/manifest'
-import type { Shotgroup, ShotgroupResponse, IndividualShot, TemplateImage } from '@/types/shotgroup'
+import type { Shotgroup, IndividualShot, TemplateImage } from '@/types/shotgroup'
 import { cn } from '@/lib/utils'
+import { useShotgroups } from '@/hooks/use-shotgroups'
 
 interface VisualManifestBuilderProps {
   manifest?: Manifest
@@ -112,15 +113,22 @@ export function VisualManifestBuilder({
   const [expandedTemplates, setExpandedTemplates] = useState(false)
   const [activeId, setActiveId] = useState<string | null>(null)
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null)
-  const [shotgroups, setShotgroups] = useState<Shotgroup[]>(existingShotgroups || [])
-  const [isLoadingShotgroups, setIsLoadingShotgroups] = useState(false)
-  const [shotgroupError, setShotgroupError] = useState<string | null>(null)
-  const [processingTime, setProcessingTime] = useState<number | null>(null)
-  const [templateImages, setTemplateImages] = useState<TemplateImage[]>(existingTemplateImages || [])
-  const [hasExistingData, setHasExistingData] = useState(!!existingShotgroups && existingShotgroups.length > 0)
-  const [initialManifestHash, setInitialManifestHash] = useState<string>(() => 
-    manifest ? JSON.stringify(manifest) : ''
-  )
+  
+  // Use the shotgroups hook for clean data management
+  const {
+    shotgroups,
+    templateImages,
+    isLoading: isLoadingShotgroups,
+    error: shotgroupError,
+    processingTime
+  } = useShotgroups({
+    manifest,
+    projectId,
+    userId,
+    existingShotgroups,
+    existingTemplateImages,
+    enabled: true
+  })
   
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -128,72 +136,6 @@ export function VisualManifestBuilder({
       coordinateGetter: sortableKeyboardCoordinates,
     })
   )
-  
-  // Only fetch shotgroups if we don't have existing data and manifest changes
-  useEffect(() => {
-    const fetchShotgroups = async () => {
-      // Skip if no manifest or empty shots
-      if (!manifest || manifest.shots.length === 0) {
-        setShotgroups([])
-        return
-      }
-      
-      // Skip if we already have existing data for this exact manifest
-      const currentManifestHash = JSON.stringify(manifest)
-      if (hasExistingData && currentManifestHash === initialManifestHash) {
-        console.log('Skipping shotgroup fetch - using existing data')
-        return
-      }
-      
-      // Skip if the manifest hasn't changed since last fetch
-      if (currentManifestHash === initialManifestHash && shotgroups.length > 0) {
-        console.log('Skipping shotgroup fetch - manifest unchanged')
-        return
-      }
-      
-      setIsLoadingShotgroups(true)
-      setShotgroupError(null)
-      
-      try {
-        console.log('Fetching new shotgroups for manifest')
-        const response = await fetch('/api/backend/media/manifest-to-shotgroup-videos', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            manifest,
-            projectId,
-            userId
-          })
-        })
-        
-        if (!response.ok) {
-          throw new Error(`Failed to fetch shotgroups: ${response.statusText}`)
-        }
-        
-        const data: ShotgroupResponse = await response.json()
-        
-        if (data.status === 'error' && data.error) {
-          throw new Error(data.error)
-        }
-        
-        setShotgroups(data.shotgroups)
-        setProcessingTime(data.total_processing_time || null)
-        setTemplateImages(data.template_images || [])
-        setInitialManifestHash(currentManifestHash) // Update the hash
-      } catch (error) {
-        console.error('Error fetching shotgroups:', error)
-        setShotgroupError(error instanceof Error ? error.message : 'Failed to fetch shotgroups')
-        setShotgroups([])
-        setProcessingTime(null)
-      } finally {
-        setIsLoadingShotgroups(false)
-      }
-    }
-    
-    fetchShotgroups()
-  }, [manifest, hasExistingData, initialManifestHash, shotgroups.length])
   
   // Handle video ID change
   const handleVideoIdChange = (videoId: string) => {

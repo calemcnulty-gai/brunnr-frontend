@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/client'
+import { createClient } from '@/lib/supabase/server'
 import { 
   updateProjectWithManifest,
   downloadAndSaveImage,
   uploadImages
 } from '@/lib/supabase/queries'
-import { cookies } from 'next/headers'
 
 export const maxDuration = 300 // 5 minutes timeout for Vercel
 
@@ -42,6 +41,9 @@ export async function POST(request: NextRequest) {
     // If we have project and user IDs, save the data to Supabase
     if (projectId && userId) {
       try {
+        console.log(`Saving shotgroups for project ${projectId}, user ${userId}`)
+        console.log(`Shotgroups to save: ${data.shotgroups?.length || 0}`)
+        
         // Save template images if they exist
         const templateImages = []
         if (data.template_images && Array.isArray(data.template_images)) {
@@ -62,9 +64,9 @@ export async function POST(request: NextRequest) {
         }
         
         // Update project with shotgroup data
-        await updateProjectWithManifest(
+        const result = await updateProjectWithManifest(
           projectId,
-          data.manifest,
+          data.manifest || body.manifest,
           {
             shotgroupResponse: {
               response: data,
@@ -73,12 +75,22 @@ export async function POST(request: NextRequest) {
             }
           },
           templateImages.length > 0 ? templateImages : undefined,
-          data.shotgroups
+          data.shotgroups || []
         )
+        
+        console.log('Successfully saved shotgroups to Supabase:', result.id)
+        
+        // Add the saved flag to response
+        data.savedToSupabase = true
       } catch (saveError) {
         console.error('Failed to save to Supabase:', saveError)
-        // Don't fail the request if saving fails, just log it
+        // Return error in response so frontend knows
+        data.saveError = saveError instanceof Error ? saveError.message : 'Unknown error'
+        data.savedToSupabase = false
       }
+    } else {
+      console.warn('Missing projectId or userId, skipping Supabase save')
+      data.savedToSupabase = false
     }
     
     return NextResponse.json(data)

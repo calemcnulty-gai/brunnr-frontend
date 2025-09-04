@@ -275,7 +275,10 @@ export function ManifestEditor({
   // Handle selecting a saved manifest
   const handleSelectSavedManifest = async (projectId: string) => {
     const selected = savedManifests?.find(p => p.id === projectId)
-    if (!selected?.manifest) return
+    if (!selected?.manifest) {
+      console.warn('No manifest found for project:', projectId)
+      return
+    }
     
     setSelectedProjectId(projectId) // Track the selected project
     
@@ -305,12 +308,16 @@ export function ManifestEditor({
       
       // Update the existing data props if we have them
       if (fullProject) {
-        // We can't directly update props, but we can trigger a re-render
-        // by invalidating the cache which will cause parent to re-render
-        queryClient.invalidateQueries({ queryKey: ['project', projectId] })
+        console.log('Loaded project has shotgroups:', fullProject.shotgroups?.length || 0)
+        // Invalidate the cache to trigger parent re-render with new data
+        await queryClient.invalidateQueries({ queryKey: ['project', projectId] })
       }
+      
+      setHasChanges(false)
     } catch (error) {
       console.error('Failed to load manifest:', error)
+      // Reset selection on error
+      setSelectedProjectId(undefined)
     }
   }
   

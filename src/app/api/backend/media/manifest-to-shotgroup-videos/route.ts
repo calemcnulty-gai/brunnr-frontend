@@ -1,10 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { 
-  updateProjectWithManifest,
-  downloadAndSaveImage,
-  uploadImages
-} from '@/lib/supabase/queries'
 
 export const maxDuration = 300 // 5 minutes timeout for Vercel
 
@@ -44,41 +39,87 @@ export async function POST(request: NextRequest) {
         console.log(`Saving shotgroups for project ${projectId}, user ${userId}`)
         console.log(`Shotgroups to save: ${data.shotgroups?.length || 0}`)
         
+        // Create server-side Supabase client with proper auth context
+        const supabase = await createClient()
+        
+        // Check if user is authenticated
+        const { data: { user }, error: authError } = await supabase.auth.getUser()
+        if (authError || !user) {
+          throw new Error('User not authenticated')
+        }
+        
+        // Verify user owns this project
+        if (user.id !== userId) {
+          throw new Error('User ID mismatch - unauthorized')
+        }
+        
         // Save template images if they exist
         const templateImages = []
         if (data.template_images && Array.isArray(data.template_images)) {
           for (const img of data.template_images) {
             if (img.download_url) {
-              const imagePath = await downloadAndSaveImage(
-                img.download_url,
-                userId,
-                projectId,
-                `template_${img.id}.png`
-              )
-              templateImages.push({
-                ...img,
-                storagePath: imagePath
-              })
+              try {
+                // Download the image
+                const imageResponse = await fetch(img.download_url)
+                if (!imageResponse.ok) {
+                  console.error(`Failed to download image: ${img.download_url}`)
+                  continue
+                }
+                
+                const imageBlob = await imageResponse.blob()
+                const fileName = `${userId}/${projectId}/template_${img.id}.png`
+                
+                // Upload to Supabase storage using server client
+                const { data: uploadData, error: uploadError } = await supabase.storage
+                  .from('images')
+                  .upload(fileName, imageBlob, {
+                    upsert: true,
+                    cacheControl: '3600'
+                  })
+                
+                if (uploadError) {
+                  console.error('Failed to upload image:', uploadError)
+                  continue
+                }
+                
+                templateImages.push({
+                  ...img,
+                  storagePath: uploadData.path
+                })
+              } catch (imgError) {
+                console.error('Error processing image:', imgError)
+              }
             }
           }
         }
         
-        // Update project with shotgroup data
-        const result = await updateProjectWithManifest(
-          projectId,
-          data.manifest || body.manifest,
-          {
+        // Update project with shotgroup data using server client
+        const updates = {
+          manifest: data.manifest || body.manifest,
+          api_responses: {
             shotgroupResponse: {
               response: data,
               timestamp: new Date().toISOString(),
               requestId: data.metadata?.request_id
             }
           },
-          templateImages.length > 0 ? templateImages : undefined,
-          data.shotgroups || []
-        )
+          template_images: templateImages.length > 0 ? templateImages : null,
+          shotgroups: data.shotgroups || [],
+          updated_at: new Date().toISOString()
+        }
         
-        console.log('Successfully saved shotgroups to Supabase:', result.id)
+        const { data: updateData, error: updateError } = await supabase
+          .from('projects')
+          .update(updates)
+          .eq('id', projectId)
+          .select()
+          .single()
+        
+        if (updateError) {
+          throw updateError
+        }
+        
+        console.log('Successfully saved shotgroups to Supabase:', updateData.id)
         
         // Add the saved flag to response
         data.savedToSupabase = true

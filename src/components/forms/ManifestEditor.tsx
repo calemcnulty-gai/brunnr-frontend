@@ -97,6 +97,7 @@ export function ManifestEditor({
   const [validationWarnings, setValidationWarnings] = useState<string[]>([])
   const [isSaving, setIsSaving] = useState(false)
   const [hasChanges, setHasChanges] = useState(false)
+  const [selectedProjectId, setSelectedProjectId] = useState<string | undefined>()
   const { user } = useAuthStore()
   const queryClient = useQueryClient()
   
@@ -274,6 +275,8 @@ export function ManifestEditor({
     const selected = savedManifests?.find(p => p.id === projectId)
     if (!selected?.manifest) return
     
+    setSelectedProjectId(projectId) // Track the selected project
+    
     try {
       // Fetch the full project data to get shotgroups and template images
       const { getProject } = await import('@/lib/supabase/queries')
@@ -366,10 +369,11 @@ export function ManifestEditor({
           <div className="flex items-center gap-2">
             {/* Saved Manifests Dropdown */}
             <Select 
+              value={selectedProjectId}
               onValueChange={handleSelectSavedManifest} 
               disabled={readOnly || isLoadingManifests || !savedManifests?.length}
             >
-              <SelectTrigger className="w-[200px] h-9">
+              <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder={
                   isLoadingManifests ? "Loading..." : 
                   !savedManifests?.length ? "No saved manifests" : 
@@ -379,7 +383,7 @@ export function ManifestEditor({
               <SelectContent>
                 {savedManifests && savedManifests.length > 0 ? (
                   savedManifests.map((project) => (
-                    <SelectItem key={project.id} value={project.id}>
+                    <SelectItem key={project.id} value={project.id} textValue={project.name}>
                       <div className="flex items-center justify-between w-full gap-4">
                         <span className="font-medium">{project.name}</span>
                         <span className="text-xs text-muted-foreground">

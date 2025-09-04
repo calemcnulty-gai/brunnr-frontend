@@ -77,6 +77,7 @@ interface ManifestEditorProps {
   className?: string
   existingShotgroups?: any[] // Pass existing shotgroups to avoid refetching
   existingTemplateImages?: any[] // Pass existing template images
+  currentProjectId?: string // The ID of the current project being edited
 }
 
 export function ManifestEditor({
@@ -86,7 +87,8 @@ export function ManifestEditor({
   readOnly = false,
   className,
   existingShotgroups,
-  existingTemplateImages
+  existingTemplateImages,
+  currentProjectId
 }: ManifestEditorProps) {
   const [activeTab, setActiveTab] = useState<'json' | 'visual'>('visual')
   const [jsonContent, setJsonContent] = useState<string>(() => 
@@ -97,7 +99,7 @@ export function ManifestEditor({
   const [validationWarnings, setValidationWarnings] = useState<string[]>([])
   const [isSaving, setIsSaving] = useState(false)
   const [hasChanges, setHasChanges] = useState(false)
-  const [selectedProjectId, setSelectedProjectId] = useState<string | undefined>()
+  const [selectedProjectId, setSelectedProjectId] = useState<string | undefined>(currentProjectId)
   const { user } = useAuthStore()
   const queryClient = useQueryClient()
   

@@ -113,7 +113,10 @@ export function VisualManifestBuilder({
   const [shotgroupError, setShotgroupError] = useState<string | null>(null)
   const [processingTime, setProcessingTime] = useState<number | null>(null)
   const [templateImages, setTemplateImages] = useState<TemplateImage[]>(existingTemplateImages || [])
-  const [hasExistingData, setHasExistingData] = useState(!!existingShotgroups)
+  const [hasExistingData, setHasExistingData] = useState(!!existingShotgroups && existingShotgroups.length > 0)
+  const [initialManifestHash, setInitialManifestHash] = useState<string>(() => 
+    manifest ? JSON.stringify(manifest) : ''
+  )
   
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -125,11 +128,22 @@ export function VisualManifestBuilder({
   // Only fetch shotgroups if we don't have existing data and manifest changes
   useEffect(() => {
     const fetchShotgroups = async () => {
-      // Skip if we have existing data or no manifest
-      if (hasExistingData || !manifest || manifest.shots.length === 0) {
-        if (!manifest || manifest.shots.length === 0) {
-          setShotgroups([])
-        }
+      // Skip if no manifest or empty shots
+      if (!manifest || manifest.shots.length === 0) {
+        setShotgroups([])
+        return
+      }
+      
+      // Skip if we already have existing data for this exact manifest
+      const currentManifestHash = JSON.stringify(manifest)
+      if (hasExistingData && currentManifestHash === initialManifestHash) {
+        console.log('Skipping shotgroup fetch - using existing data')
+        return
+      }
+      
+      // Skip if the manifest hasn't changed since last fetch
+      if (currentManifestHash === initialManifestHash && shotgroups.length > 0) {
+        console.log('Skipping shotgroup fetch - manifest unchanged')
         return
       }
       
@@ -137,6 +151,7 @@ export function VisualManifestBuilder({
       setShotgroupError(null)
       
       try {
+        console.log('Fetching new shotgroups for manifest')
         const response = await fetch('/api/backend/media/manifest-to-shotgroup-videos', {
           method: 'POST',
           headers: {
@@ -158,7 +173,7 @@ export function VisualManifestBuilder({
         setShotgroups(data.shotgroups)
         setProcessingTime(data.total_processing_time || null)
         setTemplateImages(data.template_images || [])
-        setHasExistingData(true) // Mark that we now have data
+        setInitialManifestHash(currentManifestHash) // Update the hash
       } catch (error) {
         console.error('Error fetching shotgroups:', error)
         setShotgroupError(error instanceof Error ? error.message : 'Failed to fetch shotgroups')
@@ -170,14 +185,7 @@ export function VisualManifestBuilder({
     }
     
     fetchShotgroups()
-  }, [manifest, hasExistingData])
-  
-  // Reset hasExistingData when manifest changes significantly
-  useEffect(() => {
-    // If the manifest changes (new shots, templates modified), reset the flag
-    // so it will fetch new shotgroups
-    setHasExistingData(false)
-  }, [manifest?.shots?.length, manifest?.templates?.length])
+  }, [manifest, hasExistingData, initialManifestHash, shotgroups.length])
   
   // Handle video ID change
   const handleVideoIdChange = (videoId: string) => {

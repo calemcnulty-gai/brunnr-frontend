@@ -293,6 +293,7 @@ export function ManifestWorkflow({ project }: ManifestWorkflowProps) {
         onSave={handleSaveManifest}
         existingShotgroups={project.shotgroups}
         existingTemplateImages={project.template_images}
+        currentProjectId={project.id}
       />
       
       {/* Instructions Card */}

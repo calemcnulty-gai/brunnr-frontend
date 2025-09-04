@@ -534,6 +534,8 @@ export function ManifestEditor({
               readOnly={readOnly}
               existingShotgroups={existingShotgroups}
               existingTemplateImages={existingTemplateImages}
+              projectId={currentProjectId}
+              userId={user?.id}
             />
           )}
         </div>

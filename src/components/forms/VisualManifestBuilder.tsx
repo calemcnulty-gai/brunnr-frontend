@@ -68,6 +68,8 @@ interface VisualManifestBuilderProps {
   readOnly?: boolean
   existingShotgroups?: any[]
   existingTemplateImages?: any[]
+  projectId?: string // The current project ID for saving shotgroups
+  userId?: string // The current user ID for saving shotgroups
 }
 
 // Template type icons
@@ -101,7 +103,9 @@ export function VisualManifestBuilder({
   onChange,
   readOnly = false,
   existingShotgroups,
-  existingTemplateImages
+  existingTemplateImages,
+  projectId,
+  userId
 }: VisualManifestBuilderProps) {
   const [expandedShots, setExpandedShots] = useState<Set<number>>(new Set([0]))
   const [expandedShotgroups, setExpandedShotgroups] = useState<Set<number>>(new Set([0]))
@@ -157,7 +161,11 @@ export function VisualManifestBuilder({
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(manifest)
+          body: JSON.stringify({
+            manifest,
+            projectId,
+            userId
+          })
         })
         
         if (!response.ok) {

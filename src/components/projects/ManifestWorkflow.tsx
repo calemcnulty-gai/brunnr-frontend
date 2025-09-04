@@ -14,9 +14,15 @@ import { ManifestEditor } from '@/components/forms/ManifestEditor'
 import { TemplateLibrary } from '@/components/templates/TemplateLibrary'
 import { useUpdateProject, useUploadProjectVideo } from '@/hooks/use-projects'
 import { manifestToVideo, downloadVideo, extractRequestId, extractVideoFilename, buildVideoUrl } from '@/lib/api/endpoints'
+import { 
+  updateProjectWithManifest, 
+  saveManifest,
+  downloadAndSaveImage
+} from '@/lib/supabase/queries'
+import { useAuthStore } from '@/stores/auth-store'
 import type { Project } from '@/types/database'
 import type { Manifest } from '@/lib/validation/manifest'
-import { ApiError, type ManifestToVideoRequest } from '@/lib/api/types'
+import { ApiError, type ManifestToVideoRequest, type ManifestToVideoResponse } from '@/lib/api/types'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { AlertCircle } from 'lucide-react'
 
@@ -28,9 +34,10 @@ export function ManifestWorkflow({ project }: ManifestWorkflowProps) {
   const router = useRouter()
   const updateProject = useUpdateProject()
   const uploadVideo = useUploadProjectVideo()
+  const { user } = useAuthStore()
   
   const [manifest, setManifest] = useState<Manifest | undefined>(
-    project.data?.manifest as Manifest | undefined
+    project.manifest || project.data?.manifest as Manifest | undefined
   )
   const [showTemplateLibrary, setShowTemplateLibrary] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
@@ -40,15 +47,26 @@ export function ManifestWorkflow({ project }: ManifestWorkflowProps) {
   // Handle manifest save
   const handleSaveManifest = async (newManifest: Manifest) => {
     try {
-      await updateProject.mutateAsync({
-        projectId: project.id,
-        updates: {
-          data: {
-            ...project.data,
+      // Save manifest to storage and database
+      if (user) {
+        const manifestPath = await saveManifest(user.id, project.id, newManifest)
+        await updateProjectWithManifest(project.id, newManifest, {
+          manifestStoragePath: manifestPath,
+          savedAt: new Date().toISOString()
+        })
+      } else {
+        // Fallback to just updating project data
+        await updateProject.mutateAsync({
+          projectId: project.id,
+          updates: {
+            data: {
+              ...project.data,
+              manifest: newManifest
+            },
             manifest: newManifest
           }
-        }
-      })
+        })
+      }
       setManifest(newManifest)
     } catch (err) {
       console.error('Failed to save manifest:', err)
@@ -109,6 +127,20 @@ export function ManifestWorkflow({ project }: ManifestWorkflowProps) {
         }))
       }
       const response = await manifestToVideo(apiManifest)
+      
+      // Save API response to database
+      setProgress('Saving API response...')
+      await updateProjectWithManifest(
+        project.id,
+        manifest,
+        {
+          manifestToVideo: {
+            response,
+            timestamp: new Date().toISOString(),
+            requestId: response.metadata?.request_id
+          }
+        }
+      )
       
       // Download the video
       setProgress('Downloading video...')

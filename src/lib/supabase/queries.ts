@@ -401,3 +401,30 @@ export async function downloadAndSaveImage(
     throw error
   }
 }
+
+/**
+ * Get all projects with manifests for the current user
+ * @param userId - The user's ID
+ * @returns Promise resolving to array of projects with manifests
+ */
+export async function getProjectsWithManifests(userId: string): Promise<Array<{
+  id: string
+  name: string
+  manifest: any
+  updated_at: string
+}>> {
+  const supabase = createClient()
+  
+  const { data, error } = await supabase
+    .from('projects')
+    .select('id, name, manifest, updated_at')
+    .eq('user_id', userId)
+    .not('manifest', 'is', null)
+    .order('updated_at', { ascending: false })
+  
+  if (error) throw error
+  return (data || []).map(item => ({
+    ...item,
+    updated_at: item.updated_at || new Date().toISOString()
+  }))
+}

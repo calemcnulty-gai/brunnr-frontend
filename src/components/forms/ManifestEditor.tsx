@@ -12,6 +12,13 @@ import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { 
   Code2, 
   Eye, 
@@ -22,7 +29,8 @@ import {
   Download,
   Upload,
   Copy,
-  RotateCcw
+  RotateCcw,
+  History
 } from 'lucide-react'
 import { 
   validateManifest, 
@@ -31,6 +39,9 @@ import {
 } from '@/lib/validation/manifest'
 import { cn } from '@/lib/utils'
 import { useDebounce } from '@/hooks/use-debounce'
+import { getProjectsWithManifests } from '@/lib/supabase/queries'
+import { useAuthStore } from '@/stores/auth-store'
+import { useQuery } from '@tanstack/react-query'
 
 // Dynamically import Monaco Editor to avoid SSR issues
 const MonacoEditor = dynamic(
@@ -82,6 +93,15 @@ export function ManifestEditor({
   const [validationWarnings, setValidationWarnings] = useState<string[]>([])
   const [isSaving, setIsSaving] = useState(false)
   const [hasChanges, setHasChanges] = useState(false)
+  const { user } = useAuthStore()
+  
+  // Fetch saved manifests
+  const { data: savedManifests, isLoading: isLoadingManifests } = useQuery({
+    queryKey: ['projects-with-manifests', user?.id],
+    queryFn: () => user ? getProjectsWithManifests(user.id) : Promise.resolve([]),
+    enabled: !!user,
+    staleTime: 30000, // Cache for 30 seconds
+  })
   
   // Debounced validation
   const debouncedJsonContent = useDebounce(jsonContent, 500)
@@ -242,6 +262,35 @@ export function ManifestEditor({
     setHasChanges(false)
   }
   
+  // Handle selecting a saved manifest
+  const handleSelectSavedManifest = (projectId: string) => {
+    const selected = savedManifests?.find(p => p.id === projectId)
+    if (!selected?.manifest) return
+    
+    try {
+      const validation = validateManifest(selected.manifest)
+      
+      if (validation.success && validation.data) {
+        setManifest(validation.data)
+        setJsonContent(JSON.stringify(validation.data, null, 2))
+        handleVisualChange(validation.data)
+      } else {
+        // Still allow loading if it's valid JSON
+        const manifestLike = selected.manifest as Manifest
+        setManifest(manifestLike)
+        setJsonContent(JSON.stringify(manifestLike, null, 2))
+        handleVisualChange(manifestLike)
+        
+        setValidationWarnings([
+          'Loaded manifest may have validation issues.',
+          'The API will perform final validation when generating video.'
+        ])
+      }
+    } catch (error) {
+      console.error('Failed to load manifest:', error)
+    }
+  }
+  
   const isValid = validationErrors.length === 0 && manifest !== null
   
   return (
@@ -297,6 +346,27 @@ export function ManifestEditor({
           </Tabs>
           
           <div className="flex items-center gap-2">
+            {/* Saved Manifests Dropdown */}
+            {savedManifests && savedManifests.length > 0 && (
+              <Select onValueChange={handleSelectSavedManifest} disabled={readOnly}>
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Load saved manifest" />
+                </SelectTrigger>
+                <SelectContent>
+                  {savedManifests.map((project) => (
+                    <SelectItem key={project.id} value={project.id}>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{project.name}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(project.updated_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+            
             <Button
               variant="outline"
               size="sm"

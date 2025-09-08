@@ -32,7 +32,7 @@ BEGIN
         'role', COALESCE(ur.role, 'user'),
         'partner_id', ur.partner_id,
         'partner_name', p.name,
-        'partner_code', p.code,
+        'partner_code', p.partner_code,
         'permissions', COALESCE(ur.permissions, '[]'::jsonb)
     ) INTO result
     FROM auth.users u

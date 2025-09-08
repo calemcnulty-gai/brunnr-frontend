@@ -1,23 +1,59 @@
 "use client";
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Video, Layers, FileText, Loader2 } from 'lucide-react';
-import { useProjects, useDeleteProject } from '@/hooks/use-projects';
+import { useProjects, useDeleteProject, useCreateProject } from '@/hooks/use-projects';
 import { ProjectCard } from '@/components/projects/ProjectCard';
 import { WorkflowSelectorModal } from '@/components/projects/WorkflowSelectorModal';
+import type { WorkflowType } from '@/types/database';
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [showWorkflowModal, setShowWorkflowModal] = useState(false);
+  const [isCreatingProject, setIsCreatingProject] = useState(false);
   const { data: projects, isLoading } = useProjects();
   const deleteProject = useDeleteProject();
+  const createProject = useCreateProject();
   
   const recentProjects = projects?.slice(0, 6) || [];
   
   const handleDeleteProject = async (projectId: string) => {
     if (confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
       await deleteProject.mutateAsync(projectId);
+    }
+  };
+  
+  const handleQuickWorkflow = async (workflowType: WorkflowType, baseProjectName: string) => {
+    if (isCreatingProject) return;
+    
+    setIsCreatingProject(true);
+    try {
+      // Add timestamp to make project names unique
+      const timestamp = new Date().toLocaleString('en-US', { 
+        month: 'short', 
+        day: 'numeric', 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+      const projectName = `${baseProjectName} - ${timestamp}`;
+      
+      const project = await createProject.mutateAsync({
+        name: projectName,
+        workflow_type: workflowType,
+        data: {}
+      });
+      
+      // Navigate to the project page
+      router.push(`/project/${project.id}`);
+    } catch (err) {
+      console.error('Failed to create project:', err);
+      // Fallback to showing the modal if there's an error
+      setShowWorkflowModal(true);
+    } finally {
+      setIsCreatingProject(false);
     }
   };
   
@@ -37,7 +73,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setShowWorkflowModal(true)}>
+        <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <div className="flex items-center gap-2">
               <Video className="h-5 w-5 text-blue-600" />
@@ -48,13 +84,24 @@ export default function DashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button className="w-full">
-              Start Generating
+            <Button 
+              className="w-full" 
+              onClick={() => handleQuickWorkflow('quick', 'Quick Demo')}
+              disabled={isCreatingProject}
+            >
+              {isCreatingProject ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                'Start Generating'
+              )}
             </Button>
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setShowWorkflowModal(true)}>
+        <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <div className="flex items-center gap-2">
               <Layers className="h-5 w-5 text-purple-600" />
@@ -65,13 +112,25 @@ export default function DashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button variant="outline" className="w-full">
-              Advanced Mode
+            <Button 
+              variant="outline" 
+              className="w-full"
+              onClick={() => handleQuickWorkflow('step-by-step', 'Step-by-Step')}
+              disabled={isCreatingProject}
+            >
+              {isCreatingProject ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                'Advanced Mode'
+              )}
             </Button>
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setShowWorkflowModal(true)}>
+        <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <div className="flex items-center gap-2">
               <FileText className="h-5 w-5 text-green-600" />
@@ -82,8 +141,20 @@ export default function DashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button variant="outline" className="w-full">
-              Upload Manifest
+            <Button 
+              variant="outline" 
+              className="w-full"
+              onClick={() => handleQuickWorkflow('manifest', 'From Manifest')}
+              disabled={isCreatingProject}
+            >
+              {isCreatingProject ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                'Upload Manifest'
+              )}
             </Button>
           </CardContent>
         </Card>

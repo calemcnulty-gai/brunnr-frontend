@@ -1,0 +1,7 @@
+---
+description: Don't run the dev server
+globs:
+alwaysApply: true
+---
+
+NEVER run the dev server UNLESS the user specifically asks you to.

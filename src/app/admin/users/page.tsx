@@ -166,9 +166,13 @@ export default function UserManagementPage() {
   
   if (roleLoading || isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
+      <Card>
+        <CardContent className="p-8">
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          </div>
+        </CardContent>
+      </Card>
     )
   }
   
@@ -177,7 +181,7 @@ export default function UserManagementPage() {
   }
   
   return (
-    <div className="container mx-auto max-w-7xl py-8 px-4">
+    <div>
       <div className="mb-6">
         <Button
           variant="ghost"

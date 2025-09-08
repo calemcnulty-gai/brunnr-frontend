@@ -41,13 +41,3 @@ BEGIN
         RAISE NOTICE 'User cale.mcnulty@superbuilders.school not found. Admin role not assigned.';
     END IF;
 END $$;
-
--- Verify the assignment
-SELECT 
-    u.email,
-    ur.role,
-    ur.permissions,
-    ur.created_at
-FROM auth.users u
-LEFT JOIN public.user_roles ur ON u.id = ur.user_id
-WHERE u.email = 'cale.mcnulty@superbuilders.school';

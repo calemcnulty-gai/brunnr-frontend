@@ -4,13 +4,8 @@
  */
 
 import { useState, useEffect } from 'react'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/supabase/client'
 import { useAuthStore } from '@/stores/auth-store'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
 
 export type UserRole = 'admin' | 'partner' | 'user' | null
 
@@ -51,9 +46,24 @@ export function useUserRole(): UserDashboardAccess {
   const fetchUserRole = async () => {
     try {
       // Get user's dashboard access data
-      const { data, error } = await supabase
+      const supabase = createClient()
+      
+      // First try without passing user_id (relies on auth context)
+      let { data, error } = await supabase
         .rpc('get_user_dashboard_data')
         .single()
+      
+      // If that returns default user role and we have a user, try with explicit user_id
+      if (!error && data && data.role === 'user' && user?.id) {
+        const explicitResult = await supabase
+          .rpc('get_user_dashboard_data', { user_id_input: user.id } as any)
+          .single()
+        
+        if (!explicitResult.error && explicitResult.data) {
+          data = explicitResult.data
+          error = explicitResult.error
+        }
+      }
 
       if (error) {
         console.error('Error fetching user role:', error)

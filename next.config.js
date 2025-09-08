@@ -8,6 +8,8 @@ const nextConfig = {
     // Enable if needed for better performance
     // optimizeCss: true,
   },
+  // Note: We use custom API route handlers for backend proxying
+  // to have better control over timeouts and error handling
   // Supabase auth might require headers
   async headers() {
     return [

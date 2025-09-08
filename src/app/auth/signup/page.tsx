@@ -29,6 +29,10 @@ export default function SignupPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   
+  // Check if we're in local development
+  const isLocal = process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('127.0.0.1') || 
+                  process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('localhost');
+  
   const {
     register,
     handleSubmit,
@@ -43,7 +47,8 @@ export default function SignupPage() {
 
     try {
       const supabase = createClient();
-      const { error } = await supabase.auth.signUp({
+      
+      const { data: authData, error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
         options: {
@@ -56,7 +61,29 @@ export default function SignupPage() {
         return;
       }
 
-      setSuccess(true);
+      // In local development with email confirmations disabled,
+      // automatically sign in the user after signup
+      if (isLocal && authData.user) {
+        // Small delay to ensure the user is fully created
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Try to sign in the user
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+          email: data.email,
+          password: data.password,
+        });
+        
+        if (!signInError && signInData.session) {
+          // Successfully signed in, redirect to dashboard
+          router.push('/dashboard');
+        } else {
+          // If sign-in fails, redirect to login with a success message
+          router.push('/auth/login?registered=true');
+        }
+      } else {
+        // Production or email confirmation required
+        setSuccess(true);
+      }
     } catch (err) {
       setError("An unexpected error occurred");
     } finally {
@@ -148,20 +175,12 @@ export default function SignupPage() {
             {isLoading ? "Creating account..." : "Sign up"}
           </Button>
           
-          <div className="text-center space-y-2">
-            <p className="text-sm text-gray-600">
-              Already have an account?{" "}
-              <Link href="/auth/login" className="text-primary hover:underline">
-                Sign in
-              </Link>
-            </p>
-            <p className="text-sm text-gray-600">
-              Forgot your password?{" "}
-              <Link href="/auth/forgot-password" className="text-primary hover:underline">
-                Reset it
-              </Link>
-            </p>
-          </div>
+          <p className="text-center text-sm text-gray-600">
+            Already have an account?{" "}
+            <Link href="/auth/login" className="text-primary hover:underline">
+              Sign in
+            </Link>
+          </p>
         </CardFooter>
       </form>
     </Card>

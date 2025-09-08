@@ -19,40 +19,36 @@ export default function UsageDashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto max-w-7xl py-8 px-4">
-        <Card>
-          <CardContent className="p-8">
-            <div className="flex items-center justify-center gap-2">
-              <Loader2 className="h-6 w-6 animate-spin" />
-              <p className="text-gray-600">Loading dashboard...</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <Card>
+        <CardContent className="p-8">
+          <div className="flex items-center justify-center gap-2">
+            <Loader2 className="h-6 w-6 animate-spin" />
+            <p className="text-gray-600">Loading dashboard...</p>
+          </div>
+        </CardContent>
+      </Card>
     )
   }
 
   if (error) {
     return (
-      <div className="container mx-auto max-w-7xl py-8 px-4">
-        <Alert variant="destructive">
-          <Info className="h-4 w-4" />
-          <AlertTitle>Error Loading Dashboard</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      </div>
+      <Alert variant="destructive">
+        <Info className="h-4 w-4" />
+        <AlertTitle>Error Loading Dashboard</AlertTitle>
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
     )
   }
 
   // Render appropriate dashboard based on role
   // Regular users will see PartnerDashboard but RLS will limit data to their own usage
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
       {role === 'admin' ? (
         <AdminDashboard />
       ) : (
         <PartnerDashboard partnerCode={partnerCode} />
       )}
-    </div>
+    </>
   )
 }

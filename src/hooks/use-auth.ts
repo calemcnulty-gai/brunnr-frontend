@@ -3,7 +3,7 @@
  * @module hooks/use-auth
  */
 
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "@/stores/auth-store";
@@ -11,7 +11,7 @@ import { useAuthStore } from "@/stores/auth-store";
 export function useAuth() {
   const router = useRouter();
   const { user, isLoading, setUser, setLoading } = useAuthStore();
-  const supabase = useMemo(() => createClient(), []);
+  const supabase = createClient();
 
   useEffect(() => {
     // Check active session

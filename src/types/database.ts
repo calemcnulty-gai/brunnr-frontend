@@ -21,6 +21,10 @@ export interface Database {
           data: ProjectData
           video_url: string | null
           video_storage_path: string | null
+          manifest: any | null
+          api_responses: any
+          template_images: any[]
+          shotgroups: any[]
           created_at: string
           updated_at: string
         }
@@ -34,6 +38,10 @@ export interface Database {
           data?: ProjectData
           video_url?: string | null
           video_storage_path?: string | null
+          manifest?: any | null
+          api_responses?: any
+          template_images?: any[]
+          shotgroups?: any[]
           created_at?: string
           updated_at?: string
         }
@@ -47,6 +55,10 @@ export interface Database {
           data?: ProjectData
           video_url?: string | null
           video_storage_path?: string | null
+          manifest?: any | null
+          api_responses?: any
+          template_images?: any[]
+          shotgroups?: any[]
           created_at?: string
           updated_at?: string
         }

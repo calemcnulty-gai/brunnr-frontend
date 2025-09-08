@@ -65,7 +65,7 @@ async function proxyRequest(
   
   let requestId: string | null = null
   let requestBody: any = null
-  let startTime = Date.now()
+  const startTime = Date.now()
   
   try {
     // Get user info for tracking

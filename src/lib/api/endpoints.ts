@@ -78,28 +78,32 @@ export async function questionToManifest(
 // Media Production Endpoints
 
 /**
- * Generate complete video from question (one-click)
+ * Generate complete video from question (one-click, with tracking)
  * @param request - Question and optional context
  * @returns Promise resolving to video response
  */
 export async function questionToVideo(
   request: QuestionToVideoRequest
 ): Promise<QuestionToVideoResponse> {
+  // Use tracked endpoint for video generation
   return apiClient.post('/media/question-to-video', request, {
     signal: AbortSignal.timeout(300000),
+    baseUrl: '/api/brunnr-tracked', // Use tracked API endpoint
   })
 }
 
 /**
- * Generate video from manifest
+ * Generate video from manifest (with tracking)
  * @param request - Manifest data
  * @returns Promise resolving to video response
  */
 export async function manifestToVideo(
   request: ManifestToVideoRequest
 ): Promise<ManifestToVideoResponse> {
+  // Use tracked endpoint for video generation
   return apiClient.post('/media/manifest-to-video', request, {
     signal: AbortSignal.timeout(300000),
+    baseUrl: '/api/brunnr-tracked', // Use tracked API endpoint
   })
 }
 

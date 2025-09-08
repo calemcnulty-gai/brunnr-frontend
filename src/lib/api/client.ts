@@ -11,6 +11,7 @@ const API_BASE_URL = "/api/brunnr";
 interface ApiRequestOptions extends Omit<RequestInit, "body"> {
   body?: any;
   params?: Record<string, string | number | boolean>;
+  baseUrl?: string; // Allow overriding base URL for tracked endpoints
 }
 
 /**
@@ -24,10 +25,11 @@ export async function apiCall<T>(
   endpoint: string,
   options?: ApiRequestOptions
 ): Promise<T> {
-  const { body, params, ...requestOptions } = options || {};
+  const { body, params, baseUrl, ...requestOptions } = options || {};
   
-  // Build URL with query params
-  const url = new URL(`${API_BASE_URL}${endpoint}`, window.location.origin);
+  // Build URL with query params, using custom base URL if provided
+  const apiBase = baseUrl || API_BASE_URL;
+  const url = new URL(`${apiBase}${endpoint}`, window.location.origin);
   if (params) {
     Object.entries(params).forEach(([key, value]) => {
       url.searchParams.append(key, String(value));

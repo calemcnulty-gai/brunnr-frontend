@@ -26,7 +26,14 @@ Each phase document includes:
 ### ✨ [Phase 3: Enhanced Features](./03-enhanced-features.md)
 **Goal**: Add advanced features like manifest editing and analytics  
 **Duration**: 3-4 hours  
-**Key Tasks**: Manifest editor, analytics dashboard, transcript tools, template library
+**Key Tasks**: Manifest editor, analytics dashboard, transcript tools, template library  
+**Status**: 80% Complete
+
+### 🔐 [Phase 3A: Partner Dashboard & Roles](./03a-partner-dashboard-and-roles.md)
+**Goal**: Implement partner tracking, role-based access, and comprehensive dashboards  
+**Duration**: 4-5 hours  
+**Key Tasks**: Database schema, role detection, admin/partner dashboards, API tracking, Incept goals monitoring  
+**Status**: 85% Complete
 
 ### 🎯 [Phase 4: Polish & Deploy](./04-polish-and-deploy.md)
 **Goal**: Final polish, testing, and production deployment  
@@ -50,6 +57,6 @@ Each phase document includes:
 
 ## Total Timeline
 
-**Estimated Total Time**: 11-15 hours for complete implementation
+**Estimated Total Time**: 15-20 hours for complete implementation (including partner dashboard)
 
 This can be done in one focused day or spread across multiple sessions.

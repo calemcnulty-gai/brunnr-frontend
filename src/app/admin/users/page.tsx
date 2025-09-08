@@ -182,7 +182,7 @@ export default function UserManagementPage() {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => router.push('/partner-dashboard')}
+          onClick={() => router.push('/usage-dashboard')}
           className="mb-4"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />

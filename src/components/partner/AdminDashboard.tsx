@@ -399,7 +399,7 @@ export function AdminDashboard() {
                               <Button 
                                 size="sm" 
                                 variant="outline"
-                                onClick={() => window.location.href = `/partner-dashboard/${partner.code}`}
+                                onClick={() => window.location.href = `/usage-dashboard?partner=${partner.code}`}
                               >
                                 View Details
                               </Button>

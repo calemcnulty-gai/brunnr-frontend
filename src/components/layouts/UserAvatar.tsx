@@ -92,21 +92,17 @@ export function UserAvatar() {
           <Settings className="mr-2 h-4 w-4" />
           <span>Settings</span>
         </DropdownMenuItem>
-        {(role === 'admin' || role === 'partner') && (
-          <>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => handleNavigation("/partner-dashboard")}
-              className="cursor-pointer"
-            >
-              <BarChart3 className="mr-2 h-4 w-4" />
-              <span>Usage Dashboard</span>
-              {role === 'admin' && (
-                <Shield className="ml-auto h-3 w-3 text-blue-600" />
-              )}
-            </DropdownMenuItem>
-          </>
-        )}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onClick={() => handleNavigation("/usage-dashboard")}
+          className="cursor-pointer"
+        >
+          <BarChart3 className="mr-2 h-4 w-4" />
+          <span>Usage Dashboard</span>
+          {role === 'admin' && (
+            <Shield className="ml-auto h-3 w-3 text-blue-600" />
+          )}
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={handleSignOut}

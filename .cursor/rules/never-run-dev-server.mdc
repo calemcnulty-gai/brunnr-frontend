@@ -1,0 +1,7 @@
+---
+description: do not run the dev server
+globs:
+alwaysApply: true
+---
+
+NEVER run the dev server. I will run it myself.

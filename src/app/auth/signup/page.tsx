@@ -148,12 +148,20 @@ export default function SignupPage() {
             {isLoading ? "Creating account..." : "Sign up"}
           </Button>
           
-          <p className="text-center text-sm text-gray-600">
-            Already have an account?{" "}
-            <Link href="/auth/login" className="text-primary hover:underline">
-              Sign in
-            </Link>
-          </p>
+          <div className="text-center space-y-2">
+            <p className="text-sm text-gray-600">
+              Already have an account?{" "}
+              <Link href="/auth/login" className="text-primary hover:underline">
+                Sign in
+              </Link>
+            </p>
+            <p className="text-sm text-gray-600">
+              Forgot your password?{" "}
+              <Link href="/auth/forgot-password" className="text-primary hover:underline">
+                Reset it
+              </Link>
+            </p>
+          </div>
         </CardFooter>
       </form>
     </Card>

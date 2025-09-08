@@ -5,9 +5,10 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
+import { useUserRole } from "@/hooks/use-user-role";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -17,11 +18,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Settings, LogOut, UserCircle } from "lucide-react";
+import { Settings, LogOut, UserCircle, BarChart3, Shield } from "lucide-react";
 
 export function UserAvatar() {
   const router = useRouter();
   const { user, signOut } = useAuth();
+  const { role, isLoading: roleLoading } = useUserRole();
   const [isLoading, setIsLoading] = useState(false);
 
   if (!user) return null;
@@ -90,6 +92,21 @@ export function UserAvatar() {
           <Settings className="mr-2 h-4 w-4" />
           <span>Settings</span>
         </DropdownMenuItem>
+        {(role === 'admin' || role === 'partner') && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => handleNavigation("/partner-dashboard")}
+              className="cursor-pointer"
+            >
+              <BarChart3 className="mr-2 h-4 w-4" />
+              <span>Usage Dashboard</span>
+              {role === 'admin' && (
+                <Shield className="ml-auto h-3 w-3 text-blue-600" />
+              )}
+            </DropdownMenuItem>
+          </>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={handleSignOut}

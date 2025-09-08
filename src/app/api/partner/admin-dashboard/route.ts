@@ -9,7 +9,7 @@ import { cookies } from 'next/headers'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_KEY! // Use service key for admin operations
+  process.env.SUPABASE_SERVICE_ROLE_KEY! // Use service key for admin operations
 )
 
 /**

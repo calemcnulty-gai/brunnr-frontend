@@ -82,13 +82,13 @@ export function ApiKeyManager({ partnerId, partnerName }: ApiKeyManagerProps) {
       // Transform data to match interface
       const keys: ApiKey[] = (data || []).map(key => ({
         id: key.id,
-        name: key.name,
+        name: key.seat_name || `Key ${key.key_prefix}`,
         key_prefix: key.key_prefix,
-        is_active: key.is_active,
-        created_at: key.created_at,
+        is_active: key.is_active ?? true,
+        created_at: key.created_at || new Date().toISOString(),
         last_used_at: key.last_used_at,
-        usage_count: key.usage_count || 0,
-        seat_identifier: key.seat_identifier
+        usage_count: key.request_count || 0,
+        seat_identifier: key.seat_name || undefined
       }))
       
       setApiKeys(keys)
@@ -120,10 +120,9 @@ export function ApiKeyManager({ partnerId, partnerName }: ApiKeyManagerProps) {
         .from('api_keys')
         .insert({
           partner_id: partnerId,
-          name: newKeyName,
+          seat_name: newKeyName,
           key_prefix: keyPrefix,
           key_hash: keyHash,
-          seat_identifier: newKeySeat || null,
           is_active: true
         })
         .select()
@@ -180,10 +179,9 @@ export function ApiKeyManager({ partnerId, partnerName }: ApiKeyManagerProps) {
         .from('api_keys')
         .insert({
           partner_id: partnerId,
-          name: `${oldKey.name} (rotated)`,
+          seat_name: `${oldKey.name} (rotated)`,
           key_prefix: keyPrefix,
           key_hash: keyHash,
-          seat_identifier: oldKey.seat_identifier,
           is_active: true
         })
       

@@ -419,8 +419,8 @@ export async function exportPartnerDataCsv(
     processing_time_p50: p50,
     processing_time_p95: p95,
     within_24h_sla: (gen.script_to_completion_hours || 0) <= 24,
-    seat_id: gen.api_keys?.id || '',
-    seat_name: gen.api_keys?.seat_name || '',
+    seat_id: Array.isArray(gen.api_keys) ? gen.api_keys[0]?.id || '' : (gen.api_keys as any)?.id || '',
+    seat_name: Array.isArray(gen.api_keys) ? gen.api_keys[0]?.seat_name || '' : '',
     timestamp: gen.created_at || ''
   })) || []
 }
@@ -493,7 +493,7 @@ export function subscribeToSlaAlerts(
       (payload) => {
         // Check for SLA violations
         const metrics = payload.new as SlaMetrics
-        if (metrics.success_rate < 95 || metrics.p95_manifest_to_mp4_minutes > 15) {
+        if (metrics.success_rate < 95 || (metrics.p95_manifest_to_mp4_minutes && metrics.p95_manifest_to_mp4_minutes > 15)) {
           callback({
             type: 'sla_violation',
             metrics

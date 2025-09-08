@@ -59,8 +59,8 @@ interface PartnerDashboardProps {
 export function PartnerDashboard({ partnerCode }: PartnerDashboardProps) {
   const [dashboardData, setDashboardData] = useState<any>(null)
   const [dateRange, setDateRange] = useState<{ start: string; end: string }>({
-    start: new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().split('T')[0],
-    end: new Date().toISOString().split('T')[0]
+    start: new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().split('T')[0]!,
+    end: new Date().toISOString().split('T')[0]!
   })
   const [isLoading, setIsLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('overview')

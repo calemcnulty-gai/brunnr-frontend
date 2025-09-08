@@ -24,8 +24,8 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams
     const partnerCode = searchParams.get('partner_code')
     const reportType = searchParams.get('type') || 'summary'
-    const startDate = searchParams.get('start_date') || new Date(new Date().setDate(new Date().getDate() - 30)).toISOString()
-    const endDate = searchParams.get('end_date') || new Date().toISOString()
+    const startDate: string = searchParams.get('start_date') || new Date(new Date().setDate(new Date().getDate() - 30)).toISOString()
+    const endDate: string = searchParams.get('end_date') || new Date().toISOString()
     
     if (!partnerCode) {
       return NextResponse.json(
@@ -74,8 +74,8 @@ export async function GET(request: NextRequest) {
         // SLA metrics report
         const slaMetrics = await getPartnerSlaMetrics(
           partner.id,
-          startDate?.split('T')[0] || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          endDate?.split('T')[0] || new Date().toISOString().split('T')[0]
+          startDate.split('T')[0]!,
+          endDate.split('T')[0]!
         )
         
         const activeSeats = await getActiveSeats(
@@ -146,8 +146,8 @@ export async function GET(request: NextRequest) {
         // Summary report
         const slaMetrics = await getPartnerSlaMetrics(
           partner.id,
-          startDate?.split('T')[0] || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          endDate?.split('T')[0] || new Date().toISOString().split('T')[0]
+          startDate.split('T')[0]!,
+          endDate.split('T')[0]!
         )
         
         const activeSeats = await getActiveSeats(
@@ -176,7 +176,7 @@ export async function GET(request: NextRequest) {
           : 0
         
         // Calculate additional metrics for InceptSeptemberMetrics
-        const within24h = slaMetrics.filter(m => m.within_24h_sla).length
+        const within24h = slaMetrics.filter(m => m.sla_24h_compliance_rate >= 90).length
         const slaCompliance = slaMetrics.length > 0 
           ? (within24h / slaMetrics.length) * 100 
           : 0

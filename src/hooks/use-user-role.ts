@@ -66,13 +66,14 @@ export function useUserRole(): UserDashboardAccess {
       }
 
       if (data) {
+        const roleData = data as any
         setDashboardAccess({
-          role: data.role as UserRole,
-          partnerId: data.partner_id,
-          partnerName: data.partner_name,
-          partnerCode: data.partner_code,
-          canViewAllPartners: data.can_view_all_partners,
-          accessiblePartnerIds: data.accessible_partner_ids || [],
+          role: roleData.role as UserRole,
+          partnerId: roleData.partner_id,
+          partnerName: roleData.partner_name,
+          partnerCode: roleData.partner_code,
+          canViewAllPartners: roleData.can_view_all_partners,
+          accessiblePartnerIds: roleData.accessible_partner_ids || [],
           isLoading: false
         })
       } else {

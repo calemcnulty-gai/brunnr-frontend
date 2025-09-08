@@ -3,8 +3,12 @@
  * @module Header
  */
 
+"use client";
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { UserAvatar } from "@/components/layouts/UserAvatar";
+import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
 interface HeaderProps {
@@ -12,6 +16,8 @@ interface HeaderProps {
 }
 
 export function Header({ className }: HeaderProps) {
+  const { user, isLoading } = useAuth();
+
   return (
     <header className={cn("fixed top-0 z-50 w-full border-b bg-white", className)}>
       <div className="container flex h-14 items-center justify-between">
@@ -22,14 +28,23 @@ export function Header({ className }: HeaderProps) {
         </div>
         
         <nav className="flex items-center gap-4">
-          <Link href="/dashboard">
-            <Button variant="ghost" size="sm">
-              Dashboard
-            </Button>
-          </Link>
-          <Link href="/auth/login">
-            <Button size="sm">Sign In</Button>
-          </Link>
+          {user && (
+            <Link href="/dashboard">
+              <Button variant="ghost" size="sm">
+                Dashboard
+              </Button>
+            </Link>
+          )}
+          
+          {isLoading ? (
+            <div className="h-8 w-8 animate-pulse rounded-full bg-gray-200" />
+          ) : user ? (
+            <UserAvatar />
+          ) : (
+            <Link href="/auth/login">
+              <Button size="sm">Sign In</Button>
+            </Link>
+          )}
         </nav>
       </div>
     </header>

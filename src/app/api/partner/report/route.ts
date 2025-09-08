@@ -74,8 +74,8 @@ export async function GET(request: NextRequest) {
         // SLA metrics report
         const slaMetrics = await getPartnerSlaMetrics(
           partner.id,
-          startDate.split('T')[0],
-          endDate.split('T')[0]
+          startDate?.split('T')[0] || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          endDate?.split('T')[0] || new Date().toISOString().split('T')[0]
         )
         
         const activeSeats = await getActiveSeats(
@@ -146,8 +146,8 @@ export async function GET(request: NextRequest) {
         // Summary report
         const slaMetrics = await getPartnerSlaMetrics(
           partner.id,
-          startDate.split('T')[0],
-          endDate.split('T')[0]
+          startDate?.split('T')[0] || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          endDate?.split('T')[0] || new Date().toISOString().split('T')[0]
         )
         
         const activeSeats = await getActiveSeats(
@@ -175,21 +175,24 @@ export async function GET(request: NextRequest) {
           ? p95Times.reduce((a, b) => a + b, 0) / p95Times.length 
           : 0
         
+        // Calculate additional metrics for InceptSeptemberMetrics
+        const within24h = slaMetrics.filter(m => m.within_24h_sla).length
+        const slaCompliance = slaMetrics.length > 0 
+          ? (within24h / slaMetrics.length) * 100 
+          : 0
+        
         return NextResponse.json({
           success: true,
           data: {
-            partner: {
-              id: partner.id,
-              name: partner.name,
-              code: partner.partner_code
-            },
-            period: { start: startDate, end: endDate },
             summary: {
-              total_requests: totalRequests,
+              unique_requests: totalRequests,
               successful_renders: successfulRenders,
               success_rate: avgSuccessRate,
               active_seats: activeSeats.length,
-              avg_p95_minutes: avgP95
+              p95_minutes: avgP95,
+              within_24h_sla: within24h,
+              sla_compliance_rate: slaCompliance,
+              fourth_grade_math_videos: 0 // Will be tracked separately
             },
             daily_metrics: slaMetrics,
             active_seats: activeSeats,

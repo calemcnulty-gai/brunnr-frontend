@@ -106,12 +106,12 @@ async function proxyRequest(
           await supabase
             .from('api_requests')
             .insert({
-              id: requestId,
+              request_id: requestId,
               partner_id: userRole.partner_id,
               api_key_id: apiKeyId,
               endpoint: path,
               method: method,
-              request_body: requestBody,
+              request_metadata: requestBody,
               status: 'pending',
               created_at: new Date().toISOString()
             })

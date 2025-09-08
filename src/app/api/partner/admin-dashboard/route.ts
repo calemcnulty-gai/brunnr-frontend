@@ -117,13 +117,15 @@ export async function GET(request: NextRequest) {
     // Calculate daily trends
     const dailyData: { [key: string]: any } = {}
     generations?.forEach(gen => {
-      const date = new Date(gen.created_at).toISOString().split('T')[0]
-      if (!dailyData[date]) {
-        dailyData[date] = { date, generations: 0, successful: 0 }
+      const dateStr = new Date(gen.created_at).toISOString().split('T')[0]
+      if (dateStr && !dailyData[dateStr]) {
+        dailyData[dateStr] = { date: dateStr, generations: 0, successful: 0 }
       }
-      dailyData[date].generations++
-      if (gen.render_success) {
-        dailyData[date].successful++
+      if (dateStr) {
+        dailyData[dateStr].generations++
+        if (gen.render_success) {
+          dailyData[dateStr].successful++
+        }
       }
     })
     const dailyTrends = Object.values(dailyData).sort((a, b) => a.date.localeCompare(b.date))
@@ -145,11 +147,13 @@ export async function GET(request: NextRequest) {
     const performanceData: { [key: string]: any } = {}
     generations?.forEach(gen => {
       if (gen.manifest_to_mp4_minutes != null) {
-        const date = new Date(gen.created_at).toISOString().split('T')[0]
-        if (!performanceData[date]) {
-          performanceData[date] = { date, times: [] }
+        const dateStr = new Date(gen.created_at).toISOString().split('T')[0]
+        if (dateStr && !performanceData[dateStr]) {
+          performanceData[dateStr] = { date: dateStr, times: [] }
         }
-        performanceData[date].times.push(gen.manifest_to_mp4_minutes)
+        if (dateStr) {
+          performanceData[dateStr].times.push(gen.manifest_to_mp4_minutes)
+        }
       }
     })
     

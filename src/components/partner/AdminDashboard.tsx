@@ -59,8 +59,8 @@ export function AdminDashboard() {
   const [partners, setPartners] = useState<Partner[]>([])
   const [selectedPartner, setSelectedPartner] = useState<string>('all')
   const [dateRange, setDateRange] = useState<{ start: string; end: string }>({
-    start: new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().split('T')[0],
-    end: new Date().toISOString().split('T')[0]
+    start: new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().split('T')[0] || '',
+    end: new Date().toISOString().split('T')[0] || ''
   })
   const [dashboardData, setDashboardData] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -296,7 +296,7 @@ export function AdminDashboard() {
                           cx="50%"
                           cy="50%"
                           labelLine={false}
-                          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                          label={({ name, percent }) => `${name}: ${((percent || 0) * 100).toFixed(0)}%`}
                           outerRadius={80}
                           fill="#8884d8"
                           dataKey="value"

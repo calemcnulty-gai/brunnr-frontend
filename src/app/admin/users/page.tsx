@@ -88,7 +88,7 @@ export default function UserManagementPage() {
           created_at: user.created_at,
           role: userRole ? {
             role: userRole.role as 'admin' | 'partner' | 'user',
-            partner: userRole.partner
+            partner: userRole.partner || undefined
           } : undefined
         }
       })
@@ -121,7 +121,7 @@ export default function UserManagementPage() {
       const { error } = await supabase.rpc('assign_user_role', {
         p_user_id: userId,
         p_role: newRole,
-        p_partner_id: newRole === 'partner' ? newPartnerId : null
+        p_partner_id: newRole === 'partner' ? newPartnerId : undefined
       })
       
       if (error) throw error

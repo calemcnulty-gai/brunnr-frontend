@@ -144,6 +144,56 @@ export interface ManifestToVideoResponse {
   metadata: ApiMetadata
 }
 
+// Lesson to Video Types
+export interface LessonData {
+  lesson_step_id: number
+  content_id: string
+  step_type: string
+  topic_id: number
+  course_id: number
+  generation_id: number
+  generated_html: string
+  batch_id: number
+  model: string
+  scraped_screenshot_url?: string
+  screenshot_url?: string
+  validation_status: string
+  enhanced_at?: string
+  widgets_detected?: number
+  validation_updated_at?: string
+  enhanced?: boolean
+}
+
+export interface LessonToVideoRequest {
+  lessons: LessonData[]
+}
+
+export interface LessonToVideoResult {
+  lesson_step_id: number
+  content_id: string
+  status: 'completed' | 'failed'
+  video_url: string
+  manifest?: any
+  error?: string | null
+  processing_time: number
+}
+
+export interface LessonToVideoResponse {
+  status: 'completed' | 'failed'
+  message: string
+  error?: string | null
+  metadata?: ApiMetadata
+  results?: LessonToVideoResult[]
+  total_lessons?: number
+  successful_generations?: number
+  failed_generations?: number
+  total_processing_time?: number
+  // Legacy fields for compatibility
+  video_url?: string
+  download_url?: string
+  processing_time?: number
+}
+
 // Complete pipeline types
 export interface QuestionToManifestRequest {
   text: string

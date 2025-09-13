@@ -11,6 +11,7 @@ import { useProject } from '@/hooks/use-projects'
 import { QuickDemoWorkflow } from '@/components/projects/QuickDemoWorkflow'
 import { StepByStepWorkflow } from '@/components/projects/StepByStepWorkflow'
 import { ManifestWorkflow } from '@/components/projects/ManifestWorkflow'
+import { LessonToVideoWorkflow } from '@/components/projects/LessonToVideoWorkflow'
 import { Loader2 } from 'lucide-react'
 
 export default function ProjectPage() {
@@ -57,6 +58,8 @@ export default function ProjectPage() {
       return <StepByStepWorkflow project={project} />
     case 'manifest':
       return <ManifestWorkflow project={project} />
+    case 'lesson':
+      return <LessonToVideoWorkflow projectId={project.id} />
     default:
       return (
         <div className="flex items-center justify-center min-h-screen">

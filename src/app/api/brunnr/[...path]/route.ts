@@ -5,6 +5,9 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 
+// Allow functions to run for up to 5 minutes on Vercel
+export const maxDuration = 300
+
 const BRUNNR_API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://brunnr-service-production.up.railway.app'
 const BRUNNR_API_KEY = process.env.BRUNNR_API_KEY || ''
 
@@ -76,8 +79,16 @@ async function proxyRequest(
       options.body = body
     }
     
-    // Make the request
-    const response = await fetch(url.toString(), options)
+    // Make the request with 2 minute timeout
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 120000) // 2 minute timeout
+    
+    const response = await fetch(url.toString(), {
+      ...options,
+      signal: controller.signal
+    })
+    
+    clearTimeout(timeoutId)
     
     // Handle binary responses (like video files)
     const contentType = response.headers.get('content-type')
@@ -103,8 +114,17 @@ async function proxyRequest(
         'Content-Type': response.headers.get('content-type') || 'application/json',
       },
     })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Proxy error:', error)
+    
+    // Handle timeout specifically
+    if (error.name === 'AbortError') {
+      return NextResponse.json(
+        { error: 'Request timeout', detail: 'The request took longer than 2 minutes and was cancelled' },
+        { status: 504 }
+      )
+    }
+    
     return NextResponse.json(
       { error: 'Internal proxy error', detail: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }

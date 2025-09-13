@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Video, Layers, FileText, ArrowRight, Loader2 } from 'lucide-react'
+import { Video, Layers, FileText, ArrowRight, Loader2, BookOpen } from 'lucide-react'
 import { useCreateProject } from '@/hooks/use-projects'
 import type { WorkflowType } from '@/types/database'
 
@@ -40,6 +40,19 @@ const workflowOptions: WorkflowOption[] = [
       'Shows generation pipeline',
       'DeMorgan\'s Laws demo',
       'Learn how it works'
+    ]
+  },
+  {
+    type: 'lesson',
+    title: 'Lesson to Video',
+    description: 'Convert educational lessons directly into videos',
+    icon: <BookOpen className="h-8 w-8" />,
+    color: 'text-green-600 bg-green-50',
+    features: [
+      'Select from lesson library',
+      'HTML content rendering',
+      'Direct video generation',
+      'Educational content focus'
     ]
   },
   {

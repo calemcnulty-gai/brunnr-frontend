@@ -3,7 +3,7 @@
  * @module types/database
  */
 
-export type WorkflowType = 'quick' | 'step-by-step' | 'manifest'
+export type WorkflowType = 'quick' | 'step-by-step' | 'manifest' | 'lesson'
 export type ProjectStatus = 'created' | 'in_progress' | 'generating' | 'completed' | 'failed'
 export type StepType = 'question' | 'explanation' | 'screenplay' | 'manifest' | 'video'
 

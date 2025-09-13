@@ -19,6 +19,8 @@ import type {
   ManifestToVideoResponse,
   AudioTimingAnalysisRequest,
   AudioTimingAnalysisResponse,
+  LessonToVideoRequest,
+  LessonToVideoResponse,
 } from '@/types/api'
 
 // Content Generation Endpoints
@@ -152,6 +154,32 @@ export async function analyzeAudioTiming(
   request: AudioTimingAnalysisRequest
 ): Promise<AudioTimingAnalysisResponse> {
   return apiClient.post('/analytics/audio-timing', request)
+}
+
+/**
+ * Generate video from lesson content
+ * @param request - Lesson data
+ * @returns Promise resolving to video response
+ */
+export async function lessonToVideo(
+  request: LessonToVideoRequest
+): Promise<LessonToVideoResponse> {
+  // Use the backend proxy route (same pattern as manifest-to-shotgroup-videos)
+  const response = await fetch('/api/backend/media/lesson-to-video', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+    signal: AbortSignal.timeout(300000),
+  })
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(`Failed to generate video: ${errorText}`)
+  }
+
+  return response.json()
 }
 
 // Utility Functions

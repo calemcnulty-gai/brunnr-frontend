@@ -1,0 +1,336 @@
+{
+  "video_id": "line_plot_from_data",
+  "templates": [
+    { "id": "title_t", "type": "Text", "content": "Example: Constructing a Line Plot From Given Data", "style": { "color": "#F3F4F6" } },
+
+    { "id": "frac_1_3_t", "type": "MathTex_term", "content": "\\frac{1}{3}", "style": { "color": "#F3F4F6" } },
+    { "id": "frac_1_3_blue_t", "type": "MathTex_term", "content": "\\frac{1}{3}", "style": { "color": "#60A5FA" } },
+    { "id": "frac_2_6_blue_t", "type": "MathTex_term", "content": "\\frac{2}{6}", "style": { "color": "#60A5FA" } },
+
+    { "id": "frac_5_6_t", "type": "MathTex_term", "content": "\\frac{5}{6}", "style": { "color": "#F3F4F6" } },
+    { "id": "frac_5_6_red_t", "type": "MathTex_term", "content": "\\frac{5}{6}", "style": { "color": "#EF4444" } },
+
+    { "id": "frac_1_6_t", "type": "MathTex_term", "content": "\\frac{1}{6}", "style": { "color": "#F3F4F6" } },
+
+    { "id": "frac_1_6_a_t", "type": "MathTex_term", "content": "\\frac{1}{6}", "style": { "color": "#F3F4F6" } },
+    { "id": "frac_1_6_b_t", "type": "MathTex_term", "content": "\\frac{1}{6}", "style": { "color": "#F3F4F6" } },
+    { "id": "frac_1_3_a_t", "type": "MathTex_term", "content": "\\frac{1}{3}", "style": { "color": "#F3F4F6" } },
+    { "id": "frac_1_3_b_t", "type": "MathTex_term", "content": "\\frac{1}{3}", "style": { "color": "#F3F4F6" } },
+
+    { "id": "under_bracket_black_t", "type": "under_bracket", "style": { "color": "#F3F4F6" } },
+    { "id": "under_bracket_blue_t",  "type": "under_bracket", "style": { "color": "#60A5FA" } },
+    { "id": "under_bracket_red_t",   "type": "under_bracket", "style": { "color": "#EF4444" } },
+
+    { "id": "count_black_2_t", "type": "MathTex_term", "content": "2", "style": { "color": "#F3F4F6" } },
+    { "id": "count_blue_2_t",  "type": "MathTex_term", "content": "2", "style": { "color": "#60A5FA" } },
+    { "id": "count_red_1_t",   "type": "MathTex_term", "content": "1", "style": { "color": "#EF4444" } },
+
+    { "id": "number_line_plain_t", "type": "number_line" },
+    { "id": "number_line_with_ticks_t", "type": "number_line", "content": { "ticks": ["\\frac{0}{6}", "\\frac{1}{6}", "\\frac{2}{6}", "\\frac{3}{6}", "\\frac{4}{6}", "\\frac{5}{6}", "\\frac{6}{6}"] } },
+    { "id": "number_line_with_ticks_two_black_t", "type": "number_line", "content": { "ticks": ["\\frac{0}{6}", "\\frac{1}{6}", "\\frac{2}{6}", "\\frac{3}{6}", "\\frac{4}{6}", "\\frac{5}{6}", "\\frac{6}{6}"], "counts": [null, { "count": 2, "color": "#F3F4F6" }, null, null, null, null, null] } },
+    { "id": "number_line_with_ticks_two_black_two_blue_t", "type": "number_line", "content": { "ticks": ["\\frac{0}{6}", "\\frac{1}{6}", "\\frac{2}{6}", "\\frac{3}{6}", "\\frac{4}{6}", "\\frac{5}{6}", "\\frac{6}{6}"], "counts": [null, { "count": 2, "color": "#F3F4F6" }, { "count": 2, "color": "#60A5FA" }, null, null, null, null] } },
+    { "id": "number_line_with_ticks_two_black_two_blue_one_redt", "type": "number_line", "content": { "ticks": ["\\frac{0}{6}", "\\frac{1}{6}", "\\frac{2}{6}", "\\frac{3}{6}", "\\frac{4}{6}", "\\frac{5}{6}", "\\frac{6}{6}"], "counts": [null, { "count": 2, "color": "#F3F4F6" }, { "count": 2, "color": "#60A5FA" }, null, null, { "count": 1, "color": "#EF4444" }, null] } },
+
+    {
+      "id": "equiv_steps_t",
+      "type": "MathTex_aligned",
+      "parts": [
+        "{{&\\frac{1}{3}}}",
+        "{{=}} {{&\\frac{1\\times 2}{3\\times 2}}}",
+        "{{=}} {{&\\frac{2}{6}}}"
+      ],
+      "style": { "color": "#F3F4F6" }
+    }
+  ],
+  "shots": [
+    {
+      "duration": null,
+      "actions": [
+        { "fade_in": { "instance_id": "title", "template": "title_t", "position": { "absolute": "top_center" } } },
+        { "fade_in": { "instance_id": "frac_1_3_a", "template": "frac_1_3_t", "position": { "position_group": {"below": "title"} } } },
+        { "fade_in": { "instance_id": "frac_5_6",   "template": "frac_5_6_t", "position": { "right_of": "frac_1_3_a", "position_group": {"below": "title" } } } },
+        { "fade_in": { "instance_id": "frac_1_6_a", "template": "frac_1_6_t", "position": { "right_of": "frac_5_6", "position_group": {"below": "title" } } } },
+        { "fade_in": { "instance_id": "frac_1_3_b", "template": "frac_1_3_t", "position": { "right_of": "frac_1_6_a", "position_group": {"below": "title" } } } },
+        { "fade_in": { "instance_id": "frac_1_6_b", "template": "frac_1_6_t", "position": { "right_of": "frac_1_3_b", "position_group": {"below": "title" } } } }
+      ],
+      "description": "Create the five fractions: 1/3, 5/6, 1/6, 1/3, 1/6.",
+      "voiceover": "What line plot represents the data set below?",
+      "contained": false
+    },
+    {
+      "duration": null,
+      "actions": [
+        { "reposition": { "instance_ids": [["frac_1_3_a", "frac_5_6", "frac_1_6_a", "frac_1_3_b", "frac_1_6_b"]], "position": { "below": "title" } } }
+      ],
+      "description": "Reposition the five fractions below the title.",
+      "contained": false
+    },
+    {
+      "duration": null,
+      "actions": [],
+      "voiceover": "First, identify any values that repeat.",
+      "description": "",
+      "contained": true
+    },
+    {
+      "duration": null,
+      "actions": [
+        { "morph": { "from": "frac_1_3_a", "to": "frac_1_3_blue_t" } },
+        { "morph": { "from": "frac_1_3_b", "to": "frac_1_3_blue_t" } },
+        { "morph": { "from": "frac_5_6",   "to": "frac_5_6_red_t" } }
+      ],
+      "description": "Color-code the dataset: change both 1/3 values to blue and the 5/6 value to red to preview grouping."
+    },
+    {
+      "duration": null,
+      "actions": [],
+      "voiceover": "Then, we order the data from least to greatest.",
+      "description": ""
+    },
+    {
+      "duration": null,
+      "actions": [
+        { "reorder": { "new_order": ["frac_1_6_a", "frac_1_6_b","frac_1_3_a", "frac_1_3_b", "frac_5_6"] } }
+      ],
+      "description": "Reorder the five fractions from least to greatest: 1/6, 1/6, 1/3, 1/3, 5/6."
+    },
+    {
+      "duration": null,
+      "actions": [
+      ],
+      "description": "Fade out the row of five fractions to transition to the denominator-conversion walkthrough.",
+      "voiceover": "To compare fractions with unlike denominators, we need to express each fraction as an equivalent fraction with a common denominator."
+    },
+    {
+      "duration": null,
+      "actions": [
+        { "fade_out": { "instance_id": "frac_1_6_a" } },
+        { "fade_out": { "instance_id": "frac_1_6_b" } },
+        { "fade_out": { "instance_id": "frac_1_3_a" } },
+        { "fade_out": { "instance_id": "frac_1_3_b" } },
+        { "fade_out": { "instance_id": "frac_5_6" } }
+      ],
+      "voiceover": "",
+      "description": ""
+    },
+    {
+        "duration": null,
+        "actions": [
+            { "fade_in": { "instance_id": "frac_1_3_a_v2", "template": "frac_1_3_t", "position": { "below": "title"} } },
+            { "fade_in": { "instance_id": "frac_5_6_v2", "template": "frac_5_6_t", "position": { "right_of": "frac_1_3_a_v2" } } },
+            { "fade_in": { "instance_id": "frac_1_6_a_v2", "template": "frac_1_6_t", "position": { "right_of": "frac_5_6_v2" } } },
+            { "fade_in": { "instance_id": "frac_1_3_b_v2", "template": "frac_1_3_t", "position": { "right_of": "frac_1_6_a_v2"  } } },
+            { "fade_in": { "instance_id": "frac_1_6_b_v2", "template": "frac_1_6_t", "position": { "right_of": "frac_1_3_b_v2" } } }
+        ],
+        "voiceover": "",
+        "description": "Create the five fractions back in a black color on a single row."
+    },
+    {
+        "duration": null,
+        "actions": [
+            { "reposition": { "instance_ids": [["frac_1_3_a_v2", "frac_5_6_v2", "frac_1_6_a_v2", "frac_1_3_b_v2", "frac_1_6_b_v2"]], "position": { "below": "title" } } }
+        ],
+        "voiceover": "",
+        "description": "Reposition the five fractions below the title."
+    },
+    {
+      "duration": null,
+      "actions": [],
+      "voiceover": "Here, we can make a common denominator of 6.",
+      "description": ""
+    },
+    {
+      "duration": null,
+      "actions": [
+        { "morph": { "from": "frac_1_3_a_v2", "to": "frac_1_3_blue_t" } },
+        { "morph": { "from": "frac_1_3_b_v2", "to": "frac_1_3_blue_t" } }
+      ],
+      "voiceover": "",
+      "description": "Tint both 1/3 fractions blue to indicate the values that will convert to sixths."
+    },
+    {
+      "duration": null,
+      "actions": [],
+      "voiceover": "To put 1/3 over a denominator of 6, ",
+      "description": ""
+    },
+    {
+      "duration": null,
+      "actions": [
+        { "fade_in": { "instance_id": "eq", "template": "equiv_steps_t", "position": { "right_of": "frac_1_6_b_v2" } } }
+      ],
+      "description": "Add a second 1/3 beneath the row to start a multi-line conversion equation."
+    },
+    {
+      "duration": null,
+      "actions": [
+        { "reposition": { "instance_ids": [["frac_1_3_a_v2", "frac_5_6_v2", "frac_1_6_a_v2", "frac_1_3_b_v2", "frac_1_6_b_v2"], ["eq"]], "position": { "below": "title" } } }
+      ],
+      "voiceover": "",
+      "description": "Reposition the fraction and equation below the title."
+    },
+    {
+      "duration": null,
+      "actions": [],
+      "voiceover": "we multiply the numerator and denominator by 2.",
+      "description": ""
+    },
+    {
+      "duration": null,
+      "actions": [
+        { "reveal_next_line": { "instance_id": "eq" } }
+      ],
+      "description": "Extend the equation to show = 1×2 / 3×2, demonstrating multiply-by-2/2.",
+      "contained": false
+    },
+    {
+      "duration": null,
+      "actions": [
+        { "reveal_next_line": { "instance_id": "eq" } }
+      ],
+      "description": "Reveal the next line with the simplified result = 2/6.",
+      "contained": false
+    },
+    {
+      "duration": null,
+      "actions": [],
+      "voiceover": "So our dataset is equivalent to this dataset.",
+      "description": ""
+    },
+    {
+      "duration": null,
+      "actions": [
+        { "morph": { "from": "frac_1_3_a_v2", "to": "frac_2_6_blue_t" } }
+      ],
+      "description": "Replace the first 1/3 in the top row with a blue 2/6.",
+      "contained": false
+    },
+    {
+      "duration": null,
+      "actions": [
+        { "morph": { "from": "frac_1_3_b_v2", "to": "frac_2_6_blue_t" } }
+      ],
+      "description": "Replace the second 1/3 with a blue 2/6 in the top row.",
+      "contained": false
+    },
+    {
+      "duration": null,
+      "actions": [
+        { "morph": { "from": "frac_5_6_v2", "to": "frac_5_6_red_t" } }
+      ],
+      "description": "Recolor the 5/6 in the top row to red for category consistency.",
+      "contained": false
+    },
+    {
+      "duration": null,
+      "actions": [
+        { "fade_out": { "instance_id": "eq" } }
+      ],
+      "voiceover": "Now, we order the dataset from least to greatest.",
+      "description": ""
+    },
+    {
+      "duration": null,
+      "actions": [
+        { "reorder": { "new_order": ["frac_1_6_a_v2", "frac_1_6_b_v2", "frac_1_3_a_v2", "frac_1_3_b_v2", "frac_5_6_v2"] } }
+      ],
+      "description": "Arrange the row as 1/6, 1/6, 2/6, 2/6, 5/6.",
+      "contained": false
+    },
+    {
+      "duration": null,
+      "actions": [
+        { "fade_in": { "instance_id": "ct_1_6", "template": "count_black_2_t", "position": { "below": ["frac_1_6_a_v2", "frac_1_6_b_v2"] } } },
+        { "fade_in": { "instance_id": "ct_2_6", "template": "count_blue_2_t", "position": { "below": ["frac_1_3_a_v2", "frac_1_3_b_v2"] } } },
+        { "fade_in": { "instance_id": "ct_5_6", "template": "count_red_1_t", "position": { "below": "frac_5_6_v2" } } }
+      ],
+      "description": "Add counts below each group: black 2 under 1/6, blue 2 under 2/6, red 1 under 5/6.",
+      "contained": false
+    },
+    {
+      "duration": null,
+      "actions": [
+        { "fade_in": { "instance_id": "br_1_6", "template": "under_bracket_black_t", "position": { "between": [ ["frac_1_6_a_v2", "frac_1_6_b_v2"], "ct_1_6" ] } } },
+        { "fade_in": { "instance_id": "br_2_6", "template": "under_bracket_blue_t", "position": { "between": [ ["frac_1_3_a_v2", "frac_1_3_b_v2"], "ct_2_6" ] } } },
+        { "fade_in": { "instance_id": "br_5_6", "template": "under_bracket_red_t", "position": { "between": [ "frac_5_6_v2", "ct_5_6" ] } } }
+      ],
+      "description": "Add under-brackets above the counts to group the fractions.",
+      "contained": false
+    },
+    {
+      "duration": null,
+      "actions": [],
+      "voiceover": "Finally, we can create a line plot.",
+      "description": ""
+    },
+    {
+      "duration": null,
+      "actions": [
+        { "fade_in":  { "instance_id": "numline",  "template": "number_line_plain_t", "position": { "right_of": ["frac_1_6_a_v2", "frac_1_6_b_v2", "frac_1_3_a_v2", "frac_1_3_b_v2", "frac_5_6_v2", "br_1_6", "br_2_6", "br_5_6", "ct_1_6", "ct_2_6", "ct_5_6"] } } }
+      ],
+      "voiceover": "",
+      "description": "Clear the fraction row and annotations, then introduce a horizontal number line."
+    },
+    {
+      "duration": null,
+      "actions": [
+        { "reposition": { "instance_ids": [["numline"], ["frac_1_6_a_v2", "frac_1_6_b_v2", "frac_1_3_a_v2", "frac_1_3_b_v2", "frac_5_6_v2", "br_1_6", "br_2_6", "br_5_6", "ct_1_6", "ct_2_6", "ct_5_6"]], "position": { "below": "title" } } }
+      ],
+      "voiceover": "",
+      "description": "Reposition all the counts to be to the right of the number line."
+    },
+    {
+      "duration": null,
+      "actions": [],
+      "voiceover": "We write each fraction on the number line, ",
+      "description": ""
+    },
+    {
+      "duration": null,
+      "actions": [
+        { "morph": { "from": "numline", "to": "number_line_with_ticks_t" } }
+      ],
+      "voiceover": "",
+      "description": "Add seven evenly spaced tick marks labeled 0/6 through 6/6."
+    },
+    {
+      "duration": null,
+      "actions": [],
+      "voiceover": "and then place a cross above the fraction for each time it occurs in the dataset.",
+      "description": ""
+    },
+    {
+      "duration": null,
+      "actions": [
+        { "morph": { "from": "numline", "to": "number_line_with_ticks_two_black_t" } }
+      ],
+      "voiceover": "",
+      "description": "Place two black X marks above 1/6."
+    },
+    {
+      "duration": null,
+      "actions": [
+        { "morph": { "from": "numline", "to": "number_line_with_ticks_two_black_two_blue_t" } }
+    ],
+      "voiceover": "",
+      "description": "Place two blue X marks above 2/6."
+    },
+    {
+      "duration": null,
+      "actions": [
+        { "morph": { "from": "numline", "to": "number_line_with_ticks_two_black_two_blue_one_redt" } }
+    ],
+      "voiceover": "",
+      "description": "Place one red X above 5/6."
+    },
+    {
+      "duration": 10,
+      "actions": [
+    ],
+      "voiceover": "",
+      "description": "Hold frame so the student can look at the answer."
+    }
+  ]
+}
+
+

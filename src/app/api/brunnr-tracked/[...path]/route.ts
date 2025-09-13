@@ -8,6 +8,9 @@ import { createClient } from '@/lib/supabase/server'
 import { v4 as uuidv4 } from 'uuid'
 import crypto from 'crypto'
 
+// Allow functions to run for up to 5 minutes on Vercel
+export const maxDuration = 300
+
 const BRUNNR_API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://brunnr-service-production.up.railway.app'
 const BRUNNR_API_KEY = process.env.BRUNNR_API_KEY || ''
 
@@ -168,8 +171,16 @@ async function proxyRequest(
       }
     }
     
-    // Make the request
-    const response = await fetch(url.toString(), options)
+    // Make the request with 2 minute timeout
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 120000) // 2 minute timeout
+    
+    const response = await fetch(url.toString(), {
+      ...options,
+      signal: controller.signal
+    })
+    
+    clearTimeout(timeoutId)
     const processingTime = Date.now() - startTime
     
     // Handle binary responses (like video files)
@@ -219,8 +230,11 @@ async function proxyRequest(
         'X-Request-ID': requestId || '',
       },
     })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Proxy error:', error)
+    
+    const errorDetail = error instanceof Error ? error.message : 'Unknown error'
+    const isTimeout = error.name === 'AbortError'
     
     // Update tracking for errors
     if (requestId) {
@@ -228,15 +242,30 @@ async function proxyRequest(
         supabase, 
         requestId, 
         'failed', 
-        { error: error instanceof Error ? error.message : 'Unknown error' },
+        { 
+          error: errorDetail,
+          timeout: isTimeout 
+        },
         Date.now() - startTime
+      )
+    }
+    
+    // Handle timeout specifically
+    if (isTimeout) {
+      return NextResponse.json(
+        { 
+          error: 'Request timeout', 
+          detail: 'The request took longer than 2 minutes and was cancelled',
+          request_id: requestId 
+        },
+        { status: 504 }
       )
     }
     
     return NextResponse.json(
       { 
         error: 'Internal proxy error', 
-        detail: error instanceof Error ? error.message : 'Unknown error',
+        detail: errorDetail,
         request_id: requestId 
       },
       { status: 500 }

@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+// Allow functions to run for up to 5 minutes on Vercel
+export const maxDuration = 300
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     
     // Add timeout to prevent hanging
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 120000) // 2 minute timeout
     
     try {
       const response = await fetch('http://localhost:8000/content/lesson-to-video', {
@@ -37,9 +40,9 @@ export async function POST(request: NextRequest) {
       clearTimeout(timeoutId)
       
       if (fetchError.name === 'AbortError') {
-        console.error('Request timeout after 30 seconds')
+        console.error('Request timeout after 2 minutes')
         return NextResponse.json(
-          { error: 'Request timeout', details: 'Backend took too long to respond' },
+          { error: 'Request timeout', details: 'The request took longer than 2 minutes and was cancelled' },
           { status: 504 }
         )
       }

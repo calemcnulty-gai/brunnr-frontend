@@ -61,9 +61,8 @@ export default function SignupPage() {
         return;
       }
 
-      // In local development with email confirmations disabled,
-      // automatically sign in the user after signup
-      if (isLocal && authData.user) {
+      // With email confirmations disabled, automatically sign in the user after signup
+      if (authData.user) {
         // Small delay to ensure the user is fully created
         await new Promise(resolve => setTimeout(resolve, 500));
         
@@ -81,7 +80,7 @@ export default function SignupPage() {
           router.push('/auth/login?registered=true');
         }
       } else {
-        // Production or email confirmation required
+        // Fallback to email confirmation screen (shouldn't happen with disabled confirmations)
         setSuccess(true);
       }
     } catch (err) {

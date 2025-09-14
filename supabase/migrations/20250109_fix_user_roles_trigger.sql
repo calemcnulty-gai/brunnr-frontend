@@ -34,3 +34,4 @@ GRANT ALL ON public.user_roles TO postgres, service_role;
 GRANT SELECT, INSERT, UPDATE ON public.user_roles TO authenticated;
 GRANT SELECT ON public.user_roles TO anon;
 
+

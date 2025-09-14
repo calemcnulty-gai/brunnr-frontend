@@ -11,7 +11,11 @@ import { useAuthStore } from "@/stores/auth-store";
 export function useAuth() {
   const router = useRouter();
   const { user, isLoading, setUser, setLoading } = useAuthStore();
-  const supabase = createClient();
+  
+  // Check if user has remember me preference
+  const rememberMe = typeof window !== 'undefined' ? 
+    localStorage.getItem('brunnr_remember_me') === 'true' : false;
+  const supabase = createClient(rememberMe);
 
   useEffect(() => {
     // Check active session
@@ -44,6 +48,10 @@ export function useAuth() {
     setLoading(true);
     try {
       await supabase.auth.signOut();
+      // Clear remember me preference on sign out
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('brunnr_remember_me');
+      }
       router.push("/");
     } catch (error) {
       console.error("Error signing out:", error);

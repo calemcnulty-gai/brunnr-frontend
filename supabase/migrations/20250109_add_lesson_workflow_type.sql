@@ -10,3 +10,4 @@ BEGIN
      WHERE enumtypid = 'workflow_type'::regtype);
 END $$;
 
+

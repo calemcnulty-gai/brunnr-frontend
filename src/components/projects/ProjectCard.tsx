@@ -30,6 +30,7 @@ const workflowLabels: Record<WorkflowType, string> = {
   'quick': 'Quick Generation',
   'step-by-step': 'Step-by-Step',
   'manifest': 'From Manifest',
+  'lesson': 'Lesson-based',
 }
 
 export function ProjectCard({ project, onDelete, className }: ProjectCardProps) {

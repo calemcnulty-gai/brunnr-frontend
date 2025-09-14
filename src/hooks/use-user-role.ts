@@ -54,7 +54,7 @@ export function useUserRole(): UserDashboardAccess {
         .single()
       
       // If that returns default user role and we have a user, try with explicit user_id
-      if (!error && data && data.role === 'user' && user?.id) {
+      if (!error && data && (data as any).role === 'user' && user?.id) {
         const explicitResult = await supabase
           .rpc('get_user_dashboard_data', { user_id_input: user.id } as any)
           .single()

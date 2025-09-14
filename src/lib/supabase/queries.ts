@@ -13,13 +13,14 @@ type ProjectUpdate = Database['public']['Tables']['projects']['Update']
 
 // Helper function to convert database row to Project type
 function rowToProject(row: ProjectRow): Project {
+  const data = row.data as any || {}
   return {
     ...row,
     data: row.data as ProjectData,
-    manifest: row.manifest || null,
-    api_responses: row.api_responses || {},
-    template_images: row.template_images || [],
-    shotgroups: row.shotgroups || [],
+    manifest: data.manifest || null,
+    api_responses: data.api_responses || {},
+    template_images: data.template_images || [],
+    shotgroups: data.shotgroups || [],
     created_at: row.created_at || new Date().toISOString(),
     updated_at: row.updated_at || new Date().toISOString()
   } as Project
@@ -417,14 +418,15 @@ export async function getProjectsWithManifests(userId: string): Promise<Array<{
   
   const { data, error } = await supabase
     .from('projects')
-    .select('id, name, manifest, updated_at')
+    .select('id, name, data, updated_at')
     .eq('user_id', userId)
-    .not('manifest', 'is', null)
     .order('updated_at', { ascending: false })
   
   if (error) throw error
   return (data || []).map(item => ({
-    ...item,
+    id: item.id,
+    name: item.name,
+    manifest: (item.data as any)?.manifest || null,
     updated_at: item.updated_at || new Date().toISOString()
   }))
 }

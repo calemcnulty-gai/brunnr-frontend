@@ -59,7 +59,15 @@ export default function ProjectPage() {
     case 'manifest':
       return <ManifestWorkflow project={project} />
     case 'lesson':
-      return <LessonToVideoWorkflow projectId={project.id} />
+      return (
+        <div className="space-y-6">
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold text-gray-900">{project.name}</h1>
+            <p className="text-gray-600 mt-2">Convert educational lessons into engaging videos</p>
+          </div>
+          <LessonToVideoWorkflow projectId={project.id} />
+        </div>
+      )
     default:
       return (
         <div className="flex items-center justify-center min-h-screen">

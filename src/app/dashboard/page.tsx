@@ -4,15 +4,13 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Video, Layers, FileText, Loader2 } from 'lucide-react';
+import { Plus, Video, BookOpen, FileText, Loader2 } from 'lucide-react';
 import { useProjects, useDeleteProject, useCreateProject } from '@/hooks/use-projects';
 import { ProjectCard } from '@/components/projects/ProjectCard';
-import { WorkflowSelectorModal } from '@/components/projects/WorkflowSelectorModal';
 import type { WorkflowType } from '@/types/database';
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [showWorkflowModal, setShowWorkflowModal] = useState(false);
   const [isCreatingProject, setIsCreatingProject] = useState(false);
   const { data: projects, isLoading } = useProjects();
   const deleteProject = useDeleteProject();
@@ -48,14 +46,13 @@ export default function DashboardPage() {
       
       // Navigate to the project page
       router.push(`/project/${project.id}`);
-    } catch (err) {
-      console.error('Failed to create project:', err);
-      // Fallback to showing the modal if there's an error
-      setShowWorkflowModal(true);
-    } finally {
-      setIsCreatingProject(false);
-    }
-  };
+      } catch (err) {
+        console.error('Failed to create project:', err);
+        alert('Failed to create project. Please try again.');
+      } finally {
+        setIsCreatingProject(false);
+      }
+    };
   
   return (
     <div className="space-y-6">
@@ -66,7 +63,7 @@ export default function DashboardPage() {
             Welcome back! Create a new video or manage your existing projects.
           </p>
         </div>
-        <Button onClick={() => setShowWorkflowModal(true)}>
+        <Button onClick={() => router.push('/dashboard/generate')}>
           <Plus className="mr-2 h-4 w-4" />
           New Project
         </Button>
@@ -104,18 +101,18 @@ export default function DashboardPage() {
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <div className="flex items-center gap-2">
-              <Layers className="h-5 w-5 text-purple-600" />
-              <CardTitle>Step-by-Step</CardTitle>
+              <BookOpen className="h-5 w-5 text-green-600" />
+              <CardTitle>From Lesson</CardTitle>
             </div>
             <CardDescription>
-              Full control over the generation pipeline
+              Convert educational lessons into videos
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Button 
               variant="outline" 
               className="w-full"
-              onClick={() => handleQuickWorkflow('step-by-step', 'Step-by-Step')}
+              onClick={() => handleQuickWorkflow('lesson', 'From Lesson')}
               disabled={isCreatingProject}
             >
               {isCreatingProject ? (
@@ -124,7 +121,7 @@ export default function DashboardPage() {
                   Creating...
                 </>
               ) : (
-                'Advanced Mode'
+                'Choose Lesson'
               )}
             </Button>
           </CardContent>
@@ -176,7 +173,7 @@ export default function DashboardPage() {
             <div className="flex flex-col items-center justify-center py-12 text-gray-500">
               <Video className="h-12 w-12 mb-4 text-gray-300" />
               <p>No projects yet. Create your first video to get started!</p>
-              <Button className="mt-4" onClick={() => setShowWorkflowModal(true)}>
+              <Button className="mt-4" onClick={() => router.push('/dashboard/generate')}>
                 <Plus className="mr-2 h-4 w-4" />
                 Create Project
               </Button>
@@ -194,13 +191,6 @@ export default function DashboardPage() {
           )}
         </CardContent>
       </Card>
-      
-      {showWorkflowModal && (
-        <WorkflowSelectorModal
-          open={showWorkflowModal}
-          onClose={() => setShowWorkflowModal(false)}
-        />
-      )}
     </div>
   );
 }

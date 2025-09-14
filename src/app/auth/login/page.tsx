@@ -10,11 +10,13 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
+  rememberMe: z.boolean().optional(),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -46,7 +48,7 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      const supabase = createClient();
+      const supabase = createClient(data.rememberMe);
       const { error } = await supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,
@@ -55,6 +57,15 @@ export default function LoginPage() {
       if (error) {
         setError(error.message);
         return;
+      }
+
+      // Store remember me preference for future auth checks
+      if (typeof window !== 'undefined') {
+        if (data.rememberMe) {
+          localStorage.setItem('brunnr_remember_me', 'true');
+        } else {
+          localStorage.removeItem('brunnr_remember_me');
+        }
       }
 
       router.push("/dashboard");
@@ -117,6 +128,17 @@ export default function LoginPage() {
             {errors.password && (
               <p className="text-sm text-red-600">{errors.password.message}</p>
             )}
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="rememberMe"
+              {...register("rememberMe")}
+              disabled={isLoading}
+            />
+            <Label htmlFor="rememberMe" className="text-sm font-normal">
+              Remember me for 30 days
+            </Label>
           </div>
         </CardContent>
         

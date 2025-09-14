@@ -72,14 +72,14 @@ export function LessonToVideoWorkflow({ projectId }: LessonToVideoWorkflowProps)
   const extractTitleFromHtml = (html: string): string => {
     // Try to extract from <title> tag
     const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i)
-    if (titleMatch) return titleMatch[1].trim()
+    if (titleMatch) return titleMatch[1]?.trim() || ''
     
     // Try to extract from first <h1> or <h2>
     const h1Match = html.match(/<h1[^>]*>([^<]+)<\/h1>/i)
-    if (h1Match) return h1Match[1].trim()
+    if (h1Match) return h1Match[1]?.trim() || ''
     
     const h2Match = html.match(/<h2[^>]*>([^<]+)<\/h2>/i)
-    if (h2Match) return h2Match[1].trim()
+    if (h2Match) return h2Match[1]?.trim() || ''
     
     // Fallback to lesson type and ID
     return `Lesson ${html.substring(0, 50)}...`
@@ -135,9 +135,9 @@ export function LessonToVideoWorkflow({ projectId }: LessonToVideoWorkflowProps)
         updates: {
           status: 'generating',
           data: { 
-            selectedLesson: selectedLesson.lesson_step_id,
+            lesson_step_id: selectedLesson.lesson_step_id,
             lessonTitle: selectedLesson.title
-          }
+          } as any
         }
       })
 
@@ -171,7 +171,7 @@ export function LessonToVideoWorkflow({ projectId }: LessonToVideoWorkflowProps)
       let finalVideoUrl = ''
       
       // Handle the actual API response structure
-      if (response.results && response.results.length > 0 && response.results[0].video_url) {
+      if (response.results && response.results.length > 0 && response.results[0]?.video_url) {
         finalVideoUrl = response.results[0].video_url
       } else if (response.video_url) {
         finalVideoUrl = response.video_url
@@ -212,7 +212,7 @@ export function LessonToVideoWorkflow({ projectId }: LessonToVideoWorkflowProps)
         projectId,
         updates: {
           status: 'failed',
-          data: { error: err instanceof Error ? err.message : 'Unknown error' }
+          data: { error_message: err instanceof Error ? err.message : 'Unknown error' } as any
         }
       })
     } finally {
@@ -222,12 +222,6 @@ export function LessonToVideoWorkflow({ projectId }: LessonToVideoWorkflowProps)
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold">Lesson to Video Workflow</h1>
-        <p className="text-gray-600">Convert educational lessons into engaging videos</p>
-      </div>
-
       {/* Lesson Selection */}
       <Card>
         <CardHeader>

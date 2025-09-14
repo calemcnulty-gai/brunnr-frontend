@@ -12,6 +12,9 @@ import type { WorkflowType } from '@/types/database';
 export default function DashboardPage() {
   const router = useRouter();
   const [isCreatingProject, setIsCreatingProject] = useState(false);
+  
+  // Debug logging to see if dashboard page loads
+  console.log("Dashboard page rendered");
   const { data: projects, isLoading } = useProjects();
   const deleteProject = useDeleteProject();
   const createProject = useCreateProject();

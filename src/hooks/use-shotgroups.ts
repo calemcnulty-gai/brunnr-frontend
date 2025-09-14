@@ -57,7 +57,11 @@ export function useShotgroups({
   const fetchShotgroups = useCallback(async () => {
     // Validation checks
     if (!enabled || !manifest || !manifest.shots || manifest.shots.length === 0) {
-      console.log('Skipping shotgroup fetch: disabled or empty manifest')
+      // Only log once per state change to prevent spam
+      if (lastProcessedManifest.current !== 'EMPTY') {
+        console.log('Skipping shotgroup fetch: disabled or empty manifest')
+        lastProcessedManifest.current = 'EMPTY'
+      }
       setShotgroups([])
       setTemplateImages([])
       shotgroupsRef.current = []
@@ -156,22 +160,30 @@ export function useShotgroups({
   
   // Effect to fetch shotgroups when dependencies change
   useEffect(() => {
-    // If we have existing shotgroups, use them initially
-    if (existingShotgroups.length > 0) {
+    // Early return if disabled or no manifest
+    if (!enabled || !manifest || !manifestHash) {
+      console.log('Shotgroups disabled or no manifest')
+      return
+    }
+
+    // If we have existing shotgroups and they match current manifest, use them
+    if (existingShotgroups.length > 0 && manifestHash === lastProcessedManifest.current) {
+      console.log('Using existing shotgroups for current manifest')
       setShotgroups(existingShotgroups)
       setTemplateImages(existingTemplateImages)
       shotgroupsRef.current = existingShotgroups
-      // Mark the current manifest as already processed
-      if (manifestHash) {
-        lastProcessedManifest.current = manifestHash
-      }
       return
     }
     
-    // Only fetch if enabled and we have a manifest
-    if (enabled && manifest && manifestHash) {
-      fetchShotgroups()
+    // If this exact manifest was already processed, skip
+    if (manifestHash === lastProcessedManifest.current) {
+      console.log('Manifest already processed, skipping fetch')
+      return
     }
+    
+    // Only fetch if we don't have shotgroups for this manifest
+    console.log('Fetching shotgroups for new manifest')
+    fetchShotgroups()
     
     // Cleanup function
     return () => {
@@ -179,7 +191,7 @@ export function useShotgroups({
         abortController.current.abort()
       }
     }
-  }, [manifestHash, enabled, existingShotgroups, existingTemplateImages, fetchShotgroups])
+  }, [manifestHash, enabled]) // Only depend on manifestHash and enabled
   
   return {
     shotgroups,

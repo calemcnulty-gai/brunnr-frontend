@@ -85,6 +85,11 @@ export function Sidebar({ className }: SidebarProps) {
                 e.preventDefault();
                 console.log("Using router.push for navigation to:", item.href);
                 router.push(item.href);
+                
+                // Add a timeout to check if navigation succeeded
+                setTimeout(() => {
+                  console.log("Navigation check - current pathname after 500ms:", window.location.pathname);
+                }, 500);
               }}
               className={cn(
                 "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",

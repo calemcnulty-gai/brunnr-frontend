@@ -40,6 +40,7 @@ import {
 import { cn } from '@/lib/utils'
 import { useDebounce } from '@/hooks/use-debounce'
 import { getProjectsWithManifests } from '@/lib/supabase/queries'
+import { useManifestTemplates } from '@/hooks/use-manifest-templates'
 import { useAuthStore } from '@/stores/auth-store'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
@@ -103,7 +104,10 @@ export function ManifestEditor({
   const { user } = useAuthStore()
   const queryClient = useQueryClient()
   
-  // Fetch saved manifests
+  // Fetch manifest templates from Supabase
+  const { templates: manifestTemplates, isLoading: isLoadingTemplates } = useManifestTemplates()
+  
+  // Also fetch saved manifests from projects (for backwards compatibility)
   const { data: savedManifests, isLoading: isLoadingManifests } = useQuery({
     queryKey: ['projects-with-manifests', user?.id],
     queryFn: () => user ? getProjectsWithManifests(user.id) : Promise.resolve([]),
@@ -273,19 +277,49 @@ export function ManifestEditor({
   }
   
   // Handle selecting a saved manifest
-  const handleSelectSavedManifest = async (projectId: string) => {
-    const selected = savedManifests?.find(p => p.id === projectId)
+  const handleSelectSavedManifest = async (selectedId: string) => {
+    // Check if it's a manifest template (starts with template prefix)
+    if (selectedId.startsWith('template_')) {
+      const templateId = selectedId.replace('template_', '')
+      const selected = manifestTemplates?.find(t => t.id === templateId)
+      if (!selected?.manifest) {
+        console.warn('No manifest template found for ID:', templateId)
+        return
+      }
+      
+      try {
+        const validation = validateManifest(selected.manifest)
+        if (validation.success && validation.data) {
+          setManifest(validation.data)
+          setJsonContent(JSON.stringify(validation.data, null, 2))
+          handleVisualChange(validation.data)
+        } else {
+          // Still allow loading if it's valid JSON
+          const manifestLike = selected.manifest as Manifest
+          setManifest(manifestLike)
+          setJsonContent(JSON.stringify(manifestLike, null, 2))
+          handleVisualChange(manifestLike)
+        }
+        return
+      } catch (error) {
+        console.error('Error loading manifest template:', error)
+        return
+      }
+    }
+    
+    // Otherwise, it's a saved project
+    const selected = savedManifests?.find(p => p.id === selectedId)
     if (!selected?.manifest) {
-      console.warn('No manifest found for project:', projectId)
+      console.warn('No manifest found for project:', selectedId)
       return
     }
     
-    setSelectedProjectId(projectId) // Track the selected project
+    setSelectedProjectId(selectedId) // Track the selected project
     
     try {
       // Fetch the full project data to get shotgroups and template images
       const { getProject } = await import('@/lib/supabase/queries')
-      const fullProject = await getProject(projectId)
+      const fullProject = await getProject(selectedId)
       
       const validation = validateManifest(selected.manifest)
       
@@ -310,7 +344,7 @@ export function ManifestEditor({
       if (fullProject) {
         console.log('Loaded project has shotgroups:', fullProject.shotgroups?.length || 0)
         // Invalidate the cache to trigger parent re-render with new data
-        await queryClient.invalidateQueries({ queryKey: ['project', projectId] })
+        await queryClient.invalidateQueries({ queryKey: ['project', selectedId] })
       }
       
       setHasChanges(false)
@@ -380,30 +414,70 @@ export function ManifestEditor({
             <Select 
               value={selectedProjectId}
               onValueChange={handleSelectSavedManifest} 
-              disabled={readOnly || isLoadingManifests || !savedManifests?.length}
+              disabled={readOnly || (isLoadingManifests && isLoadingTemplates)}
             >
-              <SelectTrigger className="w-[200px]">
+              <SelectTrigger className="w-[250px]">
                 <SelectValue placeholder={
-                  isLoadingManifests ? "Loading..." : 
-                  !savedManifests?.length ? "No saved manifests" : 
-                  "Load saved manifest"
+                  isLoadingManifests || isLoadingTemplates ? "Loading..." : 
+                  "Select manifest template or saved project"
                 } />
               </SelectTrigger>
               <SelectContent>
-                {savedManifests && savedManifests.length > 0 ? (
-                  savedManifests.map((project) => (
-                    <SelectItem key={project.id} value={project.id} textValue={project.name}>
-                      <div className="flex items-center justify-between w-full gap-4">
-                        <span className="font-medium">{project.name}</span>
-                        <span className="text-xs text-muted-foreground">
-                          {new Date(project.updated_at).toLocaleDateString()}
-                        </span>
-                      </div>
-                    </SelectItem>
-                  ))
-                ) : (
+                {/* Manifest Templates Section */}
+                {manifestTemplates && manifestTemplates.length > 0 && (
+                  <>
+                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                      Manifest Templates
+                    </div>
+                    {manifestTemplates.map((template) => (
+                      <SelectItem 
+                        key={`template_${template.id}`} 
+                        value={`template_${template.id}`} 
+                        textValue={template.title}
+                      >
+                        <div className="flex items-center justify-between w-full gap-4">
+                          <div>
+                            <span className="font-medium">{template.title}</span>
+                            <div className="text-xs text-muted-foreground">
+                              {template.subject} • {template.content_kind}
+                            </div>
+                          </div>
+                          <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                            Template
+                          </span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </>
+                )}
+                
+                {/* Saved Projects Section */}
+                {savedManifests && savedManifests.length > 0 && (
+                  <>
+                    {manifestTemplates && manifestTemplates.length > 0 && (
+                      <div className="border-t my-1"></div>
+                    )}
+                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                      Saved Projects
+                    </div>
+                    {savedManifests.map((project) => (
+                      <SelectItem key={project.id} value={project.id} textValue={project.name}>
+                        <div className="flex items-center justify-between w-full gap-4">
+                          <span className="font-medium">{project.name}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {new Date(project.updated_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </>
+                )}
+                
+                {/* Empty State */}
+                {(!manifestTemplates || manifestTemplates.length === 0) && 
+                 (!savedManifests || savedManifests.length === 0) && (
                   <div className="px-2 py-1.5 text-sm text-muted-foreground">
-                    No saved manifests yet
+                    No templates or saved manifests found
                   </div>
                 )}
               </SelectContent>

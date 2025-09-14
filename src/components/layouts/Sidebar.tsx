@@ -6,7 +6,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -56,6 +56,10 @@ const navigation = [
 
 export function Sidebar({ className }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  
+  // Debug logging for navigation issues
+  console.log("Sidebar pathname:", pathname, "domain:", typeof window !== 'undefined' ? window.location.hostname : 'server');
 
   return (
     <div
@@ -66,12 +70,22 @@ export function Sidebar({ className }: SidebarProps) {
     >
       <nav className="flex flex-col gap-1 p-4">
         {navigation.map((item) => {
-          const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`);
+          // Fix highlighting logic to be more precise
+          const isActive = pathname === item.href || 
+            (item.href !== '/dashboard' && pathname?.startsWith(`${item.href}/`));
           
           return (
             <Link
               key={item.name}
               href={item.href}
+              onClick={(e) => {
+                console.log("Sidebar link clicked:", item.name, item.href, "current pathname:", pathname);
+                
+                // Fallback navigation using router.push for domain-specific issues
+                e.preventDefault();
+                console.log("Using router.push for navigation to:", item.href);
+                router.push(item.href);
+              }}
               className={cn(
                 "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                 isActive

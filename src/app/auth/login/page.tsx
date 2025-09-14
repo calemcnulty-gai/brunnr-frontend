@@ -169,9 +169,32 @@ function LoginForm() {
             onClick={(e) => {
               console.log("Button clicked!", e);
               console.log("Form element:", e.currentTarget.form);
+              console.log("Form validity:", e.currentTarget.form?.checkValidity());
+              console.log("Button disabled:", e.currentTarget.disabled);
+              console.log("isLoading:", isLoading);
             }}
           >
             {isLoading ? "Signing in..." : "Sign in"}
+          </Button>
+          
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={async () => {
+              console.log("Test button clicked - bypassing form");
+              try {
+                await onSubmit({
+                  email: "test@example.com",
+                  password: "testpass123",
+                  rememberMe: false
+                });
+              } catch (err) {
+                console.error("Test login error:", err);
+              }
+            }}
+          >
+            Test Login (Debug)
           </Button>
           
           <p className="text-center text-sm text-gray-600">

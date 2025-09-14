@@ -321,32 +321,40 @@ export function LessonToVideoWorkflow({ projectId }: LessonToVideoWorkflowProps)
                 : 'Review the lesson content before generating the video'}
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="bg-white border border-gray-200 rounded-lg p-6 max-h-[600px] overflow-auto">
-              {/* Insert video at the top if it exists */}
-              {videoUrl && (
-                <div className="mb-8 pb-8 border-b border-gray-200">
-                  <h2 className="text-2xl font-bold mb-4 text-center text-gray-900">
-                    Mastery in a Minute
-                  </h2>
-                  <div className="rounded-lg overflow-hidden shadow-lg">
-                    <video 
-                      controls 
-                      className="w-full"
-                      src={videoUrl}
-                      poster=""
-                    >
-                      Your browser does not support the video tag.
-                    </video>
-                  </div>
-                  <p className="text-sm text-gray-600 text-center mt-3">
-                    Watch this quick video summary before diving into the lesson
-                  </p>
+          <CardContent className="p-0">
+            {/* Insert video at the top if it exists */}
+            {videoUrl && (
+              <div className="p-6 bg-gray-50 border-b border-gray-200">
+                <h2 className="text-2xl font-bold mb-4 text-center text-gray-900">
+                  Mastery in a Minute
+                </h2>
+                <div className="max-w-2xl mx-auto rounded-lg overflow-hidden shadow-lg">
+                  <video 
+                    controls 
+                    className="w-full"
+                    src={videoUrl}
+                    poster=""
+                  >
+                    Your browser does not support the video tag.
+                  </video>
                 </div>
-              )}
-              
-              {/* Original lesson HTML content */}
-              <div dangerouslySetInnerHTML={{ __html: selectedLesson.generated_html }} />
+                <p className="text-sm text-gray-600 text-center mt-3">
+                  Watch this quick video summary before diving into the lesson
+                </p>
+              </div>
+            )}
+            
+            {/* Original lesson HTML content with proper styling */}
+            <div className="p-6 w-full">
+              <div 
+                className="lesson-html-content w-full"
+                style={{ 
+                  maxWidth: '100%', 
+                  width: '100%',
+                  overflow: 'hidden'
+                }}
+                dangerouslySetInnerHTML={{ __html: selectedLesson.generated_html }} 
+              />
             </div>
           </CardContent>
         </Card>

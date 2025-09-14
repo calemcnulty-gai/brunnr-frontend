@@ -97,3 +97,32 @@
     @apply bg-gray-300 rounded-full hover:bg-gray-400;
   }
 }
+
+/* Lesson content layout fixes */
+.lesson-html-content {
+  max-width: 100% !important;
+  width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+.lesson-html-content * {
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.lesson-html-content table {
+  width: 100% !important;
+  table-layout: auto !important;
+}
+
+.lesson-html-content img {
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+.lesson-html-content .container,
+.lesson-html-content .row,
+.lesson-html-content .col {
+  width: 100% !important;
+  max-width: 100% !important;
+}

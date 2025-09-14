@@ -21,8 +21,8 @@ export default function ProjectPage() {
   const { data: project, isLoading, error } = useProject(projectId)
   
   useEffect(() => {
-    // Redirect to video page if project is complete
-    if (project?.status === 'completed' && project.video_url) {
+    // Redirect to video page if project is complete (except for lesson workflow)
+    if (project?.status === 'completed' && project.video_url && project.workflow_type !== 'lesson') {
       router.push(`/project/${projectId}/video`)
     }
   }, [project, projectId, router])

@@ -86,6 +86,8 @@ export function Sidebar({ className }: SidebarProps) {
         })}
       </nav>
       
+      {/* Help section commented out until docs are ready */}
+      {/*
       <div className="absolute bottom-0 left-0 right-0 p-4">
         <div className="rounded-lg bg-white/10 p-4">
           <h3 className="text-sm font-medium text-white">Need Help?</h3>
@@ -99,6 +101,7 @@ export function Sidebar({ className }: SidebarProps) {
           </Link>
         </div>
       </div>
+      */}
     </div>
   );
 }

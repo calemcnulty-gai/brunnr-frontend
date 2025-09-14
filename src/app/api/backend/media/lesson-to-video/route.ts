@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     const timeoutId = setTimeout(() => controller.abort(), 120000) // 2 minute timeout
     
     try {
-      const response = await fetch('http://localhost:8000/content/lesson-to-video', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/content/lesson-to-video`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
       const cause = error.cause as any
       if (cause?.code === 'ECONNREFUSED') {
         return NextResponse.json(
-          { error: 'Backend server not available', details: 'Please ensure the backend is running on http://localhost:8000' },
+          { error: 'Backend server not available', details: `Please ensure the backend is running on ${process.env.NEXT_PUBLIC_API_URL}` },
           { status: 503 }
         )
       }

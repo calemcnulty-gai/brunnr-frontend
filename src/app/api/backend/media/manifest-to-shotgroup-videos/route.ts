@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 300000) // 5 minute timeout
     
-    const response = await fetch('http://localhost:8000/media/manifest-to-shotgroup-videos', {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/media/manifest-to-shotgroup-videos`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

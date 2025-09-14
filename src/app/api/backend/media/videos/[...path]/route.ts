@@ -6,7 +6,7 @@ export async function GET(
 ) {
   try {
     const path = params.path.join('/')
-    const url = `http://localhost:8000/media/videos/${path}`
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/media/videos/${path}`
     
     const response = await fetch(url)
     

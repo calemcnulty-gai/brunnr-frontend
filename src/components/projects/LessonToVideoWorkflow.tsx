@@ -85,6 +85,29 @@ export function LessonToVideoWorkflow({ projectId }: LessonToVideoWorkflowProps)
     return `Lesson ${html.substring(0, 50)}...`
   }
 
+  // Clean lesson HTML by removing problematic CSS
+  const cleanLessonHtml = (html: string): string => {
+    // Remove <style> tags that contain problematic CSS
+    let cleanedHtml = html.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+    
+    // Remove <meta> tags
+    cleanedHtml = cleanedHtml.replace(/<meta[^>]*>/gi, '')
+    
+    // Remove <title> tags (we extract the title separately)
+    cleanedHtml = cleanedHtml.replace(/<title[^>]*>[\s\S]*?<\/title>/gi, '')
+    
+    // Remove any remaining <head> content
+    cleanedHtml = cleanedHtml.replace(/<head[^>]*>[\s\S]*?<\/head>/gi, '')
+    
+    // Extract only the body content if it exists
+    const bodyMatch = cleanedHtml.match(/<body[^>]*>([\s\S]*?)<\/body>/i)
+    if (bodyMatch && bodyMatch[1]) {
+      cleanedHtml = bodyMatch[1]
+    }
+    
+    return cleanedHtml.trim()
+  }
+
   // Process lessons to include titles
   const lessonsWithTitles: LessonWithTitle[] = useMemo(() => {
     const rawLessons = lessonsData.examples as Lesson[]
@@ -312,7 +335,7 @@ export function LessonToVideoWorkflow({ projectId }: LessonToVideoWorkflowProps)
 
       {/* HTML Preview with Video */}
       {selectedLesson && (
-        <Card>
+        <Card className="overflow-hidden">
           <CardHeader>
             <CardTitle>Lesson Content {videoUrl ? 'with Video' : 'Preview'}</CardTitle>
             <CardDescription>
@@ -321,7 +344,7 @@ export function LessonToVideoWorkflow({ projectId }: LessonToVideoWorkflowProps)
                 : 'Review the lesson content before generating the video'}
             </CardDescription>
           </CardHeader>
-          <CardContent className="p-0">
+          <CardContent className="p-0 w-full">
             {/* Insert video at the top if it exists */}
             {videoUrl && (
               <div className="p-6 bg-gray-50 border-b border-gray-200">
@@ -344,16 +367,16 @@ export function LessonToVideoWorkflow({ projectId }: LessonToVideoWorkflowProps)
               </div>
             )}
             
-            {/* Original lesson HTML content with proper styling */}
+            {/* Original lesson HTML content with cleaned styling */}
             <div className="p-6 w-full">
               <div 
-                className="lesson-html-content w-full"
+                className="lesson-html-content w-full prose prose-lg max-w-none"
                 style={{ 
                   maxWidth: '100%', 
                   width: '100%',
                   overflow: 'hidden'
                 }}
-                dangerouslySetInnerHTML={{ __html: selectedLesson.generated_html }} 
+                dangerouslySetInnerHTML={{ __html: cleanLessonHtml(selectedLesson.generated_html) }} 
               />
             </div>
           </CardContent>

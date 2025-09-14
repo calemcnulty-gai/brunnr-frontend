@@ -103,6 +103,9 @@
   max-width: 100% !important;
   width: 100% !important;
   overflow-x: hidden !important;
+  font-family: inherit !important;
+  line-height: 1.6 !important;
+  color: inherit !important;
 }
 
 .lesson-html-content * {
@@ -113,11 +116,14 @@
 .lesson-html-content table {
   width: 100% !important;
   table-layout: auto !important;
+  margin: 1rem 0 !important;
 }
 
 .lesson-html-content img {
   max-width: 100% !important;
   height: auto !important;
+  display: block !important;
+  margin: 1rem auto !important;
 }
 
 .lesson-html-content .container,
@@ -125,4 +131,18 @@
 .lesson-html-content .col {
   width: 100% !important;
   max-width: 100% !important;
+}
+
+/* Override any problematic lesson styles */
+.lesson-html-content .step {
+  max-width: 100% !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 1.5rem !important;
+}
+
+.lesson-html-content .math-visual-block {
+  text-align: center !important;
+  margin: 1rem 0 !important;
+  width: 100% !important;
 }

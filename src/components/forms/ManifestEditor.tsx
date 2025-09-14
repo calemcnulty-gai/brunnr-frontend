@@ -104,10 +104,10 @@ export function ManifestEditor({
   const { user } = useAuthStore()
   const queryClient = useQueryClient()
   
-  // Fetch manifest templates from Supabase
+  // Fetch manifest templates
   const { templates: manifestTemplates, isLoading: isLoadingTemplates } = useManifestTemplates()
   
-  // Also fetch saved manifests from projects (for backwards compatibility)
+  // Keep saved manifests for backwards compatibility but don't show in dropdown
   const { data: savedManifests, isLoading: isLoadingManifests } = useQuery({
     queryKey: ['projects-with-manifests', user?.id],
     queryFn: () => user ? getProjectsWithManifests(user.id) : Promise.resolve([]),
@@ -276,51 +276,15 @@ export function ManifestEditor({
     setHasChanges(false)
   }
   
-  // Handle selecting a saved manifest
-  const handleSelectSavedManifest = async (selectedId: string) => {
-    // Check if it's a manifest template (starts with template prefix)
-    if (selectedId.startsWith('template_')) {
-      const templateId = selectedId.replace('template_', '')
-      const selected = manifestTemplates?.find(t => t.id === templateId)
-      if (!selected?.manifest) {
-        console.warn('No manifest template found for ID:', templateId)
-        return
-      }
-      
-      try {
-        const validation = validateManifest(selected.manifest)
-        if (validation.success && validation.data) {
-          setManifest(validation.data)
-          setJsonContent(JSON.stringify(validation.data, null, 2))
-          handleVisualChange(validation.data)
-        } else {
-          // Still allow loading if it's valid JSON
-          const manifestLike = selected.manifest as Manifest
-          setManifest(manifestLike)
-          setJsonContent(JSON.stringify(manifestLike, null, 2))
-          handleVisualChange(manifestLike)
-        }
-        return
-      } catch (error) {
-        console.error('Error loading manifest template:', error)
-        return
-      }
-    }
-    
-    // Otherwise, it's a saved project
-    const selected = savedManifests?.find(p => p.id === selectedId)
+  // Handle selecting a manifest template
+  const handleSelectSavedManifest = async (templateId: string) => {
+    const selected = manifestTemplates?.find(t => t.id === templateId)
     if (!selected?.manifest) {
-      console.warn('No manifest found for project:', selectedId)
+      console.warn('No manifest template found for ID:', templateId)
       return
     }
     
-    setSelectedProjectId(selectedId) // Track the selected project
-    
     try {
-      // Fetch the full project data to get shotgroups and template images
-      const { getProject } = await import('@/lib/supabase/queries')
-      const fullProject = await getProject(selectedId)
-      
       const validation = validateManifest(selected.manifest)
       
       if (validation.success && validation.data) {
@@ -340,12 +304,7 @@ export function ManifestEditor({
         ])
       }
       
-      // Update the existing data props if we have them
-      if (fullProject) {
-        console.log('Loaded project has shotgroups:', fullProject.shotgroups?.length || 0)
-        // Invalidate the cache to trigger parent re-render with new data
-        await queryClient.invalidateQueries({ queryKey: ['project', selectedId] })
-      }
+      // Template loaded successfully
       
       setHasChanges(false)
     } catch (error) {
@@ -414,70 +373,30 @@ export function ManifestEditor({
             <Select 
               value={selectedProjectId}
               onValueChange={handleSelectSavedManifest} 
-              disabled={readOnly || (isLoadingManifests && isLoadingTemplates)}
+              disabled={readOnly || isLoadingTemplates || !manifestTemplates?.length}
             >
-              <SelectTrigger className="w-[250px]">
+              <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder={
-                  isLoadingManifests || isLoadingTemplates ? "Loading..." : 
-                  "Select manifest template or saved project"
+                  isLoadingTemplates ? "Loading templates..." : 
+                  !manifestTemplates?.length ? "No manifest templates" : 
+                  "Select manifest template"
                 } />
               </SelectTrigger>
               <SelectContent>
-                {/* Manifest Templates Section */}
-                {manifestTemplates && manifestTemplates.length > 0 && (
-                  <>
-                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                      Manifest Templates
-                    </div>
-                    {manifestTemplates.map((template) => (
-                      <SelectItem 
-                        key={`template_${template.id}`} 
-                        value={`template_${template.id}`} 
-                        textValue={template.title}
-                      >
-                        <div className="flex items-center justify-between w-full gap-4">
-                          <div>
-                            <span className="font-medium">{template.title}</span>
-                            <div className="text-xs text-muted-foreground">
-                              {template.subject} • {template.content_kind}
-                            </div>
-                          </div>
-                          <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                            Template
-                          </span>
+                {manifestTemplates && manifestTemplates.length > 0 ? (
+                  manifestTemplates.map((template) => (
+                    <SelectItem key={template.id} value={template.id} textValue={template.title}>
+                      <div className="flex flex-col gap-1 w-full">
+                        <span className="font-medium">{template.title}</span>
+                        <div className="text-xs text-muted-foreground">
+                          {template.subject} • {template.content_kind} • {template.grade_level || 'All grades'}
                         </div>
-                      </SelectItem>
-                    ))}
-                  </>
-                )}
-                
-                {/* Saved Projects Section */}
-                {savedManifests && savedManifests.length > 0 && (
-                  <>
-                    {manifestTemplates && manifestTemplates.length > 0 && (
-                      <div className="border-t my-1"></div>
-                    )}
-                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                      Saved Projects
-                    </div>
-                    {savedManifests.map((project) => (
-                      <SelectItem key={project.id} value={project.id} textValue={project.name}>
-                        <div className="flex items-center justify-between w-full gap-4">
-                          <span className="font-medium">{project.name}</span>
-                          <span className="text-xs text-muted-foreground">
-                            {new Date(project.updated_at).toLocaleDateString()}
-                          </span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </>
-                )}
-                
-                {/* Empty State */}
-                {(!manifestTemplates || manifestTemplates.length === 0) && 
-                 (!savedManifests || savedManifests.length === 0) && (
+                      </div>
+                    </SelectItem>
+                  ))
+                ) : (
                   <div className="px-2 py-1.5 text-sm text-muted-foreground">
-                    No templates or saved manifests found
+                    No manifest templates found
                   </div>
                 )}
               </SelectContent>

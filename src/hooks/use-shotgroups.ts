@@ -3,7 +3,7 @@
  * @module hooks/use-shotgroups
  */
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import type { Manifest } from '@/lib/validation/manifest'
 import type { Shotgroup, TemplateImage } from '@/types/shotgroup'
 
@@ -46,17 +46,23 @@ export function useShotgroups({
   // Track the last processed manifest to avoid duplicate API calls
   const lastProcessedManifest = useRef<string>('')
   const abortController = useRef<AbortController | null>(null)
+  const shotgroupsRef = useRef<Shotgroup[]>([])
   
-  const fetchShotgroups = async () => {
+  // Memoize the manifest hash to prevent unnecessary recalculations
+  const manifestHash = useMemo(() => 
+    manifest ? JSON.stringify(manifest) : '', 
+    [manifest]
+  )
+
+  const fetchShotgroups = useCallback(async () => {
     // Validation checks
     if (!enabled || !manifest || !manifest.shots || manifest.shots.length === 0) {
       console.log('Skipping shotgroup fetch: disabled or empty manifest')
       setShotgroups([])
       setTemplateImages([])
+      shotgroupsRef.current = []
       return
     }
-    
-    const manifestHash = JSON.stringify(manifest)
     
     // Check if we already have data for this exact manifest
     if (existingShotgroups.length > 0 && manifestHash === lastProcessedManifest.current) {
@@ -65,7 +71,7 @@ export function useShotgroups({
     }
     
     // Check if this manifest was already processed
-    if (manifestHash === lastProcessedManifest.current && shotgroups.length > 0) {
+    if (manifestHash === lastProcessedManifest.current && shotgroupsRef.current.length > 0) {
       console.log('Skipping duplicate API call - manifest already processed')
       return
     }
@@ -116,8 +122,12 @@ export function useShotgroups({
       }
       
       // Update state with new data
-      setShotgroups(data.shotgroups || [])
-      setTemplateImages(data.template_images || [])
+      const newShotgroups = data.shotgroups || []
+      const newTemplateImages = data.template_images || []
+      
+      setShotgroups(newShotgroups)
+      setTemplateImages(newTemplateImages)
+      shotgroupsRef.current = newShotgroups
       setProcessingTime(data.total_processing_time || null)
       
       // Mark this manifest as processed
@@ -136,12 +146,13 @@ export function useShotgroups({
       setError(err instanceof Error ? err.message : 'Failed to fetch shotgroups')
       setShotgroups([])
       setTemplateImages([])
+      shotgroupsRef.current = []
       setProcessingTime(null)
     } finally {
       setIsLoading(false)
       abortController.current = null
     }
-  }
+  }, [enabled, manifest, manifestHash, existingShotgroups, existingTemplateImages, projectId, userId])
   
   // Effect to fetch shotgroups when dependencies change
   useEffect(() => {
@@ -149,15 +160,18 @@ export function useShotgroups({
     if (existingShotgroups.length > 0) {
       setShotgroups(existingShotgroups)
       setTemplateImages(existingTemplateImages)
+      shotgroupsRef.current = existingShotgroups
       // Mark the current manifest as already processed
-      if (manifest) {
-        lastProcessedManifest.current = JSON.stringify(manifest)
+      if (manifestHash) {
+        lastProcessedManifest.current = manifestHash
       }
       return
     }
     
-    // Otherwise fetch new shotgroups
-    fetchShotgroups()
+    // Only fetch if enabled and we have a manifest
+    if (enabled && manifest && manifestHash) {
+      fetchShotgroups()
+    }
     
     // Cleanup function
     return () => {
@@ -165,7 +179,7 @@ export function useShotgroups({
         abortController.current.abort()
       }
     }
-  }, [manifest, enabled]) // Only depend on manifest and enabled state
+  }, [manifestHash, enabled, existingShotgroups, existingTemplateImages, fetchShotgroups])
   
   return {
     shotgroups,

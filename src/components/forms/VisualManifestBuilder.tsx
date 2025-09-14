@@ -396,7 +396,7 @@ export function VisualManifestBuilder({
           {shotgroupError ? (
             <div className="text-center py-8 text-red-500">
               <p>Error loading shot groups: {shotgroupError}</p>
-              <p className="text-sm text-gray-500 mt-2">Make sure the API is running on localhost:8000</p>
+              <p className="text-sm text-gray-500 mt-2">Please check your network connection and try again</p>
             </div>
           ) : isLoadingShotgroups ? (
             <div className="text-center py-8 text-gray-500">

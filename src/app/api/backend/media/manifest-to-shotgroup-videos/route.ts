@@ -16,6 +16,7 @@ export async function POST(request: NextRequest) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'X-API-Key': process.env.BRUNNR_API_KEY || '',
       },
       body: JSON.stringify(body.manifest || body),
       signal: controller.signal,

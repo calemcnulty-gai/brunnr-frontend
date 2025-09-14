@@ -48,13 +48,20 @@ function LoginForm() {
     setError(null);
 
     try {
+      console.log("Login attempt started", { email: data.email, domain: window.location.hostname });
+      
       const supabase = createClient(data.rememberMe);
-      const { error } = await supabase.auth.signInWithPassword({
+      console.log("Supabase client created");
+      
+      const { data: authData, error } = await supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,
       });
 
+      console.log("Auth response:", { authData, error });
+
       if (error) {
+        console.error("Supabase auth error:", error);
         setError(error.message);
         return;
       }
@@ -68,10 +75,12 @@ function LoginForm() {
         }
       }
 
+      console.log("Login successful, redirecting to dashboard");
       router.push("/dashboard");
       router.refresh();
     } catch (err) {
-      setError("An unexpected error occurred");
+      console.error("Unexpected login error:", err);
+      setError(`An unexpected error occurred: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setIsLoading(false);
     }

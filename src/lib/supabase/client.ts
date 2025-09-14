@@ -15,10 +15,16 @@ export function createClient(rememberMe?: boolean) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   
+  console.log("Creating Supabase client", { 
+    url: url ? `${url.substring(0, 20)}...` : 'undefined',
+    key: key ? `${key.substring(0, 20)}...` : 'undefined',
+    domain: typeof window !== 'undefined' ? window.location.hostname : 'server'
+  });
+  
   if (!url || !key) {
-    throw new Error(
-      "Supabase environment variables are not set. Please check your .env.local file."
-    );
+    const error = "Supabase environment variables are not set. Please check your .env.local file.";
+    console.error(error, { url: !!url, key: !!key });
+    throw new Error(error);
   }
   
   return createBrowserClient<Database>(url, key, {

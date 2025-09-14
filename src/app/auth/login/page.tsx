@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { createClient } from "@/lib/supabase/client";
@@ -45,7 +45,8 @@ function LoginForm() {
     handleSubmit,
     formState: { errors },
     watch,
-    getValues
+    getValues,
+    control
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
@@ -166,10 +167,18 @@ function LoginForm() {
           </div>
           
           <div className="flex items-center space-x-2">
-            <Switch
-              id="rememberMe"
-              {...register("rememberMe")}
-              disabled={isLoading}
+            <Controller
+              name="rememberMe"
+              control={control}
+              defaultValue={false}
+              render={({ field }) => (
+                <Switch
+                  id="rememberMe"
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                  disabled={isLoading}
+                />
+              )}
             />
             <Label htmlFor="rememberMe" className="text-sm font-normal">
               Remember me for 30 days

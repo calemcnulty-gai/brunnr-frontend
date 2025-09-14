@@ -44,9 +44,15 @@ function LoginForm() {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
+    getValues
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
+  
+  // Debug: Watch form values
+  const watchedValues = watch();
+  console.log("Form values changed:", watchedValues);
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
@@ -102,7 +108,17 @@ function LoginForm() {
       <form 
         onSubmit={(e) => {
           console.log("Form onSubmit triggered!", e);
-          handleSubmit(onSubmit)(e);
+          console.log("About to call handleSubmit with onSubmit function");
+          const submitHandler = handleSubmit(
+            (data) => {
+              console.log("handleSubmit success callback called with data:", data);
+              onSubmit(data);
+            },
+            (errors) => {
+              console.log("handleSubmit validation errors:", errors);
+            }
+          );
+          submitHandler(e);
         }}
       >
         <CardContent className="space-y-4">
@@ -175,6 +191,19 @@ function LoginForm() {
             }}
           >
             {isLoading ? "Signing in..." : "Sign in"}
+          </Button>
+          
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={() => {
+              console.log("Current form values:", getValues());
+              console.log("Form errors:", errors);
+              console.log("Form is valid:", Object.keys(errors).length === 0);
+            }}
+          >
+            Show Form Values (Debug)
           </Button>
           
           <Button

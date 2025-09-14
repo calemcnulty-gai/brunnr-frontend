@@ -29,6 +29,11 @@ function LoginForm() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   
   useEffect(() => {
+    console.log("LoginForm component mounted", { 
+      searchParams: searchParams.toString(),
+      domain: window.location.hostname 
+    });
+    
     // Check if user was just registered
     if (searchParams.get('registered') === 'true') {
       setSuccessMessage('Account created successfully! Please sign in.');
@@ -94,7 +99,12 @@ function LoginForm() {
           Enter your email and password to sign in
         </CardDescription>
       </CardHeader>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form 
+        onSubmit={(e) => {
+          console.log("Form onSubmit triggered!", e);
+          handleSubmit(onSubmit)(e);
+        }}
+      >
         <CardContent className="space-y-4">
           {successMessage && (
             <div className="rounded-md bg-green-50 p-3 text-sm text-green-700">
@@ -156,6 +166,10 @@ function LoginForm() {
             type="submit"
             className="w-full"
             disabled={isLoading}
+            onClick={(e) => {
+              console.log("Button clicked!", e);
+              console.log("Form element:", e.currentTarget.form);
+            }}
           >
             {isLoading ? "Signing in..." : "Sign in"}
           </Button>

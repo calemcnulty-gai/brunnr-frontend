@@ -28,6 +28,8 @@ export function useUserRole(): UserDashboardAccess {
     accessiblePartnerIds: [],
     isLoading: true
   })
+  const [retryCount, setRetryCount] = useState(0)
+  const maxRetries = 3
   
   // Memoize Supabase client to prevent constant recreation
   const supabase = useMemo(() => createClient(), [])
@@ -43,8 +45,19 @@ export function useUserRole(): UserDashboardAccess {
       return
     }
 
-    fetchUserRole()
-  }, [user])
+    if (retryCount < maxRetries) {
+      fetchUserRole()
+    } else {
+      console.warn('Max retries reached for user role fetch, defaulting to user role')
+      setDashboardAccess({
+        role: 'user',
+        canViewAllPartners: false,
+        accessiblePartnerIds: [],
+        isLoading: false,
+        error: 'Max retries reached'
+      })
+    }
+  }, [user, retryCount, maxRetries])
 
   const fetchUserRole = async () => {
     try {
@@ -69,10 +82,12 @@ export function useUserRole(): UserDashboardAccess {
 
       if (error) {
         console.error('Error fetching user role:', error)
+        setRetryCount(prev => prev + 1)
         setDashboardAccess(prev => ({
           ...prev,
           isLoading: false,
-          error: 'Failed to fetch user role'
+          error: 'Failed to fetch user role',
+          role: 'user' // Default to user role to prevent infinite retries
         }))
         return
       }

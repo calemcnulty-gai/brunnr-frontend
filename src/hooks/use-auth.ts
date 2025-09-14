@@ -3,7 +3,7 @@
  * @module hooks/use-auth
  */
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "@/stores/auth-store";
@@ -12,10 +12,14 @@ export function useAuth() {
   const router = useRouter();
   const { user, isLoading, setUser, setLoading } = useAuthStore();
   
-  // Check if user has remember me preference
+  // Check if user has remember me preference and memoize client creation
   const rememberMe = typeof window !== 'undefined' ? 
     localStorage.getItem('brunnr_remember_me') === 'true' : false;
-  const supabase = createClient(rememberMe);
+  
+  const supabase = useMemo(() => {
+    console.log("Creating Supabase client (memoized)", { rememberMe, domain: typeof window !== 'undefined' ? window.location.hostname : 'server' });
+    return createClient(rememberMe);
+  }, [rememberMe]);
 
   useEffect(() => {
     // Check active session

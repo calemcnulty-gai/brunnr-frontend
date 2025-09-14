@@ -3,7 +3,7 @@
  * @module hooks/use-user-role
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useAuthStore } from '@/stores/auth-store'
 
@@ -28,6 +28,9 @@ export function useUserRole(): UserDashboardAccess {
     accessiblePartnerIds: [],
     isLoading: true
   })
+  
+  // Memoize Supabase client to prevent constant recreation
+  const supabase = useMemo(() => createClient(), [])
 
   useEffect(() => {
     if (!user) {
@@ -45,8 +48,7 @@ export function useUserRole(): UserDashboardAccess {
 
   const fetchUserRole = async () => {
     try {
-      // Get user's dashboard access data
-      const supabase = createClient()
+      // Use memoized supabase client
       
       // First try without passing user_id (relies on auth context)
       let { data, error } = await supabase

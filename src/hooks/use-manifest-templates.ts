@@ -3,7 +3,7 @@
  * @module hooks/use-manifest-templates
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Database } from '@/types/supabase-generated'
 
@@ -19,6 +19,9 @@ export function useManifestTemplates(options: UseManifestTemplatesOptions = {}) 
   const [templates, setTemplates] = useState<ManifestTemplate[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  
+  // Memoize Supabase client to prevent constant recreation
+  const supabase = useMemo(() => createClient(), [])
 
   useEffect(() => {
     fetchTemplates()
@@ -29,7 +32,7 @@ export function useManifestTemplates(options: UseManifestTemplatesOptions = {}) 
       setIsLoading(true)
       setError(null)
 
-      const supabase = createClient()
+      // Use memoized supabase client
       
       // Query the manifest_templates table directly
       let query = supabase

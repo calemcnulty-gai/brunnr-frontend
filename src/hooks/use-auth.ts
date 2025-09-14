@@ -16,10 +16,7 @@ export function useAuth() {
   const rememberMe = typeof window !== 'undefined' ? 
     localStorage.getItem('brunnr_remember_me') === 'true' : false;
   
-  const supabase = useMemo(() => {
-    console.log("Creating Supabase client (memoized)", { rememberMe, domain: typeof window !== 'undefined' ? window.location.hostname : 'server' });
-    return createClient(rememberMe);
-  }, [rememberMe]);
+  const supabase = useMemo(() => createClient(rememberMe), [rememberMe]);
 
   useEffect(() => {
     // Check active session

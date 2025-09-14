@@ -29,11 +29,6 @@ function LoginForm() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   
   useEffect(() => {
-    console.log("LoginForm component mounted", { 
-      searchParams: searchParams.toString(),
-      domain: window.location.hostname 
-    });
-    
     // Check if user was just registered
     if (searchParams.get('registered') === 'true') {
       setSuccessMessage('Account created successfully! Please sign in.');
@@ -60,20 +55,13 @@ function LoginForm() {
     setError(null);
 
     try {
-      console.log("Login attempt started", { email: data.email, domain: window.location.hostname });
-      
       const supabase = createClient(data.rememberMe);
-      console.log("Supabase client created");
-      
-      const { data: authData, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,
       });
 
-      console.log("Auth response:", { authData, error });
-
       if (error) {
-        console.error("Supabase auth error:", error);
         setError(error.message);
         return;
       }
@@ -87,11 +75,9 @@ function LoginForm() {
         }
       }
 
-      console.log("Login successful, redirecting to dashboard");
       router.push("/dashboard");
       router.refresh();
     } catch (err) {
-      console.error("Unexpected login error:", err);
       setError(`An unexpected error occurred: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setIsLoading(false);
@@ -106,22 +92,7 @@ function LoginForm() {
           Enter your email and password to sign in
         </CardDescription>
       </CardHeader>
-      <form 
-        onSubmit={(e) => {
-          console.log("Form onSubmit triggered!", e);
-          console.log("About to call handleSubmit with onSubmit function");
-          const submitHandler = handleSubmit(
-            (data) => {
-              console.log("handleSubmit success callback called with data:", data);
-              onSubmit(data);
-            },
-            (errors) => {
-              console.log("handleSubmit validation errors:", errors);
-            }
-          );
-          submitHandler(e);
-        }}
-      >
+      <form onSubmit={handleSubmit(onSubmit)}>
         <CardContent className="space-y-4">
           {successMessage && (
             <div className="rounded-md bg-green-50 p-3 text-sm text-green-700">
@@ -191,49 +162,10 @@ function LoginForm() {
             type="submit"
             className="w-full"
             disabled={isLoading}
-            onClick={(e) => {
-              console.log("Button clicked!", e);
-              console.log("Form element:", e.currentTarget.form);
-              console.log("Form validity:", e.currentTarget.form?.checkValidity());
-              console.log("Button disabled:", e.currentTarget.disabled);
-              console.log("isLoading:", isLoading);
-            }}
           >
             {isLoading ? "Signing in..." : "Sign in"}
           </Button>
           
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
-            onClick={() => {
-              console.log("Current form values:", getValues());
-              console.log("Form errors:", errors);
-              console.log("Form is valid:", Object.keys(errors).length === 0);
-            }}
-          >
-            Show Form Values (Debug)
-          </Button>
-          
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
-            onClick={async () => {
-              console.log("Test button clicked - bypassing form");
-              try {
-                await onSubmit({
-                  email: "test@example.com",
-                  password: "testpass123",
-                  rememberMe: false
-                });
-              } catch (err) {
-                console.error("Test login error:", err);
-              }
-            }}
-          >
-            Test Login (Debug)
-          </Button>
           
           <p className="text-center text-sm text-gray-600">
             Don't have an account?{" "}

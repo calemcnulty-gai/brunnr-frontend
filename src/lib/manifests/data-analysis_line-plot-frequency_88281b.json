@@ -1,0 +1,300 @@
+{
+  "video_id": "data-analysis_line-plot-frequency_88281b",
+  "templates": [
+    {
+      "id": "text_0_t",
+      "type": "Text",
+      "content": "The plot tells us that:.",
+      "style": {
+        "color": "#F3F4F6"
+      }
+    },
+    {
+      "id": "text_10_t",
+      "type": "Text",
+      "content": "Tip: On a line plot, the number of crosses stacked above a value is the frequency. To answer questions like this, look for stacks that meet the condition and count how many positions satisfy it.",
+      "style": {
+        "color": "#F3F4F6"
+      }
+    },
+    {
+      "id": "text_1_t",
+      "type": "Text",
+      "content": "on the first night, 4 pizzas were delivered.",
+      "style": {
+        "color": "#F3F4F6"
+      }
+    },
+    {
+      "id": "text_2_t",
+      "type": "Text",
+      "content": "on the second night, 2 pizzas were delivered.",
+      "style": {
+        "color": "#F3F4F6"
+      }
+    },
+    {
+      "id": "text_3_t",
+      "type": "Text",
+      "content": "on the third night, 2 pizzas were delivered.",
+      "style": {
+        "color": "#F3F4F6"
+      }
+    },
+    {
+      "id": "text_4_t",
+      "type": "Text",
+      "content": "on the fourth night, 3 pizzas were delivered.",
+      "style": {
+        "color": "#F3F4F6"
+      }
+    },
+    {
+      "id": "text_5_t",
+      "type": "Text",
+      "content": "on the fifth night, 5 pizzas were delivered.",
+      "style": {
+        "color": "#F3F4F6"
+      }
+    },
+    {
+      "id": "text_6_t",
+      "type": "Text",
+      "content": "on the sixth night, 6 pizzas were delivered.",
+      "style": {
+        "color": "#F3F4F6"
+      }
+    },
+    {
+      "id": "text_7_t",
+      "type": "Text",
+      "content": "on the seventh night, 4 pizzas were delivered.",
+      "style": {
+        "color": "#F3F4F6"
+      }
+    },
+    {
+      "id": "text_8_t",
+      "type": "Text",
+      "content": "They delivered five or more pizzas on the fifth night and the sixth night only.",
+      "style": {
+        "color": "#F3F4F6"
+      }
+    },
+    {
+      "id": "text_9_t",
+      "type": "Text",
+      "content": "Therefore, they delivered five or more pizzas on 2 nights.",
+      "style": {
+        "color": "#F3F4F6"
+      }
+    },
+    {
+      "id": "title_t",
+      "type": "Text",
+      "content": "Mathematical Concept",
+      "style": {
+        "color": "#F3F4F6"
+      }
+    }
+  ],
+  "shots": [
+    {
+      "actions": [
+        {
+          "fade_in": {
+            "instance_id": "title",
+            "template": "title_t",
+            "position": {
+              "absolute": "top_center"
+            }
+          }
+        }
+      ],
+      "voiceover": "A local meal delivery service kept track of the number of promotional pizzas delivered each night during the last week. The line plot below shows the results, where each cross represents one pizza. How many nights did they deliver 5 or more pizzas?",
+      "description": "Show title and introduce data analysis concepts",
+      "contained": true
+    },
+    {
+      "actions": [
+        {
+          "fade_in": {
+            "instance_id": "text_0",
+            "template": "text_0_t",
+            "position": {
+              "below": "title"
+            }
+          }
+        }
+      ],
+      "voiceover": "The plot tells us that:.",
+      "description": "Data analysis explanation point 1",
+      "contained": true
+    },
+    {
+      "actions": [
+        {
+          "fade_in": {
+            "instance_id": "text_1",
+            "template": "text_1_t",
+            "position": {
+              "below": "text_0"
+            }
+          }
+        }
+      ],
+      "voiceover": "on the first night, 4 pizzas were delivered.",
+      "description": "Data analysis explanation point 2",
+      "contained": true
+    },
+    {
+      "actions": [
+        {
+          "fade_in": {
+            "instance_id": "text_2",
+            "template": "text_2_t",
+            "position": {
+              "below": "text_1"
+            }
+          }
+        }
+      ],
+      "voiceover": "on the second night, 2 pizzas were delivered.",
+      "description": "Data analysis explanation point 3",
+      "contained": true
+    },
+    {
+      "actions": [
+        {
+          "fade_in": {
+            "instance_id": "text_3",
+            "template": "text_3_t",
+            "position": {
+              "below": "text_2"
+            }
+          }
+        }
+      ],
+      "voiceover": "on the third night, 2 pizzas were delivered.",
+      "description": "Data analysis explanation point 4",
+      "contained": true
+    },
+    {
+      "actions": [
+        {
+          "fade_in": {
+            "instance_id": "text_4",
+            "template": "text_4_t",
+            "position": {
+              "below": "text_3"
+            }
+          }
+        }
+      ],
+      "voiceover": "on the fourth night, 3 pizzas were delivered.",
+      "description": "Data analysis explanation point 5",
+      "contained": true
+    },
+    {
+      "actions": [
+        {
+          "fade_in": {
+            "instance_id": "text_5",
+            "template": "text_5_t",
+            "position": {
+              "below": "text_4"
+            }
+          }
+        }
+      ],
+      "voiceover": "on the fifth night, 5 pizzas were delivered.",
+      "description": "Data analysis explanation point 6",
+      "contained": true
+    },
+    {
+      "actions": [
+        {
+          "fade_in": {
+            "instance_id": "text_6",
+            "template": "text_6_t",
+            "position": {
+              "below": "text_5"
+            }
+          }
+        }
+      ],
+      "voiceover": "on the sixth night, 6 pizzas were delivered.",
+      "description": "Data analysis explanation point 7",
+      "contained": true
+    },
+    {
+      "actions": [
+        {
+          "fade_in": {
+            "instance_id": "text_7",
+            "template": "text_7_t",
+            "position": {
+              "below": "text_6"
+            }
+          }
+        }
+      ],
+      "voiceover": "on the seventh night, 4 pizzas were delivered.",
+      "description": "Data analysis explanation point 8",
+      "contained": true
+    },
+    {
+      "actions": [
+        {
+          "fade_in": {
+            "instance_id": "text_8",
+            "template": "text_8_t",
+            "position": {
+              "below": "text_7"
+            }
+          }
+        }
+      ],
+      "voiceover": "They delivered five or more pizzas on the fifth night and the sixth night only.",
+      "description": "Data analysis explanation point 9",
+      "contained": true
+    },
+    {
+      "actions": [
+        {
+          "fade_in": {
+            "instance_id": "text_9",
+            "template": "text_9_t",
+            "position": {
+              "below": "text_8"
+            }
+          }
+        }
+      ],
+      "voiceover": "Therefore, they delivered five or more pizzas on 2 nights.",
+      "description": "Data analysis explanation point 10",
+      "contained": true
+    },
+    {
+      "actions": [
+        {
+          "fade_in": {
+            "instance_id": "text_10",
+            "template": "text_10_t",
+            "position": {
+              "below": "text_9"
+            }
+          }
+        }
+      ],
+      "voiceover": "Tip: On a line plot, the number of crosses stacked above a value is the frequency. To answer questions like this, look for stacks that meet the condition and count how many positions satisfy it.",
+      "description": "Data analysis explanation point 11",
+      "contained": true
+    }
+  ],
+  "metadata": {
+    "recipe": "data_analysis_explanation",
+    "content_kind": "data_analysis",
+    "visual_intent": "line_plot_frequency"
+  }
+}

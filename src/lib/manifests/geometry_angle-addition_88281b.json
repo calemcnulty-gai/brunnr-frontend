@@ -1,0 +1,108 @@
+{
+  "video_id": "geometry_angle-addition_88281b",
+  "templates": [
+    {
+      "id": "text_0_t",
+      "type": "Text",
+      "content": "First, notice that ∠POQ and ∠QOR are adjacent because they share the same side OQ. For adjacent angles with a common vertex, the measure of the larger angle equals the sum of the measures of its non-overlapping parts.",
+      "style": {
+        "color": "#F3F4F6"
+      }
+    },
+    {
+      "id": "text_1_t",
+      "type": "Text",
+      "content": "Therefore we add the two adjacent angles to get the measure of the combined angle ∠POR.",
+      "style": {
+        "color": "#F3F4F6"
+      }
+    },
+    {
+      "id": "text_2_t",
+      "type": "Text",
+      "content": "m∠POR = m∠POQ + m∠QOR = 68° + 37° = 105°",
+      "style": {
+        "color": "#F3F4F6"
+      }
+    },
+    {
+      "id": "title_t",
+      "type": "Text",
+      "content": "Example: Finding the Measure of a Combined Angle",
+      "style": {
+        "color": "#F3F4F6"
+      }
+    }
+  ],
+  "shots": [
+    {
+      "actions": [
+        {
+          "fade_in": {
+            "instance_id": "title",
+            "template": "title_t",
+            "position": {
+              "absolute": "top_center"
+            }
+          }
+        }
+      ],
+      "voiceover": "In the figure below, determine m∠POR.",
+      "description": "Show title and introduce geometric concepts",
+      "contained": true
+    },
+    {
+      "actions": [
+        {
+          "fade_in": {
+            "instance_id": "text_0",
+            "template": "text_0_t",
+            "position": {
+              "below": "title"
+            }
+          }
+        }
+      ],
+      "voiceover": "First, notice that angle POQ and angle QOR are adjacent because they share the same side OQ. For adjacent angles with a common vertex, the measure of the larger angle equals the sum of the measures of its non-overlapping parts.",
+      "description": "Geometric explanation point 1",
+      "contained": true
+    },
+    {
+      "actions": [
+        {
+          "fade_in": {
+            "instance_id": "text_1",
+            "template": "text_1_t",
+            "position": {
+              "below": "text_0"
+            }
+          }
+        }
+      ],
+      "voiceover": "Therefore we add the two adjacent angles to get the measure of the combined angle POR.",
+      "description": "Geometric explanation point 2",
+      "contained": true
+    },
+    {
+      "actions": [
+        {
+          "fade_in": {
+            "instance_id": "text_2",
+            "template": "text_2_t",
+            "position": {
+              "below": "text_1"
+            }
+          }
+        }
+      ],
+      "voiceover": "m angle P O R equals m angle P O Q plus m angle Q O R equals 68 degrees plus 37 degrees equals 105 degrees.",
+      "description": "Geometric calculation",
+      "contained": true
+    }
+  ],
+  "metadata": {
+    "recipe": "geometry_explanation",
+    "content_kind": "geometry",
+    "visual_intent": "angle_addition"
+  }
+}

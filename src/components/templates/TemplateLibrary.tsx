@@ -5,7 +5,7 @@
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -30,6 +30,7 @@ import {
 } from 'lucide-react'
 import type { Manifest } from '@/lib/validation/manifest'
 import { cn } from '@/lib/utils'
+import { useManifestTemplates, type ManifestTemplate } from '@/hooks/use-manifest-templates'
 
 interface Template {
   id: string
@@ -268,8 +269,36 @@ export function TemplateLibrary({ onSelectTemplate, onClose }: TemplateLibraryPr
   const [favorites, setFavorites] = useState<Set<string>>(new Set())
   const [previewTemplate, setPreviewTemplate] = useState<Template | null>(null)
   
+  // Fetch manifest templates from Supabase
+  const { templates: manifestTemplates, isLoading, error } = useManifestTemplates()
+  const [allTemplates, setAllTemplates] = useState<Template[]>(presetTemplates)
+  
+  // Convert ManifestTemplates to Template format and combine with presets
+  useEffect(() => {
+    if (manifestTemplates.length > 0) {
+      const convertedTemplates: Template[] = manifestTemplates.map(mt => ({
+        id: mt.video_id,
+        name: mt.title,
+        description: mt.description || `${mt.subject} - ${mt.content_kind}`,
+        category: mt.subject === 'math' ? 'educational' : 
+                 mt.subject === 'geometry' ? 'educational' : 'explanation' as const,
+        icon: mt.subject === 'math' ? <Calculator className="h-5 w-5" /> :
+              mt.subject === 'geometry' ? <Microscope className="h-5 w-5" /> :
+              <BookOpen className="h-5 w-5" />,
+        tags: [mt.subject, mt.content_kind, mt.grade_level || ''].filter(Boolean),
+        manifest: mt.manifest as Manifest,
+        estimatedDuration: 90, // Default duration
+        complexity: 'intermediate' as const,
+        isFavorite: false
+      }))
+      
+      // Combine with preset templates
+      setAllTemplates([...convertedTemplates, ...presetTemplates])
+    }
+  }, [manifestTemplates])
+  
   // Filter templates
-  const filteredTemplates = presetTemplates.filter(template => {
+  const filteredTemplates = allTemplates.filter(template => {
     const matchesSearch = searchQuery === '' || 
       template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       template.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -319,6 +348,32 @@ export function TemplateLibrary({ onSelectTemplate, onClose }: TemplateLibraryPr
     custom: <FileJson className="h-4 w-4" />
   }
   
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="text-center">
+          <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading manifest templates...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">Failed to load templates: {error}</p>
+          <Button onClick={() => window.location.reload()} variant="outline">
+            Retry
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-4">
       {/* Search and Filters */}

@@ -1,0 +1,203 @@
+{
+  "video_id": "fraction-sub-same-den_number-line-walk_bb2dae",
+  "templates": [
+    {
+      "id": "end_pos_t",
+      "type": "MathTex_term",
+      "content": "\\frac{2}{9}",
+      "style": {
+        "color": "#EF4444"
+      }
+    },
+    {
+      "id": "expr_t",
+      "type": "MathTex_term",
+      "content": "\\frac{7}{9} - \\frac{5}{9}",
+      "style": {
+        "color": "#F3F4F6"
+      }
+    },
+    {
+      "id": "numline_plain_t",
+      "type": "number_line"
+    },
+    {
+      "id": "numline_ticks_t",
+      "type": "number_line",
+      "content": {
+        "ticks": [
+          "\\frac{0}{9}",
+          "\\frac{1}{9}",
+          "\\frac{2}{9}",
+          "\\frac{3}{9}",
+          "\\frac{4}{9}",
+          "\\frac{5}{9}",
+          "\\frac{6}{9}",
+          "\\frac{7}{9}",
+          "\\frac{8}{9}",
+          "\\frac{9}{9}"
+        ]
+      }
+    },
+    {
+      "id": "result_t",
+      "type": "MathTex_term",
+      "content": "\\frac{2}{9}",
+      "style": {
+        "color": "#F3F4F6"
+      }
+    },
+    {
+      "id": "start_pos_t",
+      "type": "MathTex_term",
+      "content": "\\frac{7}{9}",
+      "style": {
+        "color": "#60A5FA"
+      }
+    },
+    {
+      "id": "title_t",
+      "type": "Text",
+      "content": "Example: Adding and Subtracting Fractions Using Number Line Models",
+      "style": {
+        "color": "#F3F4F6"
+      }
+    }
+  ],
+  "shots": [
+    {
+      "actions": [
+        {
+          "fade_in": {
+            "instance_id": "title",
+            "template": "title_t",
+            "position": {
+              "absolute": "top_center"
+            }
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "expr",
+            "template": "expr_t",
+            "position": {
+              "below": "title"
+            }
+          }
+        }
+      ],
+      "voiceover": "Let's find seven ninths minus five ninths We'll use a number line to solve this problem.",
+      "description": "Introduce problem",
+      "contained": true
+    },
+    {
+      "actions": [
+        {
+          "fade_in": {
+            "instance_id": "numline",
+            "template": "numline_plain_t",
+            "position": {
+              "below": "expr",
+              "spacing": 2.0
+            }
+          }
+        }
+      ],
+      "voiceover": "First, let's draw a number line.",
+      "description": "Show blank number line",
+      "contained": true
+    },
+    {
+      "actions": [
+        {
+          "morph": {
+            "from": "numline",
+            "to": "numline_ticks_t"
+          }
+        }
+      ],
+      "voiceover": "We'll divide it into 9 equal parts.",
+      "description": "Add tick marks and labels",
+      "contained": true
+    },
+    {
+      "actions": [
+        {
+          "custom_object_animation": {
+            "instance_id": "numline",
+            "kind": "highlight_tick",
+            "props": {
+              "tick_index": 7,
+              "color": "#60A5FA",
+              "duration": 1.0,
+              "denominator": 9
+            }
+          }
+        }
+      ],
+      "voiceover": "We start at 7 over 9.",
+      "description": "Highlight starting position",
+      "contained": true
+    },
+    {
+      "actions": [
+        {
+          "custom_object_animation": {
+            "instance_id": "numline",
+            "kind": "animated_walk",
+            "props": {
+              "from_tick": 7,
+              "steps": -5,
+              "step_duration": 0.4,
+              "show_arrows": true,
+              "arrow_color": "#60A5FA",
+              "denominator": 9
+            }
+          }
+        }
+      ],
+      "voiceover": "Now we move 5 steps to the left.",
+      "description": "Animate step-by-step left movement",
+      "contained": true
+    },
+    {
+      "actions": [
+        {
+          "custom_object_animation": {
+            "instance_id": "numline",
+            "kind": "highlight_tick",
+            "props": {
+              "tick_index": 2,
+              "color": "#EF4444",
+              "duration": 1.0,
+              "denominator": 9
+            }
+          }
+        },
+        {
+          "fade_in": {
+            "instance_id": "result",
+            "template": "result_t",
+            "position": {
+              "right_of": "numline",
+              "spacing": 2.0
+            }
+          }
+        }
+      ],
+      "voiceover": "We end at two ninths.",
+      "description": "Highlight ending position and show result",
+      "contained": true
+    },
+    {
+      "actions": [],
+      "voiceover": "Therefore, the answer is two ninths.",
+      "description": "Conclusion"
+    }
+  ],
+  "metadata": {
+    "recipe": "number_line_fraction_walk",
+    "content_kind": "fraction_sub_same_den",
+    "visual_intent": "number_line_walk"
+  }
+}

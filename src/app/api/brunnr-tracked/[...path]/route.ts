@@ -88,50 +88,60 @@ async function proxyRequest(
           .eq('user_id', user.id)
           .single()
         
-        if (userRole?.partner_id) {
-          // Check if user has an API key
-          const apiKeyHeader = request.headers.get('x-api-key')
-          let apiKeyId = null
+        // Get partner_id if user has one, otherwise use null for regular users
+        const partnerId = userRole?.partner_id || null
+        
+        // Check if user has an API key (for partner users)
+        const apiKeyHeader = request.headers.get('x-api-key')
+        let apiKeyId = null
+        
+        if (apiKeyHeader && partnerId) {
+          const keyHash = crypto.createHash('sha256').update(apiKeyHeader).digest('hex')
+          const { data: apiKey } = await supabase
+            .from('api_keys')
+            .select('id')
+            .eq('key_hash', keyHash)
+            .eq('is_active', true)
+            .single()
           
-          if (apiKeyHeader) {
-            const keyHash = crypto.createHash('sha256').update(apiKeyHeader).digest('hex')
-            const { data: apiKey } = await supabase
-              .from('api_keys')
-              .select('id')
-              .eq('key_hash', keyHash)
-              .eq('is_active', true)
-              .single()
-            
-            apiKeyId = apiKey?.id
-          }
-          
-          // Insert API request tracking
+          apiKeyId = apiKey?.id
+        }
+        
+        // Insert API request tracking for ALL users (partner and regular)
+        await supabase
+          .from('api_requests')
+          .insert({
+            request_id: requestId,
+            partner_id: partnerId,
+            api_key_id: apiKeyId,
+            user_id: user.id,
+            endpoint: path,
+            method: method,
+            request_payload: requestBody,
+            status_code: null, // Will be updated when response comes back
+            requested_at: new Date().toISOString(),
+            ip_address: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || null,
+            user_agent: request.headers.get('user-agent') || null
+          })
+        
+        // If it's a video generation endpoint, also track in video_generations
+        if (path.includes('video')) {
           await supabase
-            .from('api_requests')
+            .from('video_generations')
             .insert({
               request_id: requestId,
-              partner_id: userRole.partner_id,
+              partner_id: partnerId,
               api_key_id: apiKeyId,
-              endpoint: path,
-              method: method,
-              request_metadata: requestBody,
+              user_id: user.id,
+              manifest: requestBody.manifest || requestBody,
+              script_text: requestBody.script || null,
+              grade_level: requestBody.grade_level || null,
+              subject: requestBody.subject || null,
+              video_type: requestBody.video_type || 'educational',
               status: 'pending',
-              created_at: new Date().toISOString()
+              created_at: new Date().toISOString(),
+              script_received_at: requestBody.script ? new Date().toISOString() : null
             })
-          
-          // If it's a video generation endpoint, also track in video_generations
-          if (path.includes('video')) {
-            await supabase
-              .from('video_generations')
-              .insert({
-                request_id: requestId,
-                partner_id: userRole.partner_id,
-                api_key_id: apiKeyId,
-                manifest: requestBody.manifest || requestBody,
-                status: 'pending',
-                started_at: new Date().toISOString()
-              })
-          }
         }
       }
     }
@@ -285,12 +295,12 @@ async function updateTracking(
     await supabase
       .from('api_requests')
       .update({
-        status,
-        response_body: responseData,
-        response_time_ms: processingTime,
+        status_code: status === 'completed' ? 200 : 500,
+        response_payload: responseData,
+        processing_time_ms: processingTime,
         completed_at: new Date().toISOString()
       })
-      .eq('id', requestId)
+      .eq('request_id', requestId)
     
     // Update video generation if applicable
     if (responseData?.download_url || responseData?.video_url) {
@@ -299,9 +309,10 @@ async function updateTracking(
         .update({
           status,
           video_url: responseData.download_url || responseData.video_url,
-          processing_time_ms: processingTime,
-          completed_at: status === 'completed' ? new Date().toISOString() : null,
-          error_message: status === 'failed' ? JSON.stringify(responseData) : null
+          manifest_to_mp4_minutes: processingTime / (1000 * 60), // Convert ms to minutes
+          processing_completed_at: status === 'completed' ? new Date().toISOString() : null,
+          error_details: status === 'failed' ? responseData : null,
+          render_success: status === 'completed'
         })
         .eq('request_id', requestId)
     } else if (status === 'failed') {
@@ -309,8 +320,9 @@ async function updateTracking(
         .from('video_generations')
         .update({
           status: 'failed',
-          error_message: JSON.stringify(responseData),
-          completed_at: new Date().toISOString()
+          error_details: responseData,
+          processing_completed_at: new Date().toISOString(),
+          render_success: false
         })
         .eq('request_id', requestId)
     }

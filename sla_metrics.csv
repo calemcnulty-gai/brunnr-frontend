@@ -1,0 +1,1 @@
+date,partner_code,total_requests,successful_renders,success_rate,p50_manifest_to_mp4_minutes,p95_manifest_to_mp4_minutes,p99_manifest_to_mp4_minutes,jobs_within_24h,jobs_beyond_24h,sla_24h_compliance_rate,active_seats,unique_api_keys_used

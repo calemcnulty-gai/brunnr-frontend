@@ -17,10 +17,10 @@ import type {
   QuestionToVideoResponse,
   ManifestToVideoRequest,
   ManifestToVideoResponse,
-  AudioTimingAnalysisRequest,
-  AudioTimingAnalysisResponse,
   LessonToVideoRequest,
   LessonToVideoResponse,
+  AudioTimingAnalysisRequest,
+  AudioTimingAnalysisResponse,
 } from '@/types/api'
 
 // Content Generation Endpoints
@@ -156,6 +156,18 @@ export async function analyzeAudioTiming(
   return apiClient.post('/analytics/audio-timing', request)
 }
 
+// Utility Functions
+
+/**
+ * Extract video filename from download URL
+ * @param downloadUrl - The download URL from API response
+ * @returns The filename
+ */
+export function extractVideoFilename(downloadUrl: string): string {
+  const parts = downloadUrl.split('/')
+  return parts[parts.length - 1] || 'video.mp4'
+}
+
 /**
  * Generate video from lesson content
  * @param request - Lesson data
@@ -164,7 +176,7 @@ export async function analyzeAudioTiming(
 export async function lessonToVideo(
   request: LessonToVideoRequest
 ): Promise<LessonToVideoResponse> {
-  // Use the backend proxy route (same pattern as manifest-to-shotgroup-videos)
+  // Use the backend proxy route for lesson-to-video
   const response = await fetch('/api/backend/media/lesson-to-video', {
     method: 'POST',
     headers: {
@@ -180,18 +192,6 @@ export async function lessonToVideo(
   }
 
   return response.json()
-}
-
-// Utility Functions
-
-/**
- * Extract video filename from download URL
- * @param downloadUrl - The download URL from API response
- * @returns The filename
- */
-export function extractVideoFilename(downloadUrl: string): string {
-  const parts = downloadUrl.split('/')
-  return parts[parts.length - 1] || 'video.mp4'
 }
 
 /**

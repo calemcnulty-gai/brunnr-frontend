@@ -8,7 +8,11 @@ export async function GET(
     const path = params.path.join('/')
     const url = `${process.env.NEXT_PUBLIC_API_URL}/media/videos/${path}`
     
-    const response = await fetch(url)
+    const response = await fetch(url, {
+      headers: {
+        'X-API-Key': process.env.BRUNNR_API_KEY || '',
+      },
+    })
     
     if (!response.ok) {
       return NextResponse.json(

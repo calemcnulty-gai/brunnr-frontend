@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -10,6 +10,7 @@ import { lessonToVideo } from '@/lib/api/endpoints'
 import { useUpdateProject } from '@/hooks/use-projects'
 import lessonsData from '@/lib/utils/lessons.json'
 import type { Project } from '@/types/database'
+import { setupVideoAnalytics } from '@/lib/utils/video-analytics'
 
 interface Lesson {
   lesson_step_id: number
@@ -48,6 +49,7 @@ export function LessonToVideoWorkflow({ projectId }: LessonToVideoWorkflowProps)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
   const [videoUrl, setVideoUrl] = useState<string | null>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
   const [error, setError] = useState<string | null>(null)
   const [progress, setProgress] = useState<string>('')
 
@@ -351,16 +353,22 @@ export function LessonToVideoWorkflow({ projectId }: LessonToVideoWorkflowProps)
                 <h2 className="text-2xl font-bold mb-4 text-center text-gray-900">
                   Mastery in a Minute
                 </h2>
-                <div className="max-w-2xl mx-auto rounded-lg overflow-hidden shadow-lg">
-                  <video 
-                    controls 
-                    className="w-full"
-                    src={videoUrl}
-                    poster=""
-                  >
-                    Your browser does not support the video tag.
-                  </video>
-                </div>
+                  <div className="max-w-2xl mx-auto rounded-lg overflow-hidden shadow-lg">
+                    <video 
+                      ref={videoRef}
+                      controls 
+                      className="w-full"
+                      src={videoUrl}
+                      poster=""
+                      onLoadedMetadata={() => {
+                        if (videoRef.current && videoUrl) {
+                          setupVideoAnalytics(videoRef.current, videoUrl)
+                        }
+                      }}
+                    >
+                      Your browser does not support the video tag.
+                    </video>
+                  </div>
                 <p className="text-sm text-gray-600 text-center mt-3">
                   Watch this quick video summary before diving into the lesson
                 </p>

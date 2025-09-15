@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import type { Database } from '@/types/supabase-generated'
+import type { Database } from '@/types/supabase-updated'
 
 export type ManifestTemplate = Database['public']['Tables']['manifest_templates']['Row']
 

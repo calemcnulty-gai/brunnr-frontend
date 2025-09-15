@@ -19,7 +19,8 @@ const TRACKED_ENDPOINTS = [
   'media/manifest-to-video',
   'media/question-to-video',
   'media/manifest-to-shotgroup-videos',
-  'media/manifest-to-silent-video'
+  'media/manifest-to-silent-video',
+  'content/lesson-to-video'
 ]
 
 export async function GET(

@@ -176,22 +176,11 @@ export function extractVideoFilename(downloadUrl: string): string {
 export async function lessonToVideo(
   request: LessonToVideoRequest
 ): Promise<LessonToVideoResponse> {
-  // Use the backend proxy route for lesson-to-video
-  const response = await fetch('/api/backend/media/lesson-to-video', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(request),
+  // Use tracked endpoint for lesson-to-video to enable database tracking
+  return apiClient.post('/content/lesson-to-video', request, {
     signal: AbortSignal.timeout(300000),
+    baseUrl: '/api/brunnr-tracked', // Use tracked API endpoint
   })
-
-  if (!response.ok) {
-    const errorText = await response.text()
-    throw new Error(`Failed to generate video: ${errorText}`)
-  }
-
-  return response.json()
 }
 
 /**
